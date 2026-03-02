@@ -1,0 +1,35 @@
+# Heavy datasets, caches, and external model checkpoints (preserved via NTFS Junctions)
+data/Gait_Dataset/
+data/Gait_Dataset
+data/gt_cache/
+data/gt_cache
+data/inference/
+models/
+
+# Python bytecode & packaging
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Logs, temporary artifacts & IDE/AI clutter
+*.log
+run_log_output.txt
+.claude/
+.idea/
+.vscode/
+.pytest_cache/
+.ruff_cache/
+GEMINI.md
+/notes
+tmp/
+results_test/
+experiments/**/test_res*/
+*.task
+*.pth
+*.pt
+*.ckpt
+*.safetensors
