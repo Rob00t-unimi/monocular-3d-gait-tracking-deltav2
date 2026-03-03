@@ -1,0 +1,16 @@
+name: vggt_env
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pytorch=2.3.1
+  - torchvision=0.18.1
+  - pytorch-cuda=12.1
+  - pip
+  - pip:
+    - numpy
+    - Pillow
+    - huggingface_hub
