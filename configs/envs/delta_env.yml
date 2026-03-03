@@ -1,0 +1,23 @@
+name: delta_env
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - cmake=3.14.0
+  - pytorch=2.3.1
+  - torchvision=0.18.1
+  - pytorch-cuda=12.1
+  - pip
+  - ninja
+  - numpy=1.26.4
+  - scipy
+  - matplotlib
+  - pandas
+  - tqdm
+  - scikit-learn
+  - pip:
+      - mediapipe
+      - ultralytics

@@ -1,0 +1,19 @@
+name: analysis_env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - numpy
+  - scipy
+  - matplotlib
+  - pandas
+  - opencv
+  - jupyterlab
+  - tqdm
+  - scikit-learn
+  - pytest
+  - pip
+  - pip:
+      - mediapipe
+      - ultralytics
