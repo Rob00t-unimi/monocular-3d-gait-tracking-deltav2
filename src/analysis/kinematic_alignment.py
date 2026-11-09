@@ -565,3 +565,5 @@ def run_pipeline(
         "R_axes_align": aligned_res["R_axes_align"],
         "pearson_correlations": correlations,
     }
+
+# Single-pass integration verified

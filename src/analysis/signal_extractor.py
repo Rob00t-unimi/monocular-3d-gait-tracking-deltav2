@@ -459,5 +459,3 @@ def extract_aligned_signals(
         "R_cam_to_world": pipeline_res["R_cam_to_world"],
         "R_axes_align": pipeline_res["R_axes_align"],
     }
-
-# Legacy camera-frame projection note
