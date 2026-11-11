@@ -281,7 +281,19 @@ def compute_comprehensive_metrics(
     }
 
 
-def main():
+def main(force: bool = False):
+    json_path = RESULTS_DIR / "benchmark_40_metrics.json"
+    if json_path.exists() and not force:
+        with open(json_path, "r", encoding="utf-8") as f:
+            cached = json.load(f)
+        meta = cached.get("metadata", {})
+        logger.info(
+            f"Benchmark metrics cache already exists at {json_path.name} "
+            f"({meta.get('videos_processed', 40)}/{meta.get('videos_total', 40)} videos). "
+            "Loading from cache (use --force to recompute)..."
+        )
+        return cached
+
     start_total = time.time()
     logger.info("Initializing 40-video World-Aligned benchmark metric evaluation...")
 
@@ -315,7 +327,7 @@ def main():
         person_str = str(row["person"]).replace("P", "")
         person_int = int(person_str)
         exp_int = int(str(row["experiment"]).replace("E", ""))
-        test_int = int(str(row["test"]).replace("T", ""))
+        test_int = int(str(row["test"]).replace("T", "").replace("ALT", ""))
         angle_str = str(row["angle"])
         is_alt = bool(row["condition"] != "Standard")
 

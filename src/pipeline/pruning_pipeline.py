@@ -96,7 +96,13 @@ def main():
     parser.add_argument("--min_3d_ratio", type=float, default=0.05, help="Minimum 3D triangle area ratio over reference")
     parser.add_argument("--num_thigh_points", type=int, default=203, help="Number of initial thigh points to evaluate")
     parser.add_argument("--resume", action="store_true", default=True, help="Skip already refined files")
+    parser.add_argument("--force", action="store_true", help="Force re-pruning even if cached refined .npz exists")
+    parser.add_argument("--z-weight", type=float, default=0.25, help="Anisotropic Z-axis weight")
+    parser.add_argument("--min-altitude", type=float, default=0.035, help="Minimum triangle altitude in meters")
+    parser.add_argument("--max-aspect-ratio", type=float, default=8.0, help="Maximum triangle aspect ratio")
     args = parser.parse_args()
+    if getattr(args, 'force', False):
+        args.resume = False
 
     raw_dir = PROJECT_ROOT / args.raw_dir
     output_dir = PROJECT_ROOT / args.output_dir
@@ -104,7 +110,7 @@ def main():
 
     if not raw_dir.exists():
         logger.error(f"Raw directory does not exist: {raw_dir}")
-        sys.exit(1)
+        return 1
 
     pruner = GeometricPruner(
         max_area_ratio=args.max_area_ratio,
@@ -122,7 +128,7 @@ def main():
                 target_npz = candidates[0]
             else:
                 logger.error(f"Raw NPZ not found for video '{v_name}' in {raw_dir}")
-                sys.exit(1)
+                return 1
 
         ok = prune_single_video(
             pruner=pruner,
@@ -130,13 +136,13 @@ def main():
             output_dir=output_dir,
             resume=args.resume
         )
-        sys.exit(0 if ok else 1)
+        return 0 if ok else 1
 
     elif args.batch:
         raw_files = sorted(list(raw_dir.glob("delta_v2_raw_*.npz")))
         if not raw_files:
             logger.warning(f"No raw NPZ files found in {raw_dir}")
-            sys.exit(0)
+            return 0
 
         existing_refined = {f.name.replace("delta_v2_refined_", "").replace(".npz", "") for f in output_dir.glob("delta_v2_refined_*.npz")}
         total_files = len(raw_files)
@@ -185,7 +191,7 @@ def main():
             logger.info(f"Pruning batch completed: {successful}/{total_files} files available in {output_dir.name} (Elapsed: {total_elapsed:.1f}s).")
         except KeyboardInterrupt:
             logger.warning("\n[INTERRUPTED] Pruning batch interrupted by user.")
-            sys.exit(0)
+            return 0
     else:
         logger.info("No action specified. Use --video <name> for single test or --batch to process all available raw files.")
 

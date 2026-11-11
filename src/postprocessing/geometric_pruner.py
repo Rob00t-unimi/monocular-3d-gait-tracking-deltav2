@@ -230,7 +230,7 @@ def apply_convex_hull_pruning(
 def apply_adaptive_pca_dbscan(
     points_3d: np.ndarray,
     n_components: int = 5,
-    initial_eps: float = 2.0
+    initial_eps: float = 10.0
 ) -> np.ndarray:
     """
     Kinematic velocity clustering via PCA and adaptive DBSCAN to isolate coherent leg points.
@@ -265,7 +265,7 @@ def apply_adaptive_pca_dbscan(
         if len(u) > 0:
             main_label = u[np.argmax(counts)]
             indices = np.where(labels == main_label)[0]
-            if len(indices) >= 4:
+            if len(indices) >= max(4, int(0.5 * N)):
                 return indices
         eps *= 1.3
 
@@ -280,7 +280,8 @@ def select_optimal_triplet(
     original_indices: Tuple[int, int, int] = (0, 1, 2),
     min_3d_ratio: float = 0.05,
     max_search_candidates: int = 80,
-    top_combos_eval: int = 3000
+    top_combos_eval: int = 3000,
+    z_penalty_weight: float = 0.0
 ) -> Tuple[int, int, int]:
     """
     Optimal Triplet Selection System (v4.1) with Vectorized Pre-filtering.
@@ -319,10 +320,13 @@ def select_optimal_triplet(
     v2_ref = pts_ref_3d[combos_arr[:, 2]] - pts_ref_3d[combos_arr[:, 0]]
     cross_ref = np.cross(v1_ref, v2_ref)
     raw_areas_3d = 0.5 * np.linalg.norm(cross_ref, axis=1)
-    xy_span = np.maximum(np.linalg.norm(v1_ref[:, :2], axis=1), np.linalg.norm(v2_ref[:, :2], axis=1)) + 1e-6
-    dz_span = np.maximum(np.abs(v1_ref[:, 2]), np.abs(v2_ref[:, 2]))
-    z_Aspect_penalty = 1.0 / (1.0 + (dz_span / xy_span) ** 2)
-    ref_areas_3d = raw_areas_3d * z_Aspect_penalty
+    if z_penalty_weight > 0.0:
+        xy_span = np.maximum(np.linalg.norm(v1_ref[:, :2], axis=1), np.linalg.norm(v2_ref[:, :2], axis=1)) + 1e-6
+        dz_span = np.maximum(np.abs(v1_ref[:, 2]), np.abs(v2_ref[:, 2]))
+        z_Aspect_penalty = 1.0 / (1.0 + z_penalty_weight * (dz_span / xy_span) ** 2)
+        ref_areas_3d = raw_areas_3d * z_Aspect_penalty
+    else:
+        ref_areas_3d = raw_areas_3d
 
     # Sort descending by reference area and take top K combinations
     eval_k = min(top_combos_eval, len(combos_arr))
@@ -407,13 +411,15 @@ class GeometricPruner:
         max_area_ratio: float = 5.0,
         min_3d_ratio: float = 0.05,
         num_thigh_points: int = 203,
-        use_pca_dbscan_refinement: bool = True
+        use_pca_dbscan_refinement: bool = False,
+        z_penalty_weight: float = 0.0
     ):
         self.cutoff_freq = cutoff_freq if cutoff_freq is not None else self._load_default_cutoff()
         self.max_area_ratio = max_area_ratio
         self.min_3d_ratio = min_3d_ratio
         self.num_thigh_points = num_thigh_points
         self.use_pca_dbscan_refinement = use_pca_dbscan_refinement
+        self.z_penalty_weight = z_penalty_weight
 
     @staticmethod
     def _load_default_cutoff() -> float:
@@ -496,7 +502,8 @@ class GeometricPruner:
             candidate_indices=survived_global,
             ref_idx_rel=ref_idx_rel,
             original_indices=(0, 1, 2),
-            min_3d_ratio=self.min_3d_ratio
+            min_3d_ratio=self.min_3d_ratio,
+            z_penalty_weight=self.z_penalty_weight
         )
 
         triplet_idx_arr = np.array(best_triplet, dtype=np.int32)

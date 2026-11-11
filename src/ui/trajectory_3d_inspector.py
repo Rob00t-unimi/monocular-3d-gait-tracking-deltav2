@@ -61,6 +61,8 @@ class Unified3DViewer:
 
     def load_and_process(self):
         csv_path = Path(self.file_list[self.index])
+        if not csv_path.is_absolute():
+            csv_path = Path(__file__).resolve().parents[2] / csv_path
         df_raw = self.orchestrator.loader.load(csv_path)
         if df_raw is None:
             return None, None
@@ -235,3 +237,6 @@ def inspect_signals_3d(mode="all", data_dir="data"):
     if not signals_to_show: return
     browser = Unified3DViewer(signals_to_show, invalid_set, lowcut, highcut)
     plt.show()
+
+
+Unified3DInspector = Unified3DViewer

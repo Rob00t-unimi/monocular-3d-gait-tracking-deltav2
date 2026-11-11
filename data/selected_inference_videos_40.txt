@@ -1,72 +1,72 @@
 ================================================================================
-  3D GAIT TRACKING: 40 BENCHMARK INFERENCE VIDEOS (8 CATEGORIE x 5 VIDEO)
-  Data Generazione: 2026-10-30 18:32:34
-  Totale Video: 40 / 40
-  Soggetti Unici: 40 / 40 (0 duplicati - bilanciamento perfetto)
-  Sensore IMU: Gamba Destra (T1, T2, T1ALT, T2ALT)
+  3D GAIT TRACKING: 40 BENCHMARK INFERENCE VIDEOS (8 CATEGORIES x 5 VIDEOS)
+  Generated: 2026-11-11 17:03:41
+  Total Videos: 40 / 40
+  Unique Subjects: 40 / 40 (0 duplicates - balanced cohort)
+  IMU Sensor: Right Thigh (T1, T2, T1ALT, T2ALT)
 ================================================================================
 
-### 1. 90° Sagittale (Right -> Left) (5 / 5)
+### 1. 90° Sagittale (Destra -> Sinistra) (5 / 5)
 --------------------------------------------------------------------------------
- 1. P27_E2T2_90.mp4        | Subject: P27  | Test: T2    | Keypoints: Repositioned (Operator) | GT: Optimal   (ROM 61.6°, 0.8Hz) | Standard
- 2. P33_E1T1_90.mp4        | Subject: P33  | Test: T1    | Keypoints: Repositioned (Operator) | GT: Optimal   (ROM 70.7°, 0.9Hz) | Standard
- 3. P46_E1T1_90.mp4        | Subject: P46  | Test: T1    | Keypoints: Repositioned (Operator) | GT: Optimal   (ROM 66.5°, 0.9Hz) | Standard
- 4. P56_E1T1_90_ALT.mp4    | Subject: P56  | Test: T1    | Keypoints: Repositioned (Operator) | GT: Optimal   (ROM 71.0°, 0.82Hz) | Alt (Abito Largo)
- 5. P9_E2T2_90_ALT.mp4     | Subject: P9   | Test: T2    | Keypoints: Repositioned (Operator) | GT: Optimal   (ROM 56.7°, 0.97Hz) | Alt (Abito Largo)
+ 1. P27_E2T2_90.mp4        | Subject: P27  | Test: T2    | Keypoints: Riposizionato (Operatore) | GT: Ottimo   (ROM 61.6°, 0.8Hz) | Standard
+ 2. P33_E1T1_90.mp4        | Subject: P33  | Test: T1    | Keypoints: Riposizionato (Operatore) | GT: Ottimo   (ROM 70.7°, 0.9Hz) | Standard
+ 3. P46_E1T1_90.mp4        | Subject: P46  | Test: T1    | Keypoints: Riposizionato (Operatore) | GT: Ottimo   (ROM 66.5°, 0.9Hz) | Standard
+ 4. P56_E1T1_90_ALT.mp4    | Subject: P56  | Test: T1    | Keypoints: Riposizionato (Operatore) | GT: Ottimo   (ROM 71.0°, 0.82Hz) | Alt (Abito Largo)
+ 5. P9_E2T2_90_ALT.mp4     | Subject: P9   | Test: T2    | Keypoints: Riposizionato (Operatore) | GT: Ottimo   (ROM 56.7°, 0.97Hz) | Alt (Abito Largo)
 
-### 2. 90° Sagittale (Left -> Right) (5 / 5)
+### 2. 90° Sagittale (Sinistra -> Destra) (5 / 5)
 --------------------------------------------------------------------------------
- 1. P21_E1T2_90.mp4        | Subject: P21  | Test: T2    | Keypoints: Repositioned (Operator) | GT: Good    (ROM 84.8°, 0.8Hz) | Standard
- 2. P24_E1T2_90.mp4        | Subject: P24  | Test: T2    | Keypoints: Repositioned (Operator) | GT: Good    (ROM 83.3°, 0.89Hz) | Standard
- 3. P32_E1T2_90.mp4        | Subject: P32  | Test: T2    | Keypoints: Repositioned (Operator) | GT: Good    (ROM 83.8°, 0.91Hz) | Standard
- 4. P3_E1T2_90.mp4         | Subject: P3   | Test: T2    | Keypoints: Repositioned (Operator) | GT: Good    (ROM 80.6°, 0.87Hz) | Standard
- 5. P55_E1T2_90_ALT.mp4    | Subject: P55  | Test: T2    | Keypoints: Repositioned (Operator) | GT: Optimal   (ROM 67.6°, 0.76Hz) | Alt (Abito Largo)
+ 1. P21_E1T2_90.mp4        | Subject: P21  | Test: T2    | Keypoints: Riposizionato (Operatore) | GT: Buono    (ROM 84.8°, 0.8Hz) | Standard
+ 2. P24_E1T2_90.mp4        | Subject: P24  | Test: T2    | Keypoints: Riposizionato (Operatore) | GT: Buono    (ROM 83.3°, 0.89Hz) | Standard
+ 3. P32_E1T2_90.mp4        | Subject: P32  | Test: T2    | Keypoints: Riposizionato (Operatore) | GT: Buono    (ROM 83.8°, 0.91Hz) | Standard
+ 4. P3_E1T2_90.mp4         | Subject: P3   | Test: T2    | Keypoints: Riposizionato (Operatore) | GT: Buono    (ROM 80.6°, 0.87Hz) | Standard
+ 5. P55_E1T2_90_ALT.mp4    | Subject: P55  | Test: T2    | Keypoints: Riposizionato (Operatore) | GT: Ottimo   (ROM 67.6°, 0.76Hz) | Alt (Abito Largo)
 
 ### 3. 0-deg Pure Frontal (Approaching) (5 / 5)
 --------------------------------------------------------------------------------
- 1. P34_E3T1_Front.mp4     | Subject: P34  | Test: T1    | Keypoints: Repositioned (Operator) | GT: Optimal   (ROM 72.3°, 0.76Hz) | Standard
- 2. P37_E3T1_Front.mp4     | Subject: P37  | Test: T1    | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 101.5°, 1.12Hz) | Standard
- 3. P40_E3T1_Front.mp4     | Subject: P40  | Test: T1    | Keypoints: Repositioned (Operator) | GT: Good    (ROM 85.7°, 0.8Hz) | Standard
- 4. P64_E3T1_Front.mp4     | Subject: P64  | Test: T1    | Keypoints: Repositioned (Operator) | GT: Good    (ROM 85.4°, 0.73Hz) | Standard
- 5. P65_E3T2_Front.mp4     | Subject: P65  | Test: T2    | Keypoints: Repositioned (Operator) | GT: Good    (ROM 88.7°, 0.74Hz) | Standard
+ 1. P34_E3T1_Front.mp4     | Subject: P34  | Test: T1    | Keypoints: Riposizionato (Operatore) | GT: Ottimo   (ROM 72.3°, 0.76Hz) | Standard
+ 2. P37_E3T1_Front.mp4     | Subject: P37  | Test: T1    | Keypoints: Riposizionato (Operatore) | GT: Impreciso (ROM 101.5°, 1.12Hz) | Standard
+ 3. P40_E3T1_Front.mp4     | Subject: P40  | Test: T1    | Keypoints: Riposizionato (Operatore) | GT: Buono    (ROM 85.7°, 0.8Hz) | Standard
+ 4. P64_E3T1_Front.mp4     | Subject: P64  | Test: T1    | Keypoints: Riposizionato (Operatore) | GT: Buono    (ROM 85.4°, 0.73Hz) | Standard
+ 5. P65_E3T2_Front.mp4     | Subject: P65  | Test: T2    | Keypoints: Riposizionato (Operatore) | GT: Buono    (ROM 88.7°, 0.74Hz) | Standard
 
 ### 4. 180-deg Pure Posterior (Receding) (5 / 5)
 --------------------------------------------------------------------------------
- 1. P2_E3T1_Rear.mp4       | Subject: P2   | Test: T1    | Keypoints: Automatico             | GT: Good    (ROM 89.7°, 0.99Hz) | Standard
- 2. P48_E3T1_Rear.mp4      | Subject: P48  | Test: T1    | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 91.1°, 0.7Hz) | Standard
- 3. P50_E3T1_Rear.mp4      | Subject: P50  | Test: T1    | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 99.0°, 0.74Hz) | Standard
- 4. P60_E3T1_Rear.mp4      | Subject: P60  | Test: T1    | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 95.1°, 0.87Hz) | Standard
- 5. P62_E3T1_Rear.mp4      | Subject: P62  | Test: T1    | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 94.8°, 0.93Hz) | Standard
+ 1. P2_E3T1_Rear.mp4       | Subject: P2   | Test: T1    | Keypoints: Automatico             | GT: Buono    (ROM 89.7°, 0.99Hz) | Standard
+ 2. P48_E3T1_Rear.mp4      | Subject: P48  | Test: T1    | Keypoints: Riposizionato (Operatore) | GT: Impreciso (ROM 91.1°, 0.7Hz) | Standard
+ 3. P50_E3T1_Rear.mp4      | Subject: P50  | Test: T1    | Keypoints: Riposizionato (Operatore) | GT: Impreciso (ROM 99.0°, 0.74Hz) | Standard
+ 4. P60_E3T1_Rear.mp4      | Subject: P60  | Test: T1    | Keypoints: Riposizionato (Operatore) | GT: Impreciso (ROM 95.1°, 0.87Hz) | Standard
+ 5. P62_E3T1_Rear.mp4      | Subject: P62  | Test: T1    | Keypoints: Riposizionato (Operatore) | GT: Impreciso (ROM 94.8°, 0.93Hz) | Standard
 
 ### 5. 45-deg Oblique (Right -> Left) - Front-Oblique (Approaching) (5 / 5)
 --------------------------------------------------------------------------------
- 1. P11_E2T2_45.mp4        | Subject: P11  | Test: T2    | Keypoints: Repositioned (Operator) | GT: Good    (ROM 82.1°, 0.82Hz) | Standard
- 2. P12_E2T2_45.mp4        | Subject: P12  | Test: T2    | Keypoints: Repositioned (Operator) | GT: Good    (ROM 84.2°, 0.94Hz) | Standard
- 3. P31_E2T2_45.mp4        | Subject: P31  | Test: T2    | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 102.7°, 1.21Hz) | Standard
- 4. P35_E2T2_45.mp4        | Subject: P35  | Test: T2    | Keypoints: Repositioned (Operator) | GT: Good    (ROM 87.8°, 1.2Hz) | Standard
- 5. P51_E2T2_45.mp4        | Subject: P51  | Test: T2    | Keypoints: Repositioned (Operator) | GT: Good    (ROM 77.0°, 0.79Hz) | Standard
+ 1. P11_E2T2_45.mp4        | Subject: P11  | Test: T2    | Keypoints: Riposizionato (Operatore) | GT: Buono    (ROM 82.1°, 0.82Hz) | Standard
+ 2. P12_E2T2_45.mp4        | Subject: P12  | Test: T2    | Keypoints: Riposizionato (Operatore) | GT: Buono    (ROM 84.2°, 0.94Hz) | Standard
+ 3. P31_E2T2_45.mp4        | Subject: P31  | Test: T2    | Keypoints: Riposizionato (Operatore) | GT: Impreciso (ROM 102.7°, 1.21Hz) | Standard
+ 4. P35_E2T2_45.mp4        | Subject: P35  | Test: T2    | Keypoints: Riposizionato (Operatore) | GT: Buono    (ROM 87.8°, 1.2Hz) | Standard
+ 5. P51_E2T2_45.mp4        | Subject: P51  | Test: T2    | Keypoints: Riposizionato (Operatore) | GT: Buono    (ROM 77.0°, 0.79Hz) | Standard
 
 ### 6. 45-deg Oblique (Right -> Left) - Rear-Oblique (Receding) (5 / 5)
 --------------------------------------------------------------------------------
- 1. P38_E1T1_45.mp4        | Subject: P38  | Test: T1    | Keypoints: Repositioned (Operator) | GT: Good    (ROM 85.7°, 0.97Hz) | Standard
- 2. P39_E1T1_45.mp4        | Subject: P39  | Test: T1    | Keypoints: Repositioned (Operator) | GT: Good    (ROM 85.7°, 1.44Hz) | Standard
- 3. P43_E1T1_45.mp4        | Subject: P43  | Test: T1    | Keypoints: Repositioned (Operator) | GT: Good    (ROM 86.7°, 0.82Hz) | Standard
- 4. P54_E1T1_45.mp4        | Subject: P54  | Test: T1    | Keypoints: Repositioned (Operator) | GT: Good    (ROM 79.8°, 0.7Hz) | Standard
- 5. P57_E1T1_45.mp4        | Subject: P57  | Test: T1    | Keypoints: Repositioned (Operator) | GT: Good    (ROM 87.6°, 0.9Hz) | Standard
+ 1. P38_E1T1_45.mp4        | Subject: P38  | Test: T1    | Keypoints: Riposizionato (Operatore) | GT: Buono    (ROM 85.7°, 0.97Hz) | Standard
+ 2. P39_E1T1_45.mp4        | Subject: P39  | Test: T1    | Keypoints: Riposizionato (Operatore) | GT: Buono    (ROM 85.7°, 1.44Hz) | Standard
+ 3. P43_E1T1_45.mp4        | Subject: P43  | Test: T1    | Keypoints: Riposizionato (Operatore) | GT: Buono    (ROM 86.7°, 0.82Hz) | Standard
+ 4. P54_E1T1_45.mp4        | Subject: P54  | Test: T1    | Keypoints: Riposizionato (Operatore) | GT: Buono    (ROM 79.8°, 0.7Hz) | Standard
+ 5. P57_E1T1_45.mp4        | Subject: P57  | Test: T1    | Keypoints: Riposizionato (Operatore) | GT: Buono    (ROM 87.6°, 0.9Hz) | Standard
 
 ### 7. 45-deg Oblique (Left -> Right) - Front-Oblique (Approaching) (5 / 5)
 --------------------------------------------------------------------------------
- 1. P23_E1T2_45.mp4        | Subject: P23  | Test: T2    | Keypoints: Automatico             | GT: Imprecise (ROM 102.9°, 1.0Hz) | Standard
- 2. P36_E1T2_45.mp4        | Subject: P36  | Test: T2    | Keypoints: Repositioned (Operator) | GT: Good    (ROM 87.1°, 0.74Hz) | Standard
- 3. P59_E1T2_45.mp4        | Subject: P59  | Test: T2    | Keypoints: Repositioned (Operator) | GT: Good    (ROM 86.1°, 0.72Hz) | Standard
- 4. P5_E1T2_45_ALT.mp4     | Subject: P5   | Test: T2    | Keypoints: Repositioned (Operator) | GT: Good    (ROM 83.3°, 0.97Hz) | Alt (Abito Largo)
- 5. P7_E2T2_45_ALT.mp4     | Subject: P7   | Test: T2    | Keypoints: Repositioned (Operator) | GT: Good    (ROM 84.3°, 1.12Hz) | Alt (Abito Largo)
+ 1. P23_E1T2_45.mp4        | Subject: P23  | Test: T2    | Keypoints: Automatico             | GT: Impreciso (ROM 102.9°, 1.0Hz) | Standard
+ 2. P36_E1T2_45.mp4        | Subject: P36  | Test: T2    | Keypoints: Riposizionato (Operatore) | GT: Buono    (ROM 87.1°, 0.74Hz) | Standard
+ 3. P59_E1T2_45.mp4        | Subject: P59  | Test: T2    | Keypoints: Riposizionato (Operatore) | GT: Buono    (ROM 86.1°, 0.72Hz) | Standard
+ 4. P5_E1T2_45_ALT.mp4     | Subject: P5   | Test: T2    | Keypoints: Riposizionato (Operatore) | GT: Buono    (ROM 83.3°, 0.97Hz) | Alt (Abito Largo)
+ 5. P7_E2T2_45_ALT.mp4     | Subject: P7   | Test: T2    | Keypoints: Riposizionato (Operatore) | GT: Buono    (ROM 84.3°, 1.12Hz) | Alt (Abito Largo)
 
 ### 8. 45-deg Oblique (Left -> Right) - Rear-Oblique (Receding) (5 / 5)
 --------------------------------------------------------------------------------
- 1. P20_E2T1_45_ALT.mp4    | Subject: P20  | Test: T1    | Keypoints: Automatico             | GT: Imprecise (ROM 92.2°, 0.69Hz) | Alt (Abito Largo)
- 2. P44_E2T1_45.mp4        | Subject: P44  | Test: T1    | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 114.0°, 0.87Hz) | Standard
- 3. P53_E2T1_45_ALT.mp4    | Subject: P53  | Test: T1    | Keypoints: Repositioned (Operator) | GT: Good    (ROM 88.6°, 0.85Hz) | Alt (Abito Largo)
- 4. P63_E2T1_45.mp4        | Subject: P63  | Test: T1    | Keypoints: Repositioned (Operator) | GT: Good    (ROM 75.9°, 0.74Hz) | Standard
- 5. P6_E2T1_45.mp4         | Subject: P6   | Test: T1    | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 97.9°, 0.8Hz) | Standard
+ 1. P20_E2T1_45_ALT.mp4    | Subject: P20  | Test: T1    | Keypoints: Automatico             | GT: Impreciso (ROM 92.2°, 0.69Hz) | Alt (Abito Largo)
+ 2. P44_E2T1_45.mp4        | Subject: P44  | Test: T1    | Keypoints: Riposizionato (Operatore) | GT: Impreciso (ROM 114.0°, 0.87Hz) | Standard
+ 3. P53_E2T1_45_ALT.mp4    | Subject: P53  | Test: T1    | Keypoints: Riposizionato (Operatore) | GT: Buono    (ROM 88.6°, 0.85Hz) | Alt (Abito Largo)
+ 4. P63_E2T1_45.mp4        | Subject: P63  | Test: T1    | Keypoints: Riposizionato (Operatore) | GT: Buono    (ROM 75.9°, 0.74Hz) | Standard
+ 5. P6_E2T1_45.mp4         | Subject: P6   | Test: T1    | Keypoints: Riposizionato (Operatore) | GT: Impreciso (ROM 97.9°, 0.8Hz) | Standard
 

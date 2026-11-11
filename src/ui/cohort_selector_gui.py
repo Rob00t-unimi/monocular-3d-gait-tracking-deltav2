@@ -55,6 +55,7 @@ class InferenceVideoSelectorGUI:
         self.category_map = self.data["category_map"]
         self.unique_persons_dataset = set(self.data["unique_persons_list"])
         self.max_unique_persons = len(self.unique_persons_dataset)
+        self.unique_valid_persons = self.max_unique_persons
         self.allowed_duplicates = max(0, TOTAL_TARGET - self.max_unique_persons)
 
         # Selection state: map video_name -> candidate dict
@@ -82,7 +83,7 @@ class InferenceVideoSelectorGUI:
 
     def _load_data(self) -> dict:
         if not CACHE_PATH.exists():
-            from scripts.build_candidate_cache import build_cache
+            from src.pipeline.dataset_pipeline import build_cache
             return build_cache(CACHE_PATH)
         with open(CACHE_PATH, 'r', encoding='utf-8') as f:
             return json.load(f)
@@ -441,9 +442,9 @@ class InferenceVideoSelectorGUI:
                 continue
 
             # Filter origin
-            if f_origin == "Solo Automatic" and cand["kps_origin"] != "Automatico":
+            if f_origin == "Solo Automatic" and cand["kps_origin"] not in ("Automatic", "Automatico"):
                 continue
-            if f_origin == "Repositioned Only" and cand["kps_origin"] == "Automatico":
+            if f_origin == "Repositioned Only" and cand["kps_origin"] in ("Automatic", "Automatico"):
                 continue
 
             # Filter GT
@@ -476,7 +477,7 @@ class InferenceVideoSelectorGUI:
                     tag = "row_dup_allowed"
             else:
                 status_symbol = "[ ○ Disponibile ]"
-                tag = "row_avail_auto" if cand["kps_origin"] == "Automatico" else "row_avail_repo"
+                tag = "row_avail_auto" if cand["kps_origin"] in ("Automatic", "Automatico") else "row_avail_repo"
 
             values = (
                 status_symbol,
@@ -520,6 +521,8 @@ class InferenceVideoSelectorGUI:
         if not cand:
             return
         v_path = Path(cand["video_path"])
+        if not v_path.is_absolute():
+            v_path = PROJECT_ROOT / v_path
         if not v_path.exists():
             messagebox.showerror("File non trovato", f"Il file video non esiste su disco:\n{v_path}")
             return
@@ -833,6 +836,8 @@ class InferenceVideoSelectorGUI:
 
         self.root.destroy()
 
+    on_closing = _on_closing
+
 
 def main():
     root = tk.Tk()
@@ -842,3 +847,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+VideoSelectorApp = InferenceVideoSelectorGUI

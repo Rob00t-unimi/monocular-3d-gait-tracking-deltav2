@@ -6,12 +6,13 @@ from src.data_io.dataset_scanner import DatasetScanner
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
-def run_dataset_alignment(dataset_dir: str = "data/Gait_Dataset", cache_path: str = "data/cached_dataset_map.json") -> list:
+def run_dataset_alignment(dataset_dir: str = "data/Gait_Dataset", cache_path: str = "data/cached_dataset_map.json", force: bool = False) -> list:
     """Scan the multi-view gait dataset and serialize the aligned video/OpenPose/IMU trial map."""
     ds_full = str((PROJECT_ROOT / dataset_dir).resolve())
     cache_full = str((PROJECT_ROOT / cache_path).resolve())
-    scanner = DatasetScanner()
-    subjects = scanner.scan(ds_full, cache_path=cache_full)
+    base_dir = str(Path(cache_full).parent)
+    scanner = DatasetScanner(base_dir=base_dir)
+    subjects = scanner.scan(dataset_dir=ds_full, cache_path=cache_full, force=force)
     logging.info("Scanned %d subjects into %s", len(subjects), cache_full)
     return subjects
 
@@ -140,7 +141,23 @@ def evaluate_gt_quality(sensor_csv_rel: str, gt_eval_cache: dict):
         gt_eval_cache[str(proc_path)] = None
         return None
 
-def build_cache(output_path: Path = None):
+def build_cache(output_path: Path = None, force: bool = False):
+    if output_path is None:
+        output_path = PROJECT_ROOT / "data" / "candidate_videos_cache.json"
+
+    if output_path.exists() and not force:
+        print(f"Candidate videos cache already exists at {output_path.name}. Loading from cache (use --force to recompute)...")
+        with open(output_path, 'r', encoding='utf-8') as f:
+            cached = json.load(f)
+        print(f"Total valid candidate videos: {cached.get('total_candidates', 0)}")
+        print(f"Unique participants available: {cached.get('unique_persons_count', 0)}")
+        cat_map = cached.get('category_map', {})
+        for cat_key, cands in cached.get('candidates_by_cat', {}).items():
+            n_auto = sum(1 for c in cands if c.get('kps_origin') in ('Automatic', 'Automatico'))
+            n_ott = sum(1 for c in cands if c.get('gt_status') in ('Optimal', 'Ottimo'))
+            print(f"  [{cat_map.get(cat_key, cat_key)}]: {len(cands)} videos ({n_auto} Automatic, {n_ott} GT Optimal)")
+        return cached
+
     start_time = time.time()
     print("Building candidate videos cache...")
     
@@ -179,18 +196,18 @@ def build_cache(output_path: Path = None):
                             'test': t_id,
                             'sensor_position': sensor_pos,
                             'angle': a_id,
-                            'video_path': str(PROJECT_ROOT / val['video']),
-                            'sensor_csv': str(PROJECT_ROOT / sensor_csv) if sensor_csv else None,
+                            'video_path': str(val['video']).replace('\\', '/'),
+                            'sensor_csv': str(sensor_csv).replace('\\', '/') if sensor_csv else None,
                             'sensor_csv_rel': sensor_csv,
                             'keypoints': val.get('keypoints', {})
                         }
                         
     gt_eval_cache = {}
     category_map = {
-        '90_R2L': '90° Sagittale (Destra -> Sinistra)',
-        '90_L2R': '90° Sagittale (Sinistra -> Destra)',
-        '45_R2L': '45° Obliquo (Destra -> Sinistra)',
-        '45_L2R': '45° Obliquo (Sinistra -> Destra)',
+        '90_R2L': '90° Sagittal (Right -> Left)',
+        '90_L2R': '90° Sagittal (Left -> Right)',
+        '45_R2L': '45° Oblique (Right -> Left)',
+        '45_L2R': '45° Oblique (Left -> Right)',
         'Front': 'Frontal (Approaching)',
         'Rear': 'Posterior (Receding)'
     }
@@ -214,10 +231,17 @@ def build_cache(output_path: Path = None):
             
         meta = video_lookup[v_name]
         v_path = Path(meta['video_path'])
+        if not v_path.is_absolute():
+            v_path = PROJECT_ROOT / v_path
         if not v_path.exists():
             continue
             
-        if not meta['sensor_csv'] or not Path(meta['sensor_csv']).exists():
+        if not meta['sensor_csv']:
+            continue
+        s_path = Path(meta['sensor_csv'])
+        if not s_path.is_absolute():
+            s_path = PROJECT_ROOT / s_path
+        if not s_path.exists():
             continue
             
         # 2. Evaluate GT quality
@@ -240,7 +264,7 @@ def build_cache(output_path: Path = None):
             d_code = detect_direction(meta['keypoints'])
             if d_code:
                 cat_key = f"{angle}_{d_code}"
-                dir_label = "Destra -> Sinistra" if d_code == 'R2L' else "Sinistra -> Destra"
+                dir_label = "Right -> Left" if d_code == 'R2L' else "Left -> Right"
             else:
                 continue
         else:
@@ -253,7 +277,7 @@ def build_cache(output_path: Path = None):
         p3_is_int = float(p3[0]).is_integer() and float(p3[1]).is_integer()
         
         if p2_is_int and p3_is_int:
-            kps_origin = "Automatico"
+            kps_origin = "Automatic"
             kps_rank = 0
         else:
             kps_origin = "Repositioned (Operator)"
@@ -283,7 +307,7 @@ def build_cache(output_path: Path = None):
             'ref_frame_idx': int(ref_frame_idx),
             'frames_num': int(frames_num),
             'is_alt': bool(is_alt),
-            'condition': "Alt (Abito Largo)" if is_alt else "Standard",
+            'condition': "Alt (Loose Clothing)" if is_alt else "Standard",
             'video_path': meta['video_path'],
             'sensor_csv': meta['sensor_csv']
         }
@@ -321,17 +345,23 @@ def build_cache(output_path: Path = None):
     print(f"Total valid candidate videos: {total_valid}")
     print(f"Unique participants available: {len(unique_persons)}")
     for cat_key, cands in candidates_by_cat.items():
-        n_auto = sum(1 for c in cands if c['kps_origin'] == 'Automatico')
+        n_auto = sum(1 for c in cands if c['kps_origin'] in ('Automatic', 'Automatico'))
         n_ott = sum(1 for c in cands if c['gt_status'] == 'Optimal')
         print(f"  [{category_map[cat_key]}]: {len(cands)} videos ({n_auto} Automatic, {n_ott} GT Optimal)")
         
     return out_dict
 
-    build_cache()
+def build_candidate_cache_main(force: bool = False):
+    return build_cache(force=force)
 
-def run_dataset_pipeline(mode: str = "all", dataset_dir: str = "data/Gait_Dataset", cache_path: str = "data/cached_dataset_map.json") -> None:
+def run_dataset_pipeline(
+    mode: str = "all",
+    dataset_dir: str = "data/Gait_Dataset",
+    cache_path: str = "data/cached_dataset_map.json",
+    force: bool = False,
+) -> None:
     """Execute dataset scanning and/or candidate cache generation."""
     if mode in ("scan", "all"):
-        run_dataset_alignment(dataset_dir=dataset_dir, cache_path=cache_path)
+        run_dataset_alignment(dataset_dir=dataset_dir, cache_path=cache_path, force=force)
     if mode in ("candidates", "all"):
-        build_candidate_cache_main()
+        build_candidate_cache_main(force=force)
