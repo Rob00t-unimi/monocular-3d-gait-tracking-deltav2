@@ -14,9 +14,9 @@ This document details the complete five-stage workflow executed from raw multi-v
 
 ## Stage 2: 2D Vision Preprocessing & Anatomical Thigh Anchor Extraction
 
-1. **Optimal Reference Frame Selection (`src/preprocessing/vision/frame_selection.py`):** Evaluates OpenPose hip-to-knee confidence, thigh visibility, and mid-stance verticality to select the cleanest reference frame $t_{\text{ref}}$ after `walk_start`.
+1. **Optimal Reference Frame Selection (`src/preprocessing/vision/frame_selection.py`):** Evaluates horizontal inter-knee separation peaks (`stride_wave = |RKnee_x - LKnee_x|`, corresponding to maximum stride extension where feet are farthest apart and limb crossover occlusion is minimal) and joint detection confidence to select the cleanest reference frame $t_{\text{ref}}$ after `walk_start`.
 2. **Canny Edge & RANSAC Boundary Fitting (`src/preprocessing/vision/edge_processing.py`, `line_fitting.py`):** Crops the thigh region of interest (ROI), extracts morphological Canny edges, and fits anterior and posterior thigh boundary lines.
-3. **3-Point Anatomical Thigh Triplet (`src/preprocessing/vision/thigh_point_selector.py`):** Constructs a well-conditioned 2D triangle ($P_1$ proximal-anterior, $P_2$ distal-anterior, $P_3$ mid-posterior) inside the thigh silhouette, validated via `KeypointValidatorGUI`.
+3. **3-Point Anatomical Thigh Triplet (`src/preprocessing/vision/thigh_point_selector.py`):** Constructs a well-conditioned 2D triangle ($P_1$ proximal-anterior, $P_2$ distal-anterior, $P_3$ mid-posterior) inside the thigh silhouette, validated or modified via `KeypointValidatorGUI`.
 
 ---
 

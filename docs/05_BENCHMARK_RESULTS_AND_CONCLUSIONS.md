@@ -1,4 +1,4 @@
-# 05 — 40-Video SOTA Benchmark Results & Ablation Study
+# 05 — 40-Video Benchmark Results & Ablation Study
 
 This chapter summarizes the final quantitative evaluation across all **40 stratified gait videos** (8 viewing perspectives, 5 videos per perspective) generated deterministically via `gait360 evaluate`.
 
