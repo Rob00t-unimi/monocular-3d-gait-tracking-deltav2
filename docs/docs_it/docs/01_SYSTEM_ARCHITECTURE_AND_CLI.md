@@ -6,35 +6,53 @@
 
 ```text
 monocular-3d-gait-tracking-deltav2/
-├── README.md
-├── CHANGELOG.md
-├── pyproject.toml
-├── .gitignore
-├── .gitattributes
+├── README.md                          # Panoramica del progetto, guida CLI e sintesi benchmark
+├── CHANGELOG.md                       # Cronologia dei rilasci Keep-a-Changelog (v0.1.0, v0.5.0, v1.0.0)
+├── pyproject.toml                     # Configurazione del package ed entrypoint CLI `gait360`
+├── .gitignore                         # Esclusione dataset pesanti, pesi e log temporanei
+├── .gitattributes                     # Tracciamento Git LFS per artefatti .npz e report .pdf
+├── index.html                         # Hub interattivo HTML e visualizzatore bilingue (GitHub Pages)
 ├── configs/
-│   ├── default_config.yaml              # Iperparametri della pipeline e percorsi
-│   ├── envs/                            # Specifiche YAML degli ambienti Conda
-│   └── setup/                           # Script di bootstrap ambiente e diagnostica CUDA/DELTAv2
-├── data/                                # Manifest del dataset e NTFS Junctions (Gait_Dataset, gt_cache)
-├── docs/                                # Documentazione tecnica in 5 capitoli e paper di riferimento
-├── examples/                            # 5 Jupyter Notebooks interattivi end-to-end
-├── experiments/                         # Decision report storici e prototipi (01..03)
-├── models/                              # Tracker 3D esterni tramite NTFS Junctions (DELTA, DELTAv2)
-├── results/                             # Risultati ufficiali in JSON, CSV e 3 report di benchmark
-├── src/                                 # Pacchetto software di produzione e CLI unificata
-│   ├── cli.py                           # Entry-point parametrico unificato (`gait360`)
-│   ├── core/                            # Modelli di dominio, interfacce, costanti, eccezioni
-│   ├── utils/                           # Validazione percorsi PEP8 e risoluzione root
-│   ├── data_io/                         # I/O video, JSON OpenPose, CSV IMU WitMotion e stato
-│   ├── preprocessing/                   # Segmentazione 2D coscia e filtraggio segnali Butterworth
-│   ├── inference/                       # BaseTracker, DummyTracker e DELTAv2Tracker
-│   ├── postprocessing/                  # 3-Stage GeometricPruner ed estrazione tripletta rigida
-│   ├── analysis/                        # Allineamento Kabsch SVD 3D ed estrazione segnali cinematici
-│   ├── metrics/                         # Metriche di forma d'onda, ampiezza, frequenza e geometria 3D
-│   ├── pipeline/                        # Orchestratori dei singoli stadi (dataset, coorte, visione, tracking, pruning)
-│   ├── benchmark/                       # Valutatore multi-livello e generatore deterministico dei report
-│   └── ui/                              # 4 Interfacce grafiche Tkinter per 2D/3D/forme d'onda
-└── tests/                               # Oltre 100 test unitari e di integrazione automatizzati
+│   ├── default_config.yaml            # Iperparametri e percorsi della pipeline
+│   ├── envs/                          # Ambienti Conda YAML (delta_env, analysis_env, ecc.)
+│   └── setup/                         # Script di setup multipiattaforma e verifica diagnostica CUDA/DELTAv2
+├── data/                              # Manifest, stati memorizzati, dataset (Gait_Dataset) e cache IMU (gt_cache)
+├── docs/
+│   ├── 01_SYSTEM_ARCHITECTURE_AND_CLI.md
+│   ├── 02_STEP_BY_STEP_METHODOLOGY.md
+│   ├── 03_EXPERIMENTAL_CHRONICLE_AND_MODELS.md
+│   ├── 04_MATHEMATICAL_FORMULATION_AND_FIXES.md
+│   ├── 05_BENCHMARK_RESULTS_AND_CONCLUSIONS.md
+│   ├── 06_DUMMY_BASELINE_METHOD.md
+│   ├── CONCLUSIONS.md                     # Sintesi esecutiva: DELTAv2 vs Dummy sui 4 indicatori chiave
+│   ├── docs_it/                       # Mirror italiano della documentazione (README, capitoli, report)
+│   └── references/                    # PDF degli articoli scientifici di riferimento (DELTAv2, DELTA, SpaTrackerV2, VGGT)
+├── examples/                          # 5 Jupyter Notebook interattivi passo-passo (01..05)
+├── experiments/                       # Report storici di decisione e prototipi
+│   ├── 01_spatracker_vggt/            # Fase 1: Esplorazione bidirezionale VGGT e SpaTrackerV2
+│   ├── 02_delta_v1/                   # Fase 2: Tracking denso 3D DELTA v1 e ancore anatomiche
+│   └── 03_deltav2_prototyping/        # Fase 3: Validazione DELTAv2 e JSON coorte a 16 video
+├── models/                            # Modelli 3D esterni e sottomoduli (DELTA, DELTAv2, SpaTrackerV2, VGGT)
+├── results/
+│   ├── benchmark_40_metrics.json      # Metriche autorevoli per video e aggregate (coorte 40 video)
+│   ├── benchmark_40_summary.csv       # Tabella comparativa sui 4 livelli di valutazione
+│   ├── REPORT_40_VIDEOS_BENCHMARK.md  # Report completo benchmark sui 4 livelli (40 video)
+│   ├── REPORT_TRIPLET_VS_CLOUD_ABLATION.md
+│   └── REPORT_16_VIDEOS_MODEL_COMPARISON.md
+├── src/
+│   ├── cli.py                         # CLI parametrica unificata (`gait360` / `python -m src.cli`)
+│   ├── core/                          # Modelli di dominio, interfacce, costanti ed eccezioni
+│   ├── utils/                         # Validatore di percorsi PEP8 e risoluzione radice progetto
+│   ├── data_io/                       # I/O video, JSON OpenPose, CSV WitMotion IMU e stati
+│   ├── preprocessing/                 # Segmentazione 2D della coscia e filtraggio Butterworth
+│   ├── inference/                     # BaseTracker, DummyTracker e DELTAv2Tracker
+│   ├── postprocessing/                # Pruner geometrico a 3 stadi ed estrazione tripletta rigida
+│   ├── analysis/                      # Allineamento 3D SVD Kabsch ed estrazione segnali cinematici
+│   ├── metrics/                       # Metriche di forma d'onda, magnitudo, frequenza e geometria 3D
+│   ├── pipeline/                      # Orchestratori di stadio (dataset, coorte, visione, tracking, pruning)
+│   ├── benchmark/                     # Valutatore multi-livello e generatore report deterministico
+│   └── ui/                            # 4 ispettori grafici interattivi Tkinter (2D, 3D e forme d'onda)
+└── tests/                             # 106 test unitari e d'integrazione automatizzati
 ```
 
 ## 2. Caching, Persistenza dello Stato

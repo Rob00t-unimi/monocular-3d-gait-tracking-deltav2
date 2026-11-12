@@ -1,10 +1,16 @@
-# monocular-3d-gait-tracking-deltav2 (Gait360): 360-Degree Monocular 3D Gait Analysis via DELTAv2
+# Monocular-3d-gait-tracking-deltav2: 360-Degree Monocular 3D Gait Analysis via DELTAv2
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 [![Architecture: DELTAv2](https://img.shields.io/badge/3D%20Tracker-DELTAv2%20%2B%20UniDepthV2-success.svg)](docs/03_EXPERIMENTAL_CHRONICLE_AND_MODELS.md)
 [![Tests: 106 Passed](https://img.shields.io/badge/tests-106%20passed-brightgreen.svg)](tests/)
 
-**`monocular-3d-gait-tracking-deltav2`** (**Gait360**) is a markerless monocular 3D gait analysis framework that extracts clinical thigh kinematics (sagittal flexion/extension pitch, 3D linear accelerations, step cadence, and rigid-body stability) across **arbitrary 360° camera viewing angles** (`90°` pure lateral, `45°` front/rear oblique, `0°` frontal approaching, and `180°` posterior receding), validated against synchronized wearable **WitMotion IMU** ground-truth sensors across **40 stratified videos** (39 subjects).
+**`Monocular-3d-gait-tracking-deltav2`** is a markerless monocular 3D gait analysis framework that extracts clinical thigh kinematics (sagittal flexion/extension pitch, 3D linear accelerations, step cadence, and rigid-body stability) across **arbitrary 360° camera viewing angles** (`90°` pure lateral, `45°` front/rear oblique, `0°` frontal approaching, and `180°` posterior receding), validated against synchronized wearable **WitMotion IMU** ground-truth sensors across **40 stratified videos** (39 subjects).
+
+---
+
+<div align="center">
+  <h4> <a href="https://rob00t-unimi.github.io/monocular-3d-gait-tracking-deltav2/">Click here to Read Full Documentation</a> </h4>
+</div>
 
 ---
 
@@ -30,6 +36,7 @@ monocular-3d-gait-tracking-deltav2/
 │   ├── 04_MATHEMATICAL_FORMULATION_AND_FIXES.md
 │   ├── 05_BENCHMARK_RESULTS_AND_CONCLUSIONS.md
 │   ├── 06_DUMMY_BASELINE_METHOD.md
+│   ├── CONCLUSIONS.md                 # Executive summary: DELTAv2 vs Dummy across 4 key indicators
 │   ├── docs_it/                       # Italian documentation mirror (README, chapters, reports)
 │   └── references/                    # Reference literature PDFs (DELTAv2, DELTA, SpaTrackerV2, VGGT)
 ├── examples/                          # 5 End-to-End Interactive Jupyter Notebooks (01..05)
@@ -58,6 +65,7 @@ monocular-3d-gait-tracking-deltav2/
 │   ├── benchmark/                     # Multi-tier evaluator & deterministic report generator
 │   └── ui/                            # 4 Tkinter interactive 2D/3D/waveform inspectors
 └── tests/                             # 106 automated unit & integration tests
+```
 
 ## 2. Unified Command-Line Interface (`gait360`)
 
@@ -222,7 +230,7 @@ Launches standalone interactive graphical inspectors for qualitative validation 
 
 ---
 
-## 3. 40-Video SOTA Benchmark Summary
+## 3. 40-Video Benchmark Summary
 
 | Metric (40 Stratified Videos) | 1. Dummy Tracker | 2. DELTAv2 Raw | 3. DELTAv2 Pruned Cloud | 4. DELTAv2 Refined Triplet |
 | :--- | :---: | :---: | :---: | :---: |

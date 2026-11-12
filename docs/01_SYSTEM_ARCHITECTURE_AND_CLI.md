@@ -6,35 +6,53 @@
 
 ```text
 monocular-3d-gait-tracking-deltav2/
-├── README.md
-├── CHANGELOG.md
-├── pyproject.toml
-├── .gitignore
-├── .gitattributes
+├── README.md                          # Project overview, CLI guide & benchmark summary
+├── CHANGELOG.md                       # Keep-a-Changelog release history (v0.1.0, v0.5.0, v1.0.0)
+├── pyproject.toml                     # Package configuration & `gait360` CLI entrypoint
+├── .gitignore                         # Ignores heavy datasets, weights & temporary logs
+├── .gitattributes                     # Git LFS tracking rules for .npz and .pdf artifacts
+├── index.html                         # Interactive HTML documentation & bilingual viewer (GitHub Pages)
 ├── configs/
-│   ├── default_config.yaml              # Pipeline hyperparameters & paths
-│   ├── envs/                            # Conda environment YAML specifications
-│   └── setup/                           # Environment bootstrap, CUDA & DELTAv2 diagnostics
-├── data/                                # Dataset manifests, raw datasets (Gait_Dataset) & IMU cache (gt_cache)
-├── docs/                                # 5-Chapter Technical Documentation & PDF References
-├── examples/                            # 5 End-to-End Interactive Jupyter Notebooks
-├── experiments/                         # Historical Decision Reports & Prototypes (01..03)
-├── models/                              # External 3D Trackers & submodules (DELTA, DELTAv2)
-├── results/                             # Authoritative JSON, CSV & 3 Benchmark Reports
-├── src/                                 # Production Software Package & Unified CLI
-│   ├── cli.py                           # Unified parametric entrypoint (`gait360`)
-│   ├── core/                            # Domain models, interfaces, constants, exceptions
-│   ├── utils/                           # PEP8 path validation & root resolution
-│   ├── data_io/                         # Video, OpenPose JSON, WitMotion IMU CSV & state I/O
-│   ├── preprocessing/                   # 2D thigh vision segmentation & Butterworth filtering
-│   ├── inference/                       # BaseTracker, DummyTracker & DELTAv2Tracker
-│   ├── postprocessing/                  # 3-Stage GeometricPruner & rigid triplet extraction
-│   ├── analysis/                        # 3D SVD Kabsch alignment & kinematic signal extraction
-│   ├── metrics/                         # Waveform, magnitude, frequency & 3D geometry metrics
-│   ├── pipeline/                        # Stage orchestrators (dataset, cohort, vision, track, prune)
-│   ├── benchmark/                       # Multi-tier evaluator & deterministic report generator
-│   └── ui/                              # 4 Tkinter interactive 2D/3D/waveform inspectors
-└── tests/                               # 100+ automated unit & integration tests
+│   ├── default_config.yaml            # Pipeline hyperparameters & paths
+│   ├── envs/                          # Conda YAML environments (delta_env, analysis_env, etc.)
+│   └── setup/                         # Cross-platform setup & CUDA/DELTAv2 diagnostic scripts
+├── data/                              # Manifests, cached states, datasets (Gait_Dataset) & IMU cache (gt_cache)
+├── docs/
+│   ├── 01_SYSTEM_ARCHITECTURE_AND_CLI.md
+│   ├── 02_STEP_BY_STEP_METHODOLOGY.md
+│   ├── 03_EXPERIMENTAL_CHRONICLE_AND_MODELS.md
+│   ├── 04_MATHEMATICAL_FORMULATION_AND_FIXES.md
+│   ├── 05_BENCHMARK_RESULTS_AND_CONCLUSIONS.md
+│   ├── 06_DUMMY_BASELINE_METHOD.md
+│   ├── CONCLUSIONS.md                 # Executive summary: DELTAv2 vs Dummy across 4 key indicators
+│   ├── docs_it/                       # Italian documentation mirror (README, chapters, reports)
+│   └── references/                    # Reference literature PDFs (DELTAv2, DELTA, SpaTrackerV2, VGGT)
+├── examples/                          # 5 End-to-End Interactive Jupyter Notebooks (01..05)
+├── experiments/                       # Historical Decision Reports & Prototypes
+│   ├── 01_spatracker_vggt/            # Phase 1: VGGT & SpaTrackerV2 bidirectional exploration
+│   ├── 02_delta_v1/                   # Phase 2: DELTA v1 dense 3D & anatomical anchor trials
+│   └── 03_deltav2_prototyping/        # Phase 3: DELTAv2 validation & 16-video cohort JSON
+├── models/                            # External 3D Trackers & submodules (DELTA, DELTAv2, SpaTrackerV2, VGGT)
+├── results/
+│   ├── benchmark_40_metrics.json      # Authoritative 40-video per-trial & aggregate metrics
+│   ├── benchmark_40_summary.csv       # Tabular summary across all 4 evaluation tiers
+│   ├── REPORT_40_VIDEOS_BENCHMARK.md  # Full 40-video 4-tier benchmark report
+│   ├── REPORT_TRIPLET_VS_CLOUD_ABLATION.md
+│   └── REPORT_16_VIDEOS_MODEL_COMPARISON.md
+├── src/
+│   ├── cli.py                         # Unified parametric CLI (`gait360` / `python -m src.cli`)
+│   ├── core/                          # Domain models, interfaces, constants & exceptions
+│   ├── utils/                         # PEP8 path validator & project root resolver
+│   ├── data_io/                       # Video, OpenPose JSON, WitMotion IMU CSV & state I/O
+│   ├── preprocessing/                 # 2D thigh vision segmentation & Butterworth filtering
+│   ├── inference/                     # BaseTracker, DummyTracker & DELTAv2Tracker
+│   ├── postprocessing/                # 3-Stage GeometricPruner & rigid triplet extraction
+│   ├── analysis/                      # 3D SVD Kabsch alignment & kinematic signal extraction
+│   ├── metrics/                       # Waveform, magnitude, frequency & 3D geometry metrics
+│   ├── pipeline/                      # Stage orchestrators (dataset, cohort, vision, track, prune)
+│   ├── benchmark/                     # Multi-tier evaluator & deterministic report generator
+│   └── ui/                            # 4 Tkinter interactive 2D/3D/waveform inspectors
+└── tests/                             # 106 automated unit & integration tests
 ```
 
 ## 2. Caching, State Persistence
