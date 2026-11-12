@@ -365,3 +365,24 @@ def run_dataset_pipeline(
         run_dataset_alignment(dataset_dir=dataset_dir, cache_path=cache_path, force=force)
     if mode in ("candidates", "all"):
         build_candidate_cache_main(force=force)
+
+
+def run_manifest_alignment(
+    manifest_path: str = "data/dataset_manifest.json",
+    dataset_dir: str = "data/Gait_Dataset",
+    dry_run: bool = False,
+    delete_extras: bool = False,
+) -> dict:
+    """Verify hashes and restructure raw dataset files according to dataset_manifest.json."""
+    from src.data_io.dataset_aligner import DatasetAligner
+
+    manifest_full = str((PROJECT_ROOT / manifest_path).resolve())
+    ds_full = str((PROJECT_ROOT / dataset_dir).resolve())
+
+    aligner = DatasetAligner()
+    return aligner.align(
+        manifest_path=manifest_full,
+        data_dir=ds_full,
+        dry_run=dry_run,
+        delete_extras=delete_extras,
+    )

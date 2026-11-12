@@ -15,6 +15,36 @@ class TestUnifiedCLIAndPipelines(unittest.TestCase):
     def setUp(self) -> None:
         self.parser = build_parser()
 
+    def test_cli_align_dataset_subcommand(self) -> None:
+        args = self.parser.parse_args(["align-dataset", "--manifest", "data/dataset_manifest.json", "--dir", "data/Gait_Dataset", "--dry-run"])
+        self.assertEqual(args.command, "align-dataset")
+        self.assertEqual(args.manifest, "data/dataset_manifest.json")
+        self.assertEqual(args.dataset_dir, "data/Gait_Dataset")
+        self.assertTrue(args.dry_run)
+
+    def test_dataset_aligner_mock(self) -> None:
+        import tempfile, json
+        from src.data_io.dataset_aligner import DatasetAligner
+
+        aligner = DatasetAligner()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmppath = Path(tmpdir)
+            f1 = tmppath / "subdir" / "file1.txt"
+            f1.parent.mkdir(parents=True)
+            f1.write_text("sample content for hashing", encoding="utf-8")
+
+            h1 = aligner.compute_file_hash(str(f1))
+            self.assertTrue(len(h1) > 0)
+
+            manifest_dict = {"canonical/file1.txt": h1}
+            m_path = tmppath / "manifest.json"
+            with open(m_path, "w", encoding="utf-8") as mf:
+                json.dump(manifest_dict, mf)
+
+            summary = aligner.align(str(m_path), str(tmppath), dry_run=True)
+            self.assertEqual(summary["to_move_count"], 1)
+            self.assertEqual(summary["missing_count"], 0)
+
     def test_cli_scan_subcommand(self) -> None:
         args = self.parser.parse_args(["scan", "--mode", "candidates", "--dataset-dir", "data/Gait_Dataset"])
         self.assertEqual(args.command, "scan")

@@ -64,12 +64,29 @@ monocular-3d-gait-tracking-deltav2/
 The entire pipeline is driven by a single parametric command-line interface, accessible either via the installed executable `gait360` (after `pip install -e .`) or directly via Python (`python -m src.cli <command> [options]`).
 
 ```text
-usage: gait360 [-h] {scan,select-cohort,preprocess,track,prune,evaluate,inspect} ...
+usage: gait360 [-h] {align-dataset,scan,select-cohort,preprocess,track,prune,evaluate,inspect} ...
 ```
 
 ---
 
 ### Command Reference & Parameters
+
+#### 0. `align-dataset` — Dataset Integrity Verification & Restructuring
+Verifies local files against `data/dataset_manifest.json` using fast SHA-256 partial-chunk hashing and automatically reorganizes raw Gait360 files downloaded from LJMU OpenData into the canonical hierarchy (`Participant -> Experiment -> Test -> Angle`).
+- **Syntax:** `python -m src.cli align-dataset [options]`
+- **Parameters:**
+  - `--manifest <path>` *(default: `data/dataset_manifest.json`)*: Path to the authoritative manifest containing canonical file paths and SHA-256 hashes.
+  - `--dir <path>` *(default: `data/Gait_Dataset`)*: Path to the local dataset directory to verify and restructure.
+  - `--dry-run`: Preview identified matches, relocations, missing files, and extra files without applying any disk modifications.
+  - `--delete-extras`: Automatically delete untracked extra files not present in the manifest.
+- **Examples:**
+  ```bash
+  python -m src.cli align-dataset --dry-run      # Preview verification and proposed moves safely
+  python -m src.cli align-dataset                # Restructure files into canonical hierarchy
+  python -m src.cli align-dataset --delete-extras # Clean up untracked extra files
+  ```
+
+---
 
 #### 1. `scan` — Multi-Modal Dataset Mapping & Quality Cache
 Scans the multi-view dataset directory, matches OpenPose 2D keypoints with synchronized WitMotion IMU CSV sensors, and builds the quality candidate cache.

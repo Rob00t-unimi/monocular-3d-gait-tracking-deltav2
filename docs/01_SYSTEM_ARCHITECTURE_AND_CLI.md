@@ -49,6 +49,9 @@ monocular-3d-gait-tracking-deltav2/
 All pipeline stages and interactive inspectors are accessible via a single parametric entrypoint:
 
 ```bash
+# 0. Verify dataset integrity and restructure raw files against manifest
+python -m src.cli align-dataset --dry-run
+
 # 1. Scan dataset and build candidate quality cache
 python -m src.cli scan --mode all
 
