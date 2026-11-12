@@ -1,6 +1,7 @@
 """Unified Parametric Command-Line Interface for monocular-3d-gait-tracking-deltav2 (Gait360).
 
-Provides a single entrypoint (`gait360` or `python -m src.cli`) with seven subcommands:
+Provides a single entrypoint (`gait360` or `python -m src.cli`) with subcommands:
+  - `align-dataset`: Verify file integrity and reorganize raw Gait360 files against dataset_manifest.json.
   - `scan`: Scan dataset, align multi-view video/OpenPose/IMU trials, and build candidate quality cache.
   - `select-cohort`: Select stratified 40/60 benchmark video cohort across 8 viewing perspectives (or launch GUI).
   - `preprocess`: Run 2D vision thigh segmentation, reference frame selection, and 3-point anchor extraction.
@@ -30,6 +31,33 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     subparsers = parser.add_subparsers(dest="command", required=True, help="Pipeline stage subcommand")
+
+    # 0. align-dataset
+    p_align = subparsers.add_parser(
+        "align-dataset",
+        help="Verify file integrity and reorganize raw Gait360 files against dataset_manifest.json",
+    )
+    p_align.add_argument(
+        "--manifest",
+        default="data/dataset_manifest.json",
+        help="Path to authoritative dataset manifest JSON with expected SHA-256 hashes",
+    )
+    p_align.add_argument(
+        "--dir",
+        dest="dataset_dir",
+        default="data/Gait_Dataset",
+        help="Path to Gait_Dataset root directory to verify and restructure",
+    )
+    p_align.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Preview proposed moves and missing files without altering files on disk",
+    )
+    p_align.add_argument(
+        "--delete-extras",
+        action="store_true",
+        help="Delete untracked extra files not listed in the manifest",
+    )
 
     # 1. scan
     p_scan = subparsers.add_parser(
@@ -208,6 +236,22 @@ def main(argv: Optional[List[str]] = None) -> int:
     """Parse CLI arguments and dispatch to the corresponding pipeline module."""
     parser = build_parser()
     args = parser.parse_args(argv)
+
+    if args.command == "align-dataset":
+        from src.pipeline.dataset_pipeline import run_manifest_alignment
+
+        res = run_manifest_alignment(
+            manifest_path=args.manifest,
+            dataset_dir=args.dataset_dir,
+            dry_run=args.dry_run,
+            delete_extras=args.delete_extras,
+        )
+        print(
+            f"Alignment completed: {res['correct']} correct, "
+            f"{res['to_move_count']} moved, {res['missing_count']} missing, "
+            f"{res['format_mismatches_count']} format mismatches."
+        )
+        return 0
 
     if args.command == "scan":
         from src.pipeline.dataset_pipeline import run_dataset_pipeline

@@ -64,12 +64,29 @@ monocular-3d-gait-tracking-deltav2/
 L'intera pipeline è controllata da un'unica interfaccia da riga di comando parametrica, accessibile tramite l'eseguibile `gait360` (dopo `pip install -e .`) oppure direttamente via Python (`python -m src.cli <comando> [opzioni]`).
 
 ```text
-usage: gait360 [-h] {scan,select-cohort,preprocess,track,prune,evaluate,inspect} ...
+usage: gait360 [-h] {align-dataset,scan,select-cohort,preprocess,track,prune,evaluate,inspect} ...
 ```
 
 ---
 
 ### Riferimento Comandi e Parametri
+
+#### 0. `align-dataset` — Verifica Integrità e Riorganizzazione Dataset
+Verifica i file locali rispetto a `data/dataset_manifest.json` tramite hashing parziale veloce SHA-256 e riorganizza automaticamente i file grezzi di Gait360 scaricati da LJMU OpenData nella gerarchia canonica (`Participant -> Experiment -> Test -> Angle`).
+- **Sintassi:** `python -m src.cli align-dataset [opzioni]`
+- **Parametri:**
+  - `--manifest <path>` *(default: `data/dataset_manifest.json`)*: Percorso del manifest autorevole con i percorsi canonici e gli hash SHA-256 attesi.
+  - `--dir <path>` *(default: `data/Gait_Dataset`)*: Percorso della cartella locale del dataset da verificare e ristrutturare.
+  - `--dry-run`: Anteprima a video di corrispondenze esatte, spostamenti necessari, file mancanti ed extra senza alterare i file su disco.
+  - `--delete-extras`: Elimina automaticamente i file extra non censiti nel manifest.
+- **Esempi:**
+  ```bash
+  python -m src.cli align-dataset --dry-run      # Anteprima sicura di integrità e spostamenti
+  python -m src.cli align-dataset                # Riorganizzazione dei file nella gerarchia canonica
+  python -m src.cli align-dataset --delete-extras # Pulizia dei file extra non tracciati
+  ```
+
+---
 
 #### 1. `scan` — Mappatura Multi-Modale del Dataset & Cache di Qualità
 Esegue la scansione della directory del dataset multi-vista, associa i keypoint 2D OpenPose ai sensori inerziali WitMotion IMU sincronizzati (CSV) e costruisce la cache di qualità dei candidati.
