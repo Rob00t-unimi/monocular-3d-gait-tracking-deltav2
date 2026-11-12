@@ -7,7 +7,7 @@ Provides a single entrypoint (`gait360` or `python -m src.cli`) with seven subco
   - `track`: Run dense 3D trajectory inference (`deltav2` or `dummy`) with automatic `.npz` resume/caching.
   - `prune`: Run the 3-Stage Geometric Pruner (anisotropic spatial DBSCAN, kinematic MAD, and rigid triplet).
   - `evaluate`: Compute 3D SVD-aligned kinematic/geometric metrics and regenerate JSON, CSV, and Markdown reports.
-  - `inspect`: Launch interactive 2D/3D/waveform inspection GUIs (`keypoints`, `cohort`, `3d`, `signals`).
+  - `inspect`: Launch interactive 2D/3D/waveform inspection GUIs (`keypoints`, `cohort`, `3d`, `signals`, `dashboard`).
 """
 
 from __future__ import annotations
@@ -52,6 +52,11 @@ def build_parser() -> argparse.ArgumentParser:
         default="data/cached_dataset_map.json",
         help="Output path for the serialized dataset alignment map JSON",
     )
+    p_scan.add_argument(
+        "--force",
+        action="store_true",
+        help="Force recomputation of dataset cache even if files already exist",
+    )
 
     # 2. select-cohort
     p_cohort = subparsers.add_parser(
@@ -62,6 +67,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--gui",
         action="store_true",
         help="Launch the interactive Tkinter Stratified Cohort Selector GUI",
+    )
+    p_cohort.add_argument(
+        "--force",
+        action="store_true",
+        help="Force regeneration of selected_inference_videos_40.csv/.txt even if already cached",
     )
 
     # 3. preprocess
@@ -75,9 +85,19 @@ def build_parser() -> argparse.ArgumentParser:
         help="Path to pipeline YAML configuration (default: configs/default_config.yaml)",
     )
     p_prep.add_argument(
+        "--video",
+        default=None,
+        help="Optional specific video name to inspect in GUI (e.g., P27_E2T2_90.mp4)",
+    )
+    p_prep.add_argument(
         "--gui",
         action="store_true",
-        help="Launch the interactive 2D Keypoint & Reference Frame Validator GUI after extraction",
+        help="Launch the interactive 2D Keypoint & Reference Frame Validator GUI",
+    )
+    p_prep.add_argument(
+        "--force",
+        action="store_true",
+        help="Force recalculation of IMU ground truth cutoffs and video reference frames ignoring cache",
     )
 
     # 4. track
@@ -130,6 +150,11 @@ def build_parser() -> argparse.ArgumentParser:
         default=8.0,
         help="Maximum triangle aspect ratio for Stage 3 normal-twist guard (default: 8.0)",
     )
+    p_prune.add_argument(
+        "--force",
+        action="store_true",
+        help="Re-run geometric pruning even if cached refined .npz already exists",
+    )
 
     # 6. evaluate
     p_eval = subparsers.add_parser(
@@ -141,6 +166,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Regenerate Markdown reports from existing results/benchmark_40_metrics.json without recomputing",
     )
+    p_eval.add_argument(
+        "--force",
+        action="store_true",
+        help="Force recomputation of all 40 video alignments and metrics ignoring cached benchmark_40_metrics.json",
+    )
 
     # 7. inspect
     p_insp = subparsers.add_parser(
@@ -149,9 +179,26 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_insp.add_argument(
         "--mode",
-        choices=["keypoints", "cohort", "3d", "signals"],
+        choices=["keypoints", "cohort", "3d", "signals", "dashboard"],
         default="3d",
         help="Interactive GUI mode to launch (default: 3d)",
+    )
+    p_insp.add_argument(
+        "--model",
+        choices=["deltav2", "spatracker", "compare"],
+        default="deltav2",
+        help="Model mode for the 40-video / 6-video benchmark dashboard (default: deltav2)",
+    )
+    p_insp.add_argument(
+        "--video",
+        default="P27_E2T2_90.mp4",
+        help="Starting video filename for keypoint inspection (default: P27_E2T2_90.mp4)",
+    )
+    p_insp.add_argument(
+        "--start",
+        type=int,
+        default=0,
+        help="Starting video index (0-39) for the interactive signal/3D benchmark dashboard",
     )
 
     return parser
@@ -169,6 +216,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             mode=args.mode,
             dataset_dir=args.dataset_dir,
             cache_path=args.cache_path,
+            force=args.force,
         )
         return 0
 
@@ -184,22 +232,34 @@ def main(argv: Optional[List[str]] = None) -> int:
         else:
             from src.pipeline.cohort_selector import main as cohort_main
 
-            cohort_main()
+            cohort_main(force=args.force)
         return 0
 
     if args.command == "preprocess":
         from src.pipeline.vision_pipeline import main as vision_main
 
-        sys.argv = ["gait360 preprocess", "--config", args.config]
+        cli_args = ["gait360 preprocess", "--config", args.config]
+        if args.force:
+            cli_args.append("--force-gt")
+        if not args.gui and not args.video:
+            cli_args.append("--auto")
+            if not args.force:
+                cli_args.append("--resume")
+        else:
+            if args.video:
+                cli_args.extend(["--start-from", args.video])
+        sys.argv = cli_args
         vision_main()
         return 0
 
     if args.command == "track":
         from src.pipeline.tracking_pipeline import main as track_main
 
-        cli_args = ["gait360 track"]
+        cli_args = ["gait360 track", "--tracker", args.tracker]
         if args.video:
             cli_args.extend(["--video", args.video])
+        else:
+            cli_args.append("--batch")
         if args.force:
             cli_args.append("--force")
         sys.argv = cli_args
@@ -209,7 +269,19 @@ def main(argv: Optional[List[str]] = None) -> int:
     if args.command == "prune":
         from src.pipeline.pruning_pipeline import main as prune_main
 
-        sys.argv = ["gait360 prune"]
+        cli_args = [
+            "gait360 prune",
+            "--z-weight", str(args.z_weight),
+            "--min-altitude", str(args.min_altitude),
+            "--max-aspect-ratio", str(args.max_aspect_ratio),
+        ]
+        if args.video:
+            cli_args.extend(["--video", args.video])
+        else:
+            cli_args.append("--batch")
+        if args.force:
+            cli_args.append("--force")
+        sys.argv = cli_args
         prune_main()
         return 0
 
@@ -218,14 +290,13 @@ def main(argv: Optional[List[str]] = None) -> int:
         from src.benchmark.report_generator import generate_reports
 
         if not args.reports_only:
-            eval_main()
-        generate_reports()
+            eval_main(force=args.force)
+        generate_reports(force=args.force)
         return 0
 
     if args.command == "inspect":
-        import tkinter as tk
-
         if args.mode == "cohort":
+            import tkinter as tk
             from src.ui.cohort_selector_gui import VideoSelectorApp
 
             root = tk.Tk()
@@ -233,21 +304,18 @@ def main(argv: Optional[List[str]] = None) -> int:
             root.protocol("WM_DELETE_WINDOW", app.on_closing)
             root.mainloop()
         elif args.mode == "3d":
-            from src.ui.trajectory_3d_inspector import Unified3DInspector
+            from src.ui.trajectory_3d_inspector import inspect_signals_3d
 
-            root = tk.Tk()
-            Unified3DInspector(root)
-            root.mainloop()
-        elif args.mode == "signals":
-            from src.ui.kinematic_signal_inspector import UnifiedSignalInspector
+            inspect_signals_3d(mode="all", data_dir=str(PROJECT_ROOT / "data"))
+        elif args.mode in ("signals", "dashboard"):
+            from src.ui.benchmark_dashboard import main as dashboard_main
 
-            root = tk.Tk()
-            UnifiedSignalInspector(root)
-            root.mainloop()
+            sys.argv = ["gait360 inspect", "--start", str(args.start), "--model", args.model]
+            dashboard_main()
         elif args.mode == "keypoints":
             from src.pipeline.vision_pipeline import main as vision_main
 
-            sys.argv = ["gait360 preprocess", "--config", "configs/default_config.yaml"]
+            sys.argv = ["gait360 preprocess", "--config", "configs/default_config.yaml", "--start-from", args.video]
             vision_main()
         return 0
 

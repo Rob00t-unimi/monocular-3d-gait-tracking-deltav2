@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class DatasetScanner:
     """Scans the dataset directory and yields VideoInfo entities."""
 
-    def __init__(self, base_dir: str):
+    def __init__(self, base_dir: str = "data"):
         self.expected_files = 629539
         # Ensure we resolve relative to the ACTUAL script execution location if path is relative
         self.base_dir = Path(base_dir).resolve()
@@ -32,6 +32,20 @@ class DatasetScanner:
         self.cached_dataset_map_path = self.base_dir / "cached_dataset_map.json"
         self.cached_dataset_map = {}
         self._load()
+
+    def scan(self, dataset_dir: str = None, cache_path: str = None, force: bool = False) -> dict:
+        """Scan or reload the dataset and return the cached dataset map."""
+        if cache_path:
+            self.cached_dataset_map_path = Path(cache_path).resolve()
+        if dataset_dir:
+            self.dataset_dir = Path(dataset_dir).resolve()
+        if force:
+            logger.info("Force flag enabled. Re-extracting full dataset map...")
+            self._extract()
+            self._save()
+        elif not self.cached_dataset_map:
+            self._load()
+        return self.cached_dataset_map
 
     def _load(self):
         """Loads the Json dataset structure."""

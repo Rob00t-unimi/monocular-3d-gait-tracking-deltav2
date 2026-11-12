@@ -11,7 +11,7 @@ This chapter documents the chronological progression of architectures evaluated 
 - **Failure Mode on Gait Sequences:** VGGT assumes a predominantly static scene observed by a moving camera. In clinical gait laboratory recordings with a **static camera** and a **non-rigidly moving human subject**, background walls dominate the global geometry while the walking subject suffers severe depth flattening and temporal incoherence.
 
 ### 1.2 SpaTrackerV2 (Bidirectional Forward-Backward Point Tracking)
-- **Hypothesis:** Track the 3 thigh query points forward and backward from the optimal mid-stance reference frame $t_{\text{ref}}$.
+- **Hypothesis:** Track the 3 thigh query points forward and backward from the optimal reference frame $t_{\text{ref}}$ (selected at maximum horizontal knee separation).
 - **Empirical Findings (16-Video Matched Cohort):**
   - **High Identity-Swap Rate (31.2%, 5/16 videos):** During contralateral leg crossover in $90^\circ$ lateral and $45^\circ$ oblique views, sparse queries frequently latch onto the swinging opposite leg.
   - **Low Smoothness & Rigidity:** Produces an average RMS Jerk of `98.4 ± 41.2 m/s³` and 3D Rigid Deformation of `68.4% ± 24.5%`.

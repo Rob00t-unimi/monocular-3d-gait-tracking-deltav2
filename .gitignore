@@ -1,4 +1,4 @@
-# Heavy datasets, caches, and external model checkpoints (preserved via NTFS Junctions)
+# Heavy datasets, caches, and external model checkpoints (managed locally, ignored from git tracking)
 data/Gait_Dataset/
 data/Gait_Dataset
 data/gt_cache/

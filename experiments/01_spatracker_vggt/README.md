@@ -36,6 +36,6 @@ At project inception, **SpatialTrackerV2** coupled with **VGGT (Visual Geometry 
 2. **Prohibitive GPU Memory Scaling (60–90 Frame Ceiling):**
    Jointly holding VGGT multi-frame attention maps and bundle adjustment gradients exhausts 24 GB VRAM beyond ~90 frames, making full-sequence gait analysis (180–300 frames, 5–8 gait cycles) infeasible in a single pass.
 3. **Diffuse Background Query Drift:**
-   Uniform background grid queries required to stabilize VGGT camera pose estimation frequently latch onto moving shadows or contralateral limbs during sagittal cross-overs.
+   Uniform background grid queries required to stabilize VGGT camera pose estimation frequently latch onto moving shadows or contralateral limbs during sagittal cross-overs, collapsing the tracking.
 
 **Conclusion:** We transition to **DELTA / DELTAv2** with metric depth estimation (`UniDepthV2`) and anatomical query masking.

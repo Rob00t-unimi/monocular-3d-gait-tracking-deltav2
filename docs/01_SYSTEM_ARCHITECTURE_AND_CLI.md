@@ -1,8 +1,8 @@
 # 01 — System Architecture, State Management, and Unified CLI (`gait360`)
 
-## 1. Architectural Overview (Clean & SOLID Modular Design)
+## 1. Architectural Overview
 
-`monocular-3d-gait-tracking-deltav2` (**Gait360**) is structured into seven top-level functional directories with **zero root clutter**:
+`monocular-3d-gait-tracking-deltav2` (**Gait360**) is structured into seven top-level functional directories:
 
 ```text
 monocular-3d-gait-tracking-deltav2/
@@ -15,11 +15,11 @@ monocular-3d-gait-tracking-deltav2/
 │   ├── default_config.yaml              # Pipeline hyperparameters & paths
 │   ├── envs/                            # Conda environment YAML specifications
 │   └── setup/                           # Environment bootstrap, CUDA & DELTAv2 diagnostics
-├── data/                                # Dataset manifests & NTFS Junctions (Gait_Dataset, gt_cache)
+├── data/                                # Dataset manifests, raw datasets (Gait_Dataset) & IMU cache (gt_cache)
 ├── docs/                                # 5-Chapter Technical Documentation & PDF References
 ├── examples/                            # 5 End-to-End Interactive Jupyter Notebooks
 ├── experiments/                         # Historical Decision Reports & Prototypes (01..03)
-├── models/                              # External 3D Trackers via NTFS Junctions (DELTA, DELTAv2)
+├── models/                              # External 3D Trackers & submodules (DELTA, DELTAv2)
 ├── results/                             # Authoritative JSON, CSV & 3 Benchmark Reports
 ├── src/                                 # Production Software Package & Unified CLI
 │   ├── cli.py                           # Unified parametric entrypoint (`gait360`)
@@ -37,12 +37,12 @@ monocular-3d-gait-tracking-deltav2/
 └── tests/                               # 100+ automated unit & integration tests
 ```
 
-## 2. Caching, State Persistence, and Zero-Copy Storage
+## 2. Caching, State Persistence
 
 1. **Multi-View Trial Alignment Cache (`data/cached_dataset_map.json`):** Serializes the mapping between RGB videos (`90°`, `45°`, `Front`, `Rear`), OpenPose 2D keypoint directories, and WitMotion IMU ground-truth CSV files across all 59 subjects.
 2. **Candidate Video Quality Cache (`data/candidate_videos_cache.json`):** Stores pre-evaluated IMU ground-truth quality scores (`Optimal`, `Good`, `Imprecise`), Range of Motion (ROM), and step cadence for rapid stratified cohort selection.
 3. **2D Vision Keypoint State (`data/videos_state.json`):** Persists the selected reference frame index (`ref_frame`), walk start frame (`walk_start`), and the 3 anatomical thigh query points (`p1`, `p2`, `p3`) with automatic resume support.
-4. **3D Trajectory Tensor Cache (`data/inference_results/raw/*.npz` & `refined/*.npz`):** Stores raw DELTAv2 `(T, N, 3)` metric point clouds and geometrically pruned point clouds + rigid triplets `(T, 3, 3)`, tracked via Git LFS.
+4. **3D Trajectory Tensor Cache (`data/inference_results/raw/*.npz` & `refined/*.npz`):** Stores raw DELTAv2 `(T, N, 3)` metric point clouds and geometrically pruned point clouds + rigid triplets `(T, 3, 3)`.
 
 ## 3. Unified Command-Line Interface (`gait360` / `python -m src.cli`)
 

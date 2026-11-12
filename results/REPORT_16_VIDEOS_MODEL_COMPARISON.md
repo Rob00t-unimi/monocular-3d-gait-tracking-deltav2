@@ -70,7 +70,6 @@
 When all candidate models are evaluated over the **exact same temporal window** (60–90 frames around the reference frame, spanning 1–2 complete gait cycles):
 1. **Forward Linear Acceleration (AccX) & Sagittal Flexion-Extension (Pitch):**
    - **DELTAv2 (MediaPipe) outperforms SpatialTrackerV2 on linear acceleration:** achieving a mean AccX Pearson correlation of $r = \mathbf{+0.449 \pm 0.255}$ compared to $\mathbf{+0.360 \pm 0.255}$ for SpatialTrackerV2, the **lowest Pitch DTW distance** ($\mathbf{0.221 \pm 0.078}$ vs $\mathbf{0.269 \pm 0.075}$), and Pitch correlation $r = \mathbf{+0.430 \pm 0.398}$ vs $\mathbf{+0.546 \pm 0.250}$.
-   - Earlier apparent disparities stemmed solely from evaluating DELTAv2 across full 8-second sequences (5–8 strides) while restricting SpatialTrackerV2 to 2-second clips.
 2. **Rigid Body Structural Fidelity (Femur Segment):**
    - DELTAv2 preserves nearly **3× lower 3D structural deformation** than SpatialTrackerV2 (**19.6% vs 56.7%**). SpatialTrackerV2 suffers from unconstrained spatial elasticity during global bundle adjustment.
 3. **Trajectory Smoothness (RMS Jerk):**

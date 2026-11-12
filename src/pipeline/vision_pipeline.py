@@ -28,6 +28,7 @@ from src.preprocessing.video_prepper import video_service
 from src.ui.trajectory_3d_inspector import inspect_signals_3d
 from src.ui.kinematic_signal_inspector import inspect_signals
 from src.ui.keypoint_validator_gui import validate_first_frame_of_all_videos
+from src.data_io.state_manager import videos_state_manager
 from src.utils.path_validator import load_pipeline_config, resolve_config_path
 
 logging.basicConfig(
@@ -155,11 +156,27 @@ def main() -> None:
                 valid_videos = filtered_list
 
         if args.auto:
-            logger.info(f"--- Step 4: Starting AUTOMATED Evaluation for {len(valid_videos)} videos ---")
-            with logging_redirect_tqdm():
-                for v_info in tqdm(valid_videos, desc="Auto-Evaluating", unit="vid"):
-                    metadata = video_provider.get_metadata(v_info.video_path)
-                    video_service.get_reference_frame(v_info, metadata, skip_if_already_done=args.resume)
+            if args.resume:
+                all_states = videos_state_manager._load_full_cache()
+                unprocessed = [
+                    v for v in valid_videos
+                    if v.name not in all_states or (
+                        all_states[v.name].get('ref_frame_idx') is None and
+                        not all_states[v.name].get('specific', {}).get('discarded') and
+                        not all_states[v.name].get('fullbody', {}).get('discarded')
+                    )
+                ]
+                logger.info(f"--- Step 4: Fast resume active: {len(valid_videos) - len(unprocessed)}/{len(valid_videos)} videos already completed in videos_state.json ---")
+                valid_videos = unprocessed
+
+            if valid_videos:
+                logger.info(f"Starting AUTOMATED Evaluation for {len(valid_videos)} remaining videos...")
+                with logging_redirect_tqdm():
+                    for v_info in tqdm(valid_videos, desc="Auto-Evaluating", unit="vid"):
+                        metadata = video_provider.get_metadata(v_info.video_path)
+                        video_service.get_reference_frame(v_info, metadata, skip_if_already_done=args.resume)
+            else:
+                logger.info("All videos already validated in videos_state.json. Skipping automated loop.")
         else:
             logger.info("--- Step 4: Launching MANUAL Validation GUI ---")
             with logging_redirect_tqdm():

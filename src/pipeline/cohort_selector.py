@@ -49,18 +49,19 @@ CATEGORIES_8 = [
 def map_to_8class(row: pd.Series) -> str:
     cat = str(row['category_name'])
     sub = str(row.get('sub_perspective', ''))
+    angle = str(row.get('angle', ''))
     
-    if '90' in cat and 'Destra -> Sinistra' in cat:
+    if '90' in cat and ('Destra -> Sinistra' in cat or 'Right -> Left' in cat):
         return CATEGORIES_8[0]
-    if '90' in cat and 'Sinistra -> Destra' in cat:
+    if '90' in cat and ('Sinistra -> Destra' in cat or 'Left -> Right' in cat):
         return CATEGORIES_8[1]
-    if 'Frontale' in cat:
+    if 'Front' in cat or angle == 'Front':
         return CATEGORIES_8[2]
-    if 'Posteriore' in cat:
+    if 'Post' in cat or 'Rear' in cat or angle == 'Rear':
         return CATEGORIES_8[3]
-    if '45' in cat and 'Destra -> Sinistra' in cat:
+    if '45' in cat and ('Destra -> Sinistra' in cat or 'Right -> Left' in cat):
         return CATEGORIES_8[4] if 'Front' in sub else CATEGORIES_8[5]
-    if '45' in cat and 'Sinistra -> Destra' in cat:
+    if '45' in cat and ('Sinistra -> Destra' in cat or 'Left -> Right' in cat):
         return CATEGORIES_8[6] if 'Front' in sub else CATEGORIES_8[7]
     raise ValueError(f"Unknown category for row: {row['video_name']}")
 
@@ -80,14 +81,17 @@ def select_40_benchmark() -> pd.DataFrame:
     # 2. Select 5 unique persons for each of the remaining 4 categories
     selected_other = []
     category_order = [
-        '90° Sagittale (Destra -> Sinistra)',
-        '90° Sagittale (Sinistra -> Destra)',
-        'Frontal (Approaching)',
-        'Posterior (Receding)'
+        ('90° Sagittale (Destra -> Sinistra)', '90_R2L'),
+        ('90° Sagittale (Sinistra -> Destra)', '90_L2R'),
+        ('Front', 'Front'),
+        ('Rear', 'Rear')
     ]
 
-    for cat in category_order:
-        sub = df_60[df_60['category_name'] == cat].sort_values(
+    for cat_pattern, angle_pattern in category_order:
+        mask = df_60['category_name'].str.contains(cat_pattern, regex=False) | (df_60['angle'] == angle_pattern)
+        if 'Post' in cat_pattern:
+            mask = mask | df_60['category_name'].str.contains('Post', regex=False)
+        sub = df_60[mask].sort_values(
             by=['gt_score', 'gt_rom_deg'], ascending=[False, True]
         )
         picked = []
@@ -134,11 +138,11 @@ def export_manifests(df_40: pd.DataFrame):
     # 2. Export TXT
     with open(OUTPUT_40_TXT, 'w', encoding='utf-8') as f:
         f.write("=" * 80 + "\n")
-        f.write("  3D GAIT TRACKING: 40 BENCHMARK INFERENCE VIDEOS (8 CATEGORIE x 5 VIDEO)\n")
-        f.write(f"  Data Generazione: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-        f.write("  Totale Video: 40 / 40\n")
-        f.write("  Soggetti Unici: 40 / 40 (0 duplicati - bilanciamento perfetto)\n")
-        f.write("  Sensore IMU: Gamba Destra (T1, T2, T1ALT, T2ALT)\n")
+        f.write("  3D GAIT TRACKING: 40 BENCHMARK INFERENCE VIDEOS (8 CATEGORIES x 5 VIDEOS)\n")
+        f.write(f"  Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write("  Total Videos: 40 / 40\n")
+        f.write("  Unique Subjects: 40 / 40 (0 duplicates - balanced cohort)\n")
+        f.write("  IMU Sensor: Right Thigh (T1, T2, T1ALT, T2ALT)\n")
         f.write("=" * 80 + "\n\n")
 
         for cat_name in CATEGORIES_8:
@@ -148,7 +152,7 @@ def export_manifests(df_40: pd.DataFrame):
             for i, (_, r) in enumerate(sub.iterrows(), 1):
                 f.write(
                     f"{i:2d}. {r['video_name']:<22} | "
-                    f"Persona: {r['person']:<4} | "
+                    f"Subject: {r['person']:<4} | "
                     f"Test: {r['test']:<5} | "
                     f"Keypoints: {r['kps_origin']:<22} | "
                     f"GT: {r['gt_status']:<8} (ROM {r['gt_rom_deg']}°, {r['gt_step_freq_hz']}Hz) | "
@@ -157,14 +161,26 @@ def export_manifests(df_40: pd.DataFrame):
             f.write("\n")
     print(f"Exported TXT: {OUTPUT_40_TXT}")
 
-def main():
+def main(force: bool = False):
+    if OUTPUT_40_CSV.exists() and OUTPUT_40_TXT.exists() and not force:
+        df_40 = pd.read_csv(OUTPUT_40_CSV)
+        print(f"Benchmark cohort manifest already exists at {OUTPUT_40_CSV.name}. Loading from cache (use --force to regenerate)...")
+        print(f"- Total videos: {len(df_40)}")
+        print(f"- Unique participants: {len(set(df_40['person'].tolist()))}")
+        print(f"- Categories: {len(df_40['category_8class'].unique())} (5 videos each)")
+        return df_40
+
     print("Selecting 40 benchmark videos across 8 balanced categories...")
     df_40 = select_40_benchmark()
+    for col in ['video_path', 'sensor_csv']:
+        if col in df_40.columns:
+            df_40[col] = df_40[col].apply(lambda s: s.replace('\\', '/')[s.replace('\\', '/').find('data/Gait_Dataset/'):] if isinstance(s, str) and 'data/Gait_Dataset/' in s.replace('\\', '/') else s)
     export_manifests(df_40)
     print("\nBenchmark selection completed successfully!")
     print(f"- Total videos: {len(df_40)}")
     print(f"- Unique participants: {len(set(df_40['person'].tolist()))}")
     print(f"- Categories: {len(CATEGORIES_8)} (5 videos each)")
+    return df_40
 
 if __name__ == "__main__":
     main()

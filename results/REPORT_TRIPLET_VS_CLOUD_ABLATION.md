@@ -10,10 +10,6 @@
 
 ## 1. Executive Summary & Verdict
 
-Previous benchmark evaluations suffered from a fundamental kinematic flaw: tracking signals were projected and analyzed in camera-relative coordinate frames without transforming into the IMU World reference frame. Consequently, for non-sagittal viewpoints (0° frontal, 180° posterior, 45° oblique), flexion-extension (Pitch) was projected onto unaligned camera axes, yielding near-zero correlations and invalid conclusions.
-
-With **rigorous Kinematic World Alignment** deployed, both camera tracking and IMU Ground Truth signals are projected into an identical physical inertial reference frame, revealing the true biomechanical performance of the tracking methods.
-
 ### 🏆 Head-to-Head Comparative Summary (Triplet vs Cloud vs Raw Baseline):
 
 | Metric Domain | Metric | Raw Baseline | Refined Triplet (3 Pts) | Refined Cloud (SVD) | Winner | Triplet vs Cloud Wins |
@@ -33,7 +29,7 @@ With **rigorous Kinematic World Alignment** deployed, both camera tracking and I
    - **Rigid Body Consistency:** The optimal 3 points isolated by Geometric Pruning exhibit only **28.4%** structural deformation, compared to **41.4%** for the full point cloud (winning in **39 of 40 videos, 97.5%**).
 2. **Point Cloud Role:**
    - SVD Best-Fit over 100+ points acts as a spatial low-pass filter on centroid motion (AccX $r = 0.288$ vs $0.255$ for Triplet).
-   - **However, fitting a single plane across the entire thigh conflates quadriceps muscle deformation and clothing wrinkling with skeletal rotation**, corrupting angular orientation estimation.
+   - **However, fitting a single plane across the entire thigh conflates non-rigid clothing dynamics and cloth wrinkling with skeletal rotation**, corrupting angular orientation estimation.
 3. **Conclusion:** **The Optimal Refined Triplet is unequivocally confirmed as the superior methodology for 3D Gait Tracking.**
 
 ---
@@ -90,7 +86,7 @@ A critical test of World Kinematic Alignment is whether orientation estimation r
 
 ### B. The Role of Kinematic World Alignment:
 
-In previous experiments without World alignment, tracking in Frontal (0°) and Oblique (45°) views appeared to have zero or negative correlation because camera coordinates were directly compared to body IMU coordinates. By:
+By:
 1. Converting IMU linear acceleration to inertial World coordinates via orientation quaternions: $\vec{a}_{world}(t) = R_{imu}(t) \cdot \vec{a}_{body}(t) - \vec{g}$.
 2. Estimating the static 3D rotation $R_{cam \to world}$ via vector alignment.
 3. Aligning orientation trajectories via relative rotation vectors in the Lie algebra $\mathfrak{so}(3)$;

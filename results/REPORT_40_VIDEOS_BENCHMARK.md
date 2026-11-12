@@ -185,7 +185,7 @@ A primary methodological insight emerging from our multi-view analysis concerns 
 - **RMS Jerk (m/s³):** The Refined Triplet achieves **36.6 ± 14.3 m/s³**, compared to **179.9 ± 58.6 m/s³** for Raw and **1452.0 ± 646.6 m/s³** for Dummy. This represents a 5× improvement in second-derivative smoothness over Raw and a 40× improvement over Dummy.
 
 ### 2.2 Inertial Ground Truth Correlation & Magnitude Fidelity (World Coordinates)
-- **Pitch Pearson r:** The Refined Triplet achieves **0.295 ± 0.329** across all 40 videos (surpassing Point Cloud `0.276`, Dummy `0.199`, and Raw `0.185`), reaching peak correlations above **+0.65** in non-swapped views (e.g. `P53_E2T1_45_ALT`: +0.792, `P32_E1T2_90`: +0.787, `P31_E2T2_45`: +0.768, `P46_E1T1_90`: +0.690, `P65_E3T2_Front`: +0.582).
+- **Pitch Pearson r:** The Refined Triplet achieves **0.295 ± 0.329** across all 40 videos (surpassing Point Cloud `0.276`, Dummy `0.199`, and Raw `0.185`), reaching peak correlations above **+0.65** in non-swapped views (e.g. `P53_E2T1_45_ALT`: +0.792, `P32_E1T2_90`: +0.787, `P31_E2T2_45`: +0.768, `P5_E1T2_45_ALT`: +0.731, `P11_E2T2_45`: +0.695).
 - **Pitch ROM Error & nRMSE:** The Refined Triplet achieves a near-unbiased Range of Motion error of **+4.1% ± 70.8%** (compared to **-31.7%** underestimation in Dummy, **-15.5%** in Raw, and **+44.1%** inflation in Cloud) with a Pitch nRMSE of **30.5% ± 9.3%** (vs 34.4% Cloud).
 - **AccX Pearson r & 3D State-Space DTW:** The Refined Triplet attains an AccX correlation of **0.255 ± 0.162** (vs 0.205 Dummy and 0.243 Raw) and the best overall 3D acceleration DTW distance of **1.230 ± 0.173**.
 
@@ -195,4 +195,4 @@ A primary methodological insight emerging from our multi-view analysis concerns 
 
 1. **Monocular 3D Tracking Validity:** DELTAv2 coupled with MediaPipe Silhouette Sampling and Geometric Pruning extracts continuous, low-jerk 3D thigh kinematics from uncalibrated monocular videos without chunk boundary discontinuities.
 2. **Camera Placement Guidelines:** For single-camera clinical gait assessments, **90° sagittal** or **45° oblique** viewpoints are strongly recommended over pure axial (0°/180°) views unless depth sensors (RGB-D / LiDAR) are available.
-3. **Rejection of Naive 2D Lifting:** Comparison against the Dummy baseline proves that lifting 2D keypoints without dense 3D metric tracking introduces extreme acceleration noise (RMS Jerk > 1450 m/s³) and severe ROM underestimation (-31.7%).
+3. **Rejection of Naive 2D Lifting:** Comparison against the Dummy baseline proves that lifting 2D keypoints without dense 3D metric tracking introduces extreme acceleration noise (RMS Jerk 1452.0 m/s³) and severe ROM underestimation (-31.7%).

@@ -31,7 +31,7 @@ def _en_cat(cat: str) -> str:
     return CATEGORY_EN_MAP.get(cat, cat)
 
 
-def generate_reports() -> None:
+def generate_reports(force: bool = False) -> None:
     json_path = PROJECT_ROOT / "results" / "benchmark_40_metrics.json"
     if not json_path.exists():
         print(f"Error: {json_path} does not exist.")
@@ -240,11 +240,24 @@ def generate_reports() -> None:
     # -------------------------------------------------------------------------
     # 2. Build Analysis Markdown (results/deltav2_vs_dummy_benchmark_analysis.md)
     # -------------------------------------------------------------------------
-    p_p32 = evals["P32_E1T2_90.mp4"]["methods"]["refined_triplet"]["pearson_pitch"]
-    p_p53 = evals["P53_E2T1_45_ALT.mp4"]["methods"]["refined_triplet"]["pearson_pitch"]
-    p_p31 = evals["P31_E2T2_45.mp4"]["methods"]["refined_triplet"]["pearson_pitch"]
-    p_p46 = evals["P46_E1T1_90.mp4"]["methods"]["refined_triplet"]["pearson_pitch"]
-    p_p65 = evals["P65_E3T2_Front.mp4"]["methods"]["refined_triplet"]["pearson_pitch"]
+    # Dynamically select top 5 performing videos by refined_triplet Pitch Pearson r
+    ranked_vids = sorted(
+        evals.items(),
+        key=lambda kv: float(kv[1].get("methods", {}).get("refined_triplet", {}).get("pearson_pitch", -1.0)),
+        reverse=True,
+    )
+    top5_examples = ", ".join(
+        f"`{k.replace('.mp4', '')}`: {v['methods']['refined_triplet']['pearson_pitch']:+.3f}"
+        for k, v in ranked_vids[:5]
+    )
+    total_vids = len(evals)
+    def_wins = sum(
+        1
+        for v in evals.values()
+        if v["methods"]["refined_triplet"]["relative_deformation_percent"]
+        < v["methods"]["refined_cloud"]["relative_deformation_percent"]
+    )
+    def_win_pct = (def_wins / max(1, total_vids)) * 100.0
 
     md_analysis: list[str] = []
     md_analysis.append("# 🔬 Critical Benchmark Analysis: DELTAv2 vs Dummy Baseline")
@@ -303,14 +316,14 @@ def generate_reports() -> None:
     md_analysis.append("## 2. Aggregated Metric Performance Synthesis\n")
     md_analysis.append("### 2.1 3D Rigid Body Fidelity and Kinematic Smoothness (Jerk)")
     md_analysis.append(
-        f"- **3D Rigid Deformation:** DELTAv2 Refined Triplet achieves a mean relative deformation of **{stats['refined_triplet']['relative_deformation_percent'][0]:.1f}% ± {stats['refined_triplet']['relative_deformation_percent'][1]:.1f}%**, substantially outperforming both the Raw baseline ({stats['raw']['relative_deformation_percent'][0]:.1f}% ± {stats['raw']['relative_deformation_percent'][1]:.1f}%) and the full Point Cloud SVD ({stats['refined_cloud']['relative_deformation_percent'][0]:.1f}% ± {stats['refined_cloud']['relative_deformation_percent'][1]:.1f}%, winning **39 / 40 videos = 97.5%**)."
+        f"- **3D Rigid Deformation:** DELTAv2 Refined Triplet achieves a mean relative deformation of **{stats['refined_triplet']['relative_deformation_percent'][0]:.1f}% ± {stats['refined_triplet']['relative_deformation_percent'][1]:.1f}%**, substantially outperforming both the Raw baseline ({stats['raw']['relative_deformation_percent'][0]:.1f}% ± {stats['raw']['relative_deformation_percent'][1]:.1f}%) and the full Point Cloud SVD ({stats['refined_cloud']['relative_deformation_percent'][0]:.1f}% ± {stats['refined_cloud']['relative_deformation_percent'][1]:.1f}%, winning **{def_wins} / {total_vids} videos = {def_win_pct:.1f}%**)."
     )
     md_analysis.append(
         f"- **RMS Jerk (m/s³):** The Refined Triplet achieves **{stats['refined_triplet']['rms_jerk'][0]:.1f} ± {stats['refined_triplet']['rms_jerk'][1]:.1f} m/s³**, compared to **{stats['raw']['rms_jerk'][0]:.1f} ± {stats['raw']['rms_jerk'][1]:.1f} m/s³** for Raw and **{stats['dummy']['rms_jerk'][0]:.1f} ± {stats['dummy']['rms_jerk'][1]:.1f} m/s³** for Dummy. This represents a 5× improvement in second-derivative smoothness over Raw and a 40× improvement over Dummy.\n"
     )
     md_analysis.append("### 2.2 Inertial Ground Truth Correlation & Magnitude Fidelity (World Coordinates)")
     md_analysis.append(
-        f"- **Pitch Pearson r:** The Refined Triplet achieves **{stats['refined_triplet']['pearson_pitch'][0]:.3f} ± {stats['refined_triplet']['pearson_pitch'][1]:.3f}** across all 40 videos (surpassing Point Cloud `{stats['refined_cloud']['pearson_pitch'][0]:.3f}`, Dummy `{stats['dummy']['pearson_pitch'][0]:.3f}`, and Raw `{stats['raw']['pearson_pitch'][0]:.3f}`), reaching peak correlations above **+0.65** in non-swapped views (e.g. `P53_E2T1_45_ALT`: {p_p53:+.3f}, `P32_E1T2_90`: {p_p32:+.3f}, `P31_E2T2_45`: {p_p31:+.3f}, `P46_E1T1_90`: {p_p46:+.3f}, `P65_E3T2_Front`: {p_p65:+.3f})."
+        f"- **Pitch Pearson r:** The Refined Triplet achieves **{stats['refined_triplet']['pearson_pitch'][0]:.3f} ± {stats['refined_triplet']['pearson_pitch'][1]:.3f}** across all 40 videos (surpassing Point Cloud `{stats['refined_cloud']['pearson_pitch'][0]:.3f}`, Dummy `{stats['dummy']['pearson_pitch'][0]:.3f}`, and Raw `{stats['raw']['pearson_pitch'][0]:.3f}`), reaching peak correlations above **+0.65** in non-swapped views (e.g. {top5_examples})."
     )
     md_analysis.append(
         f"- **Pitch ROM Error & nRMSE:** The Refined Triplet achieves a near-unbiased Range of Motion error of **{stats['refined_triplet']['rom_pitch_error_percent'][0]:+.1f}% ± {stats['refined_triplet']['rom_pitch_error_percent'][1]:.1f}%** (compared to **{stats['dummy']['rom_pitch_error_percent'][0]:+.1f}%** underestimation in Dummy, **{stats['raw']['rom_pitch_error_percent'][0]:+.1f}%** in Raw, and **{stats['refined_cloud']['rom_pitch_error_percent'][0]:+.1f}%** inflation in Cloud) with a Pitch nRMSE of **{stats['refined_triplet']['nrmse_pitch_percent'][0]:.1f}% ± {stats['refined_triplet']['nrmse_pitch_percent'][1]:.1f}%** (vs {stats['refined_cloud']['nrmse_pitch_percent'][0]:.1f}% Cloud)."
@@ -327,15 +340,19 @@ def generate_reports() -> None:
         "2. **Camera Placement Guidelines:** For single-camera clinical gait assessments, **90° sagittal** or **45° oblique** viewpoints are strongly recommended over pure axial (0°/180°) views unless depth sensors (RGB-D / LiDAR) are available."
     )
     md_analysis.append(
-        "3. **Rejection of Naive 2D Lifting:** Comparison against the Dummy baseline proves that lifting 2D keypoints without dense 3D metric tracking introduces extreme acceleration noise (RMS Jerk > 1450 m/s³) and severe ROM underestimation (-31.7%)."
+        f"3. **Rejection of Naive 2D Lifting:** Comparison against the Dummy baseline proves that lifting 2D keypoints without dense 3D metric tracking introduces extreme acceleration noise (RMS Jerk {stats['dummy']['rms_jerk'][0]:.1f} m/s³) and severe ROM underestimation ({stats['dummy']['rom_pitch_error_percent'][0]:+.1f}%)."
     )
 
     analysis_content = "\n".join(md_analysis) + "\n"
     report_40_path = PROJECT_ROOT / "results" / "REPORT_40_VIDEOS_BENCHMARK.md"
-    report_40_path.write_text(
-        tables_content + "\n---\n\n" + analysis_content, encoding="utf-8"
-    )
-    print(f"Generated {report_40_path.resolve()}")
+    full_md = tables_content + "\n---\n\n" + analysis_content
+    if report_40_path.exists() and not force:
+        existing = report_40_path.read_text(encoding="utf-8")
+        if existing == full_md:
+            print(f"Report {report_40_path.name} is already up-to-date.")
+            return
+    report_40_path.write_text(full_md, encoding="utf-8")
+    print(f"Generated {report_40_path.name}")
 
 
 if __name__ == "__main__":
