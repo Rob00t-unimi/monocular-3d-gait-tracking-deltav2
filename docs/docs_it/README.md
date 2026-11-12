@@ -1,10 +1,16 @@
-# monocular-3d-gait-tracking-deltav2 (Gait360): Analisi Cinematica del Cammino 3D Monoculare a 360° via DELTAv2
+# Monocular-3d-gait-tracking-deltav2: Analisi Cinematica del Cammino 3D Monoculare a 360° via DELTAv2
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 [![Architettura: DELTAv2](https://img.shields.io/badge/Tracker%203D-DELTAv2%20%2B%20UniDepthV2-success.svg)](docs/03_EXPERIMENTAL_CHRONICLE_AND_MODELS.md)
 [![Test: 106 Superati](https://img.shields.io/badge/tests-106%20passed-brightgreen.svg)](tests/)
 
-**`monocular-3d-gait-tracking-deltav2`** (**Gait360**) è un framework markerless di analisi cinematica 3D del cammino da singola telecamera monoculare, in grado di estrarre la cinematica clinica della coscia (angolo di pitch flesso-estensione sul piano sagittale, accelerazioni lineari 3D, cadenza del passo e stabilità a corpo rigido) su **angolazioni di ripresa arbitrarie a 360°** (`90°` laterale puro, `45°` obliquo anteriore/posteriore, `0°` frontale in avvicinamento e `180°` posteriore in allontanamento), validato direttamente contro i segnali ground-truth di sensori inerziali indossabili sincronizzati **WitMotion IMU** su una coorte di **40 video stratificati** (39 soggetti).
+**`Monocular-3d-gait-tracking-deltav2`** è un framework markerless di analisi cinematica 3D del cammino da singola telecamera monoculare, in grado di estrarre la cinematica clinica della coscia (angolo di pitch flesso-estensione sul piano sagittale, accelerazioni lineari 3D, cadenza del passo e stabilità a corpo rigido) su **angolazioni di ripresa arbitrarie a 360°** (`90°` laterale puro, `45°` obliquo anteriore/posteriore, `0°` frontale in avvicinamento e `180°` posteriore in allontanamento), validato direttamente contro i segnali ground-truth di sensori inerziali indossabili sincronizzati **WitMotion IMU** su una coorte di **40 video stratificati** (39 soggetti).
+
+---
+
+<div align="center">
+  <h4> <a href="https://rob00t-unimi.github.io/monocular-3d-gait-tracking-deltav2/">Clicca qui per leggere la Documentazione Completa</a> </h4>
+</div>
 
 ---
 
@@ -30,6 +36,7 @@ monocular-3d-gait-tracking-deltav2/
 │   ├── 04_MATHEMATICAL_FORMULATION_AND_FIXES.md
 │   ├── 05_BENCHMARK_RESULTS_AND_CONCLUSIONS.md
 │   ├── 06_DUMMY_BASELINE_METHOD.md
+│   ├── CONCLUSIONS.md                     # Sintesi esecutiva: DELTAv2 vs Dummy sui 4 indicatori chiave
 │   ├── docs_it/                       # Mirror italiano della documentazione (README, capitoli, report)
 │   └── references/                    # PDF degli articoli scientifici di riferimento (DELTAv2, DELTA, SpaTrackerV2, VGGT)
 ├── examples/                          # 5 Jupyter Notebook interattivi passo-passo (01..05)
@@ -58,6 +65,7 @@ monocular-3d-gait-tracking-deltav2/
 │   ├── benchmark/                     # Valutatore multi-livello e generatore report deterministico
 │   └── ui/                            # 4 ispettori grafici interattivi Tkinter (2D, 3D e forme d'onda)
 └── tests/                             # 106 test unitari e d'integrazione automatizzati
+```
 
 ## 2. Interfaccia da Riga di Comando Unificata (`gait360`)
 
@@ -222,7 +230,7 @@ Avvia ispettori grafici interattivi per la validazione qualitativa dei keypoint,
 
 ---
 
-## 3. Sintesi Benchmark SOTA su 40 Video
+## 3. Sintesi Benchmark su 40 Video
 
 | Metrica (40 Video Stratificati) | 1. Dummy Tracker | 2. DELTAv2 Raw | 3. DELTAv2 Pruned Cloud | 4. DELTAv2 Refined Triplet |
 | :--- | :---: | :---: | :---: | :---: |
