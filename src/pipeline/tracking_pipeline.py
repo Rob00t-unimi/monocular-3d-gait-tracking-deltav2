@@ -92,7 +92,9 @@ def main():
     parser.add_argument("--csv", type=str, default="data/selected_inference_videos_40.csv", help="Path to benchmark CSV")
     parser.add_argument("--output_dir", type=str, default="data/inference_results/raw", help="Output directory for raw NPZ")
     parser.add_argument("--max_frames", type=int, default=250, help="Maximum video frames to track")
+    parser.add_argument("--tracker", choices=["deltav2", "dummy"], default="deltav2", help="Tracker architecture to run")
     parser.add_argument("--resume", action="store_true", default=True, help="Skip already processed videos")
+    parser.add_argument("--force", action="store_true", help="Force re-computation even if cached .npz exists")
     parser.add_argument("--device", type=str, default=None, help="Device to use ('cuda' or 'cpu')")
     parser.add_argument("--verbose", action="store_true", help="Enable verbose model logs")
     args = parser.parse_args()
@@ -103,9 +105,34 @@ def main():
     csv_path = PROJECT_ROOT / args.csv
     if not csv_path.exists():
         logger.error(f"Benchmark CSV not found at {csv_path}")
-        sys.exit(1)
+        return 1
+
+    if getattr(args, "force", False):
+        args.resume = False
 
     df_benchmark = pd.read_csv(csv_path)
+
+    if getattr(args, "tracker", "deltav2") == "dummy":
+        from src.inference.dummy_tracker import DummyTracker
+        from src.data_io.dataset_scanner import DatasetScanner
+        scanner = DatasetScanner(str(PROJECT_ROOT / "data"))
+        dummy = DummyTracker()
+        targets = df_benchmark[df_benchmark["video_name"] == args.video] if args.video else df_benchmark
+        if targets.empty:
+            logger.error(f"Video {args.video} not found in {args.csv}")
+            return 1
+        logger.info(f"=== Dummy 2D-Lift Baseline Tracker ({len(targets)} videos) ===")
+        for idx, (_, row) in enumerate(targets.iterrows(), 1):
+            v_name = row["video_name"]
+            p_int = int(str(row["person"]).replace("P", ""))
+            e_int = int(str(row["experiment"]).replace("E", ""))
+            t_int = int(str(row["test"]).replace("T", "").replace("ALT", ""))
+            is_alt = "_ALT" in v_name or str(row.get("condition", "Standard")) != "Standard"
+            v_info = scanner.get_video_info(p_int, e_int, t_int, str(row["angle"]), is_alt)
+            st = videos_state_manager.load(v_name)
+            res = dummy.track(v_info, st, start_frame=0, end_frame=int(row.get("frames_num", 100)) - 1)
+            logger.info(f"[{idx}/{len(targets)}] Dummy tracked {v_name}: shape={res['track3d'].shape}")
+        return 0
 
     # Initialize tracker lazily
     from src.inference.delta_v2_tracker import DeltaV2Tracker
@@ -118,8 +145,10 @@ def main():
         row = df_benchmark[df_benchmark["video_name"] == args.video]
         if row.empty:
             logger.error(f"Video {args.video} not found in {args.csv}")
-            sys.exit(1)
+            return 1
         v_path = Path(row.iloc[0]["video_path"])
+        if not v_path.is_absolute():
+            v_path = PROJECT_ROOT / v_path
         success = run_single_video(
             tracker=tracker,
             video_name=args.video,
@@ -128,7 +157,7 @@ def main():
             max_frames=args.max_frames,
             resume=args.resume
         )
-        sys.exit(0 if success else 1)
+        return 0 if success else 1
 
     elif args.batch:
         output_files = list(output_dir.glob("delta_v2_raw_*.npz"))
@@ -153,6 +182,8 @@ def main():
             for idx, (_, row) in enumerate(df_benchmark.iterrows(), 1):
                 v_name = row["video_name"]
                 v_path = Path(row["video_path"])
+                if not v_path.is_absolute():
+                    v_path = PROJECT_ROOT / v_path
                 is_already_done = args.resume and (output_dir / f"delta_v2_raw_{v_name}.npz").exists()
                 
                 # Estimate remaining time based on processed videos
@@ -187,7 +218,7 @@ def main():
             logger.warning("\n[INTERRUPTED] Execution interrupted by user.")
             logger.warning(f"Completed videos ({current_done}/{total_videos}) have been safely saved to disk.")
             logger.warning("You can resume at any time by re-running the same command: only remaining videos will be processed.")
-            sys.exit(0)
+            return 0
     else:
         logger.info("No action specified. Use --video <name> for single test or --batch to run the full benchmark.")
 

@@ -1,0 +1,1015 @@
+{
+    "metadata": {
+        "videos_count": 6,
+        "methods_count": 6,
+        "lowcut_hz": 0.5,
+        "highcut_hz": 2.9296874999999973,
+        "alignment": "Full 3D Kinematic World Alignment (Strict Matched Window)"
+    },
+    "method_statistics": {
+        "SpatialTrackerV2 + VGGT": {
+            "pearson_pitch": {
+                "mean": 0.5464168306126446,
+                "std": 0.25000248390986174,
+                "min": 0.09933545260857742,
+                "max": 0.7885312756014374
+            },
+            "abs_pearson_pitch": {
+                "mean": 0.5464168306126446,
+                "std": 0.25000248390986174,
+                "min": 0.09933545260857742,
+                "max": 0.7885312756014374
+            },
+            "pearson_accX": {
+                "mean": 0.35959784397107636,
+                "std": 0.25496105914842976,
+                "min": 0.0084635986042002,
+                "max": 0.6314792727179379
+            },
+            "dtw_pitch_norm": {
+                "mean": 0.26875782951344074,
+                "std": 0.0754914727392171,
+                "min": 0.13998831695322353,
+                "max": 0.3504353268066522
+            },
+            "dtw_acc3d_norm": {
+                "mean": 1.167269162483129,
+                "std": 0.2109845549494542,
+                "min": 0.9373645668468978,
+                "max": 1.5443425963373243
+            },
+            "nrmse_pitch_percent": {
+                "mean": 37.42601810843813,
+                "std": 11.26495795751886,
+                "min": 24.478892674860592,
+                "max": 52.14619382898543
+            },
+            "relative_deformation_percent": {
+                "mean": 56.74945587430863,
+                "std": 13.3185412111957,
+                "min": 41.47766160408232,
+                "max": 77.17060706828026
+            },
+            "rms_jerk": {
+                "mean": 30.426554915815103,
+                "std": 2.029491458529971,
+                "min": 27.457989775114545,
+                "max": 32.575510179792275
+            },
+            "cadence_error_percent": {
+                "mean": 38.00165060614312,
+                "std": 31.739438357373945,
+                "min": 5.714285714285714,
+                "max": 81.52173913043478
+            },
+            "identity_swaps": 0
+        },
+        "DELTAv2 (MediaPipe - Matched)": {
+            "pearson_pitch": {
+                "mean": 0.4295207219500279,
+                "std": 0.3984860046030521,
+                "min": -0.1494208654329996,
+                "max": 0.7656218205797094
+            },
+            "abs_pearson_pitch": {
+                "mean": 0.4793276770943611,
+                "std": 0.3232193220267937,
+                "min": 0.01442111012153512,
+                "max": 0.7656218205797094
+            },
+            "pearson_accX": {
+                "mean": 0.4492038322336449,
+                "std": 0.25549099401593667,
+                "min": 0.04821599255953054,
+                "max": 0.8352749399379356
+            },
+            "dtw_pitch_norm": {
+                "mean": 0.221039697674133,
+                "std": 0.07828431779107124,
+                "min": 0.1205588883911539,
+                "max": 0.31338830219309066
+            },
+            "dtw_acc3d_norm": {
+                "mean": 1.3085939815894476,
+                "std": 0.0774910624422451,
+                "min": 1.2397163739811494,
+                "max": 1.4334404740598334
+            },
+            "nrmse_pitch_percent": {
+                "mean": 221.8042394930834,
+                "std": 469.6998681400246,
+                "min": 21.92467612806381,
+                "max": 1180.499624203959
+            },
+            "relative_deformation_percent": {
+                "mean": 19.594241274890773,
+                "std": 7.625726036422577,
+                "min": 9.324222817867984,
+                "max": 27.963150616832205
+            },
+            "rms_jerk": {
+                "mean": 30.730757884882674,
+                "std": 12.969272095986602,
+                "min": 16.154694081744566,
+                "max": 47.687017538111164
+            },
+            "cadence_error_percent": {
+                "mean": 25.064548498731615,
+                "std": 18.771066013382214,
+                "min": 3.389830508474576,
+                "max": 59.036144578313255
+            },
+            "identity_swaps": 0
+        },
+        "DELTAv2 (Bounding Box - Matched)": {
+            "pearson_pitch": {
+                "mean": 0.23150766541924117,
+                "std": 0.2983156446613946,
+                "min": -0.21603071509899097,
+                "max": 0.5583056694296276
+            },
+            "abs_pearson_pitch": {
+                "mean": 0.30351790378557153,
+                "std": 0.2067835615447207,
+                "min": 0.04474384359644082,
+                "max": 0.5583056694296276
+            },
+            "pearson_accX": {
+                "mean": 0.49725133672705013,
+                "std": 0.21790532273862304,
+                "min": 0.10588963691359062,
+                "max": 0.7575117836571384
+            },
+            "dtw_pitch_norm": {
+                "mean": 0.31177809645772353,
+                "std": 0.09931441684620557,
+                "min": 0.21562803855313492,
+                "max": 0.44920274357531736
+            },
+            "dtw_acc3d_norm": {
+                "mean": 1.2914390776330713,
+                "std": 0.2119139860516067,
+                "min": 1.0040205405471754,
+                "max": 1.5544606755810264
+            },
+            "nrmse_pitch_percent": {
+                "mean": 28.880440860913,
+                "std": 2.830486563959887,
+                "min": 26.738441737993224,
+                "max": 34.031610358359046
+            },
+            "relative_deformation_percent": {
+                "mean": 24.497324842350878,
+                "std": 7.8446736867334,
+                "min": 14.96875180146535,
+                "max": 36.56915675666935
+            },
+            "rms_jerk": {
+                "mean": 176.72385255415944,
+                "std": 46.70625288776431,
+                "min": 100.6360415795774,
+                "max": 229.18143348621942
+            },
+            "cadence_error_percent": {
+                "mean": 52.81403276926104,
+                "std": 60.8299337934633,
+                "min": 2.2026431718061676,
+                "max": 158.65384615384613
+            },
+            "identity_swaps": 1
+        },
+        "DELTA (Chunked SVD - Matched)": {
+            "pearson_pitch": {
+                "mean": 0.5346286829655453,
+                "std": 0.3351575588210198,
+                "min": -0.14366878063191751,
+                "max": 0.7104907662977994
+            },
+            "abs_pearson_pitch": {
+                "mean": 0.5825182765095179,
+                "std": 0.21938763103942466,
+                "min": 0.14366878063191751,
+                "max": 0.7104907662977994
+            },
+            "pearson_accX": {
+                "mean": 0.4819308342627234,
+                "std": 0.11719582544998115,
+                "min": 0.33627055541250234,
+                "max": 0.6734923978570089
+            },
+            "dtw_pitch_norm": {
+                "mean": 0.23455080567669465,
+                "std": 0.052919617984658766,
+                "min": 0.16052285930341587,
+                "max": 0.297303356402571
+            },
+            "dtw_acc3d_norm": {
+                "mean": 1.2415817794118287,
+                "std": 0.17641891261455267,
+                "min": 1.0187546932445162,
+                "max": 1.4719588443216332
+            },
+            "nrmse_pitch_percent": {
+                "mean": 33.412814043230924,
+                "std": 11.961109737388112,
+                "min": 19.82172260727886,
+                "max": 46.74380957397277
+            },
+            "relative_deformation_percent": {
+                "mean": 46.43142804850316,
+                "std": 31.018919808208917,
+                "min": 20.717908195839005,
+                "max": 97.25343592931762
+            },
+            "rms_jerk": {
+                "mean": 476.29552723426804,
+                "std": 133.8011716100865,
+                "min": 277.99028350359646,
+                "max": 641.3235482924283
+            },
+            "cadence_error_percent": {
+                "mean": 32.210408382338095,
+                "std": 24.52408839429802,
+                "min": 2.7777777777777777,
+                "max": 63.96396396396396
+            },
+            "identity_swaps": 0
+        },
+        "Dummy (2D Lift - Matched)": {
+            "pearson_pitch": {
+                "mean": 0.22725643809713594,
+                "std": 0.18091136928876336,
+                "min": -0.020846890261284726,
+                "max": 0.45489692675084575
+            },
+            "abs_pearson_pitch": {
+                "mean": 0.23420540151756422,
+                "std": 0.16994383132625915,
+                "min": 0.020846890261284726,
+                "max": 0.45489692675084575
+            },
+            "pearson_accX": {
+                "mean": 0.39439860104753904,
+                "std": 0.27136394016202925,
+                "min": 0.10904762779807475,
+                "max": 0.8052141065455137
+            },
+            "dtw_pitch_norm": {
+                "mean": 0.27811469452331516,
+                "std": 0.054886188937305354,
+                "min": 0.21332657358525725,
+                "max": 0.37212665985555504
+            },
+            "dtw_acc3d_norm": {
+                "mean": 1.0673351980620236,
+                "std": 0.13839118397348263,
+                "min": 0.9168560925089769,
+                "max": 1.3160832102273423
+            },
+            "nrmse_pitch_percent": {
+                "mean": 28.869615852075338,
+                "std": 2.515431220168128,
+                "min": 24.050389431951274,
+                "max": 30.952972469018565
+            },
+            "relative_deformation_percent": {
+                "mean": 4.741419756676927e-13,
+                "std": 1.0905374439101089e-13,
+                "min": 3.402677278084753e-13,
+                "max": 5.854043137626877e-13
+            },
+            "rms_jerk": {
+                "mean": 1236.5700623486252,
+                "std": 387.60990239656246,
+                "min": 764.2496131977699,
+                "max": 1836.973418571797
+            },
+            "cadence_error_percent": {
+                "mean": 19.619013993909682,
+                "std": 21.106061924510637,
+                "min": 0.0,
+                "max": 43.56846473029046
+            },
+            "identity_swaps": 0
+        },
+        "DELTAv2 (MediaPipe - Full Sequence)": {
+            "pearson_pitch": {
+                "mean": 0.18369778322969088,
+                "std": 0.21719657064780393,
+                "min": -0.233623901825123,
+                "max": 0.39019866550404675
+            },
+            "abs_pearson_pitch": {
+                "mean": 0.2615724171713986,
+                "std": 0.07459253090962734,
+                "min": 0.1862860982255016,
+                "max": 0.39019866550404675
+            },
+            "pearson_accX": {
+                "mean": 0.40131020439320836,
+                "std": 0.12124215091317499,
+                "min": 0.2748756062093024,
+                "max": 0.5831777646680649
+            },
+            "dtw_pitch_norm": {
+                "mean": 0.23363759185537228,
+                "std": 0.019759727969388213,
+                "min": 0.20543442460005915,
+                "max": 0.2578809584176353
+            },
+            "dtw_acc3d_norm": {
+                "mean": 1.165708574513681,
+                "std": 0.10004664679078663,
+                "min": 1.036712271767263,
+                "max": 1.2567883641925865
+            },
+            "nrmse_pitch_percent": {
+                "mean": 34.61148699708496,
+                "std": 9.693150400313776,
+                "min": 26.484422871840675,
+                "max": 51.214567155364755
+            },
+            "relative_deformation_percent": {
+                "mean": 26.872417859737567,
+                "std": 5.590602652813826,
+                "min": 17.219556631298584,
+                "max": 32.5183908319001
+            },
+            "rms_jerk": {
+                "mean": 35.61801359384173,
+                "std": 6.926496059069531,
+                "min": 27.89320293370405,
+                "max": 45.75207819371252
+            },
+            "cadence_error_percent": {
+                "mean": 23.44417141519799,
+                "std": 12.7216899240675,
+                "min": 12.698412698412698,
+                "max": 46.7479674796748
+            },
+            "identity_swaps": 1
+        }
+    },
+    "evaluations_by_video": {
+        "P1_E1T1_45_ALT.mp4": {
+            "category": "45\u00b0 Oblique (Alternative Clothing)",
+            "angle": "45",
+            "matched_frames": 90,
+            "full_frames": 179,
+            "methods": {
+                "SpatialTrackerV2 + VGGT": {
+                    "temporal_lag": -17,
+                    "pearson_pitch": 0.09933545260857742,
+                    "abs_pearson_pitch": 0.09933545260857742,
+                    "pearson_accX": 0.46289825479879415,
+                    "abs_pearson_accX": 0.46289825479879415,
+                    "pearson_accY": 0.4444244605811244,
+                    "pearson_accZ": 0.05927811963171189,
+                    "dtw_pitch_norm": 0.3504353268066522,
+                    "dtw_acc3d_norm": 1.0222829525314439,
+                    "nrmse_pitch_percent": 46.79167675609831,
+                    "relative_deformation_percent": 57.04697062086035,
+                    "sigma_rigidity_m": 0.007700082623316575,
+                    "rms_jerk": 30.444470332518023,
+                    "cadence_error_percent": 45.81673306772908,
+                    "has_identity_swap": false
+                },
+                "DELTAv2 (MediaPipe - Matched)": {
+                    "temporal_lag": -8,
+                    "pearson_pitch": 0.01442111012153512,
+                    "abs_pearson_pitch": 0.01442111012153512,
+                    "pearson_accX": 0.524323013357521,
+                    "abs_pearson_accX": 0.524323013357521,
+                    "pearson_accY": 0.01589396563521468,
+                    "pearson_accZ": 0.22308479962800526,
+                    "dtw_pitch_norm": 0.31338830219309066,
+                    "dtw_acc3d_norm": 1.4334404740598334,
+                    "nrmse_pitch_percent": 34.07598232194348,
+                    "relative_deformation_percent": 20.31084022288654,
+                    "sigma_rigidity_m": 0.006620936999525424,
+                    "rms_jerk": 45.28259964906496,
+                    "cadence_error_percent": 59.036144578313255,
+                    "has_identity_swap": false
+                },
+                "DELTAv2 (MediaPipe - Full Sequence)": {
+                    "temporal_lag": 60,
+                    "pearson_pitch": -0.233623901825123,
+                    "abs_pearson_pitch": 0.233623901825123,
+                    "pearson_accX": 0.29604296927560536,
+                    "abs_pearson_accX": 0.29604296927560536,
+                    "pearson_accY": 0.12819146284887267,
+                    "pearson_accZ": 0.5265261115189691,
+                    "dtw_pitch_norm": 0.2381326011554964,
+                    "dtw_acc3d_norm": 1.036712271767263,
+                    "nrmse_pitch_percent": 41.178345439608286,
+                    "relative_deformation_percent": 24.645997500344095,
+                    "sigma_rigidity_m": 0.008133775367189544,
+                    "rms_jerk": 42.188987030095674,
+                    "cadence_error_percent": 46.7479674796748,
+                    "has_identity_swap": true
+                },
+                "DELTAv2 (Bounding Box - Matched)": {
+                    "temporal_lag": 38,
+                    "pearson_pitch": 0.11904735906645063,
+                    "abs_pearson_pitch": 0.11904735906645063,
+                    "pearson_accX": 0.7575117836571384,
+                    "abs_pearson_accX": 0.7575117836571384,
+                    "pearson_accY": 0.4818300193142477,
+                    "pearson_accZ": 0.3408392457618154,
+                    "dtw_pitch_norm": 0.21562803855313492,
+                    "dtw_acc3d_norm": 1.4921209548404608,
+                    "nrmse_pitch_percent": 26.790751312530496,
+                    "relative_deformation_percent": 29.39934452443166,
+                    "sigma_rigidity_m": 0.013524310553587467,
+                    "rms_jerk": 229.18143348621942,
+                    "cadence_error_percent": 2.2026431718061676,
+                    "has_identity_swap": false
+                },
+                "DELTA (Chunked SVD - Matched)": {
+                    "temporal_lag": -12,
+                    "pearson_pitch": 0.6668382963925525,
+                    "abs_pearson_pitch": 0.6668382963925525,
+                    "pearson_accX": 0.33627055541250234,
+                    "abs_pearson_accX": 0.33627055541250234,
+                    "pearson_accY": 0.4345451701642134,
+                    "pearson_accZ": 0.5068717138849737,
+                    "dtw_pitch_norm": 0.16052285930341587,
+                    "dtw_acc3d_norm": 1.357479444260269,
+                    "nrmse_pitch_percent": 19.988223052963612,
+                    "relative_deformation_percent": 33.47667715310373,
+                    "sigma_rigidity_m": 0.01660142789925408,
+                    "rms_jerk": 499.148231687425,
+                    "cadence_error_percent": 40.0,
+                    "has_identity_swap": false
+                },
+                "Dummy (2D Lift - Matched)": {
+                    "temporal_lag": -34,
+                    "pearson_pitch": 0.3964252089945221,
+                    "abs_pearson_pitch": 0.3964252089945221,
+                    "pearson_accX": 0.10904762779807475,
+                    "abs_pearson_accX": 0.10904762779807475,
+                    "pearson_accY": 0.04005562108194467,
+                    "pearson_accZ": 0.2193811695994565,
+                    "dtw_pitch_norm": 0.24620867410639435,
+                    "dtw_acc3d_norm": 1.0824044457829367,
+                    "nrmse_pitch_percent": 29.595127235089542,
+                    "relative_deformation_percent": 5.084042096420348e-13,
+                    "sigma_rigidity_m": 8.90118688066741e-17,
+                    "rms_jerk": 1836.973418571797,
+                    "cadence_error_percent": 43.56846473029046,
+                    "has_identity_swap": false
+                }
+            }
+        },
+        "P2_E1T1_90.mp4": {
+            "category": "90\u00b0 Sagittal View",
+            "angle": "90",
+            "matched_frames": 90,
+            "full_frames": 238,
+            "methods": {
+                "SpatialTrackerV2 + VGGT": {
+                    "temporal_lag": 22,
+                    "pearson_pitch": 0.5285343860699898,
+                    "abs_pearson_pitch": 0.5285343860699898,
+                    "pearson_accX": 0.11432887014886065,
+                    "abs_pearson_accX": 0.11432887014886065,
+                    "pearson_accY": 0.589032344289633,
+                    "pearson_accZ": 0.6859043255670293,
+                    "dtw_pitch_norm": 0.2702387857115152,
+                    "dtw_acc3d_norm": 0.9373645668468978,
+                    "nrmse_pitch_percent": 24.478892674860592,
+                    "relative_deformation_percent": 41.47766160408232,
+                    "sigma_rigidity_m": 0.005003357228313997,
+                    "rms_jerk": 27.457989775114545,
+                    "cadence_error_percent": 66.84491978609626,
+                    "has_identity_swap": false
+                },
+                "DELTAv2 (MediaPipe - Matched)": {
+                    "temporal_lag": -16,
+                    "pearson_pitch": 0.5102343275712427,
+                    "abs_pearson_pitch": 0.5102343275712427,
+                    "pearson_accX": 0.40729717450877145,
+                    "abs_pearson_accX": 0.40729717450877145,
+                    "pearson_accY": 0.6459400770273237,
+                    "pearson_accZ": 0.4335803052918893,
+                    "dtw_pitch_norm": 0.20925689760108027,
+                    "dtw_acc3d_norm": 1.2397163739811494,
+                    "nrmse_pitch_percent": 38.73280274342433,
+                    "relative_deformation_percent": 27.963150616832205,
+                    "sigma_rigidity_m": 0.010478732940484257,
+                    "rms_jerk": 28.59106759584598,
+                    "cadence_error_percent": 25.423728813559322,
+                    "has_identity_swap": false
+                },
+                "DELTAv2 (MediaPipe - Full Sequence)": {
+                    "temporal_lag": -16,
+                    "pearson_pitch": 0.39019866550404675,
+                    "abs_pearson_pitch": 0.39019866550404675,
+                    "pearson_accX": 0.2748756062093024,
+                    "abs_pearson_accX": 0.2748756062093024,
+                    "pearson_accY": 0.4146953286320057,
+                    "pearson_accZ": 0.1791489595830755,
+                    "dtw_pitch_norm": 0.20543442460005915,
+                    "dtw_acc3d_norm": 1.1890695797017956,
+                    "nrmse_pitch_percent": 51.214567155364755,
+                    "relative_deformation_percent": 32.5183908319001,
+                    "sigma_rigidity_m": 0.01211451589096354,
+                    "rms_jerk": 33.77986026102221,
+                    "cadence_error_percent": 29.03225806451613,
+                    "has_identity_swap": false
+                },
+                "DELTAv2 (Bounding Box - Matched)": {
+                    "temporal_lag": -11,
+                    "pearson_pitch": 0.4086231903391556,
+                    "abs_pearson_pitch": 0.4086231903391556,
+                    "pearson_accX": 0.45717410623882027,
+                    "abs_pearson_accX": 0.45717410623882027,
+                    "pearson_accY": 0.5740956183641291,
+                    "pearson_accZ": 0.743278765893564,
+                    "dtw_pitch_norm": 0.4074671149350422,
+                    "dtw_acc3d_norm": 1.1262172848269942,
+                    "nrmse_pitch_percent": 29.78976376787382,
+                    "relative_deformation_percent": 36.56915675666935,
+                    "sigma_rigidity_m": 0.01842589500148233,
+                    "rms_jerk": 178.42721318128952,
+                    "cadence_error_percent": 10.05586592178771,
+                    "has_identity_swap": false
+                },
+                "DELTA (Chunked SVD - Matched)": {
+                    "temporal_lag": -1,
+                    "pearson_pitch": 0.7104907662977994,
+                    "abs_pearson_pitch": 0.7104907662977994,
+                    "pearson_accX": 0.46661302896472134,
+                    "abs_pearson_accX": 0.46661302896472134,
+                    "pearson_accY": 0.4068802051317819,
+                    "pearson_accZ": 0.36024238274450227,
+                    "dtw_pitch_norm": 0.27887186168263844,
+                    "dtw_acc3d_norm": 1.1344920380273282,
+                    "nrmse_pitch_percent": 19.82172260727886,
+                    "relative_deformation_percent": 97.25343592931762,
+                    "sigma_rigidity_m": 0.3320245902964762,
+                    "rms_jerk": 595.318948038616,
+                    "cadence_error_percent": 2.7777777777777777,
+                    "has_identity_swap": false
+                },
+                "Dummy (2D Lift - Matched)": {
+                    "temporal_lag": -29,
+                    "pearson_pitch": 0.08068893210448903,
+                    "abs_pearson_pitch": 0.08068893210448903,
+                    "pearson_accX": 0.23923454762676194,
+                    "abs_pearson_accX": 0.23923454762676194,
+                    "pearson_accY": 0.18590075498457234,
+                    "pearson_accZ": 0.24824570935968385,
+                    "dtw_pitch_norm": 0.2885648719969844,
+                    "dtw_acc3d_norm": 1.3160832102273423,
+                    "nrmse_pitch_percent": 28.981942487624924,
+                    "relative_deformation_percent": 5.792449706434772e-13,
+                    "sigma_rigidity_m": 8.772045226304275e-17,
+                    "rms_jerk": 1004.1313808344437,
+                    "cadence_error_percent": 35.46511627906977,
+                    "has_identity_swap": false
+                }
+            }
+        },
+        "P3_E1T2_45.mp4": {
+            "category": "45\u00b0 Oblique View",
+            "angle": "45",
+            "matched_frames": 90,
+            "full_frames": 164,
+            "methods": {
+                "SpatialTrackerV2 + VGGT": {
+                    "temporal_lag": 0,
+                    "pearson_pitch": 0.7596618921616463,
+                    "abs_pearson_pitch": 0.7596618921616463,
+                    "pearson_accX": 0.3427062886071338,
+                    "abs_pearson_accX": 0.3427062886071338,
+                    "pearson_accY": 0.18486213949510624,
+                    "pearson_accZ": 0.20890930427958837,
+                    "dtw_pitch_norm": 0.264167100888433,
+                    "dtw_acc3d_norm": 1.1419631924265805,
+                    "nrmse_pitch_percent": 27.923544035497933,
+                    "relative_deformation_percent": 62.59004383315612,
+                    "sigma_rigidity_m": 0.003995893074116651,
+                    "rms_jerk": 32.575510179792275,
+                    "cadence_error_percent": 5.714285714285714,
+                    "has_identity_swap": false
+                },
+                "DELTAv2 (MediaPipe - Matched)": {
+                    "temporal_lag": -40,
+                    "pearson_pitch": 0.7039815472692093,
+                    "abs_pearson_pitch": 0.7039815472692093,
+                    "pearson_accX": 0.5070248286232419,
+                    "abs_pearson_accX": 0.5070248286232419,
+                    "pearson_accY": 0.2964556845542818,
+                    "pearson_accZ": 0.7469163638204757,
+                    "dtw_pitch_norm": 0.21655111149387016,
+                    "dtw_acc3d_norm": 1.2543382946499397,
+                    "nrmse_pitch_percent": 21.92467612806381,
+                    "relative_deformation_percent": 26.244269178343036,
+                    "sigma_rigidity_m": 0.012500419179871552,
+                    "rms_jerk": 26.099776179418892,
+                    "cadence_error_percent": 14.814814814814813,
+                    "has_identity_swap": false
+                },
+                "DELTAv2 (MediaPipe - Full Sequence)": {
+                    "temporal_lag": -32,
+                    "pearson_pitch": 0.24372026209751763,
+                    "abs_pearson_pitch": 0.24372026209751763,
+                    "pearson_accX": 0.4682333870476916,
+                    "abs_pearson_accX": 0.4682333870476916,
+                    "pearson_accY": 0.5177723045775274,
+                    "pearson_accZ": 0.2391644321862243,
+                    "dtw_pitch_norm": 0.21435424073751064,
+                    "dtw_acc3d_norm": 1.2301729541220459,
+                    "nrmse_pitch_percent": 32.07845367226602,
+                    "relative_deformation_percent": 29.268183694379672,
+                    "sigma_rigidity_m": 0.014150016816520007,
+                    "rms_jerk": 33.697531454448054,
+                    "cadence_error_percent": 15.65217391304348,
+                    "has_identity_swap": false
+                },
+                "DELTAv2 (Bounding Box - Matched)": {
+                    "temporal_lag": 40,
+                    "pearson_pitch": 0.04474384359644082,
+                    "abs_pearson_pitch": 0.04474384359644082,
+                    "pearson_accX": 0.6085439154732094,
+                    "abs_pearson_accX": 0.6085439154732094,
+                    "pearson_accY": 0.883926919952025,
+                    "pearson_accZ": 0.46916830120140807,
+                    "dtw_pitch_norm": 0.44920274357531736,
+                    "dtw_acc3d_norm": 1.0040205405471754,
+                    "nrmse_pitch_percent": 34.031610358359046,
+                    "relative_deformation_percent": 24.5516117736699,
+                    "sigma_rigidity_m": 0.0177577333517782,
+                    "rms_jerk": 176.33323923438752,
+                    "cadence_error_percent": 69.0,
+                    "has_identity_swap": false
+                },
+                "DELTA (Chunked SVD - Matched)": {
+                    "temporal_lag": 5,
+                    "pearson_pitch": 0.6974286216639085,
+                    "abs_pearson_pitch": 0.6974286216639085,
+                    "pearson_accX": 0.5294260953494402,
+                    "abs_pearson_accX": 0.5294260953494402,
+                    "pearson_accY": 0.35302946236433336,
+                    "pearson_accZ": 0.32269606412053364,
+                    "dtw_pitch_norm": 0.1939759916692372,
+                    "dtw_acc3d_norm": 1.1153808189950598,
+                    "nrmse_pitch_percent": 38.224150247075535,
+                    "relative_deformation_percent": 72.35364373314222,
+                    "sigma_rigidity_m": 0.2622779788201755,
+                    "rms_jerk": 641.3235482924283,
+                    "cadence_error_percent": 7.079646017699115,
+                    "has_identity_swap": false
+                },
+                "Dummy (2D Lift - Matched)": {
+                    "temporal_lag": -24,
+                    "pearson_pitch": 0.21705566534440113,
+                    "abs_pearson_pitch": 0.21705566534440113,
+                    "pearson_accX": 0.24975872648319178,
+                    "abs_pearson_accX": 0.24975872648319178,
+                    "pearson_accY": 0.2653742051579445,
+                    "pearson_accZ": 0.2308796755178785,
+                    "dtw_pitch_norm": 0.21332657358525725,
+                    "dtw_acc3d_norm": 0.9168560925089769,
+                    "nrmse_pitch_percent": 28.888199944746102,
+                    "relative_deformation_percent": 5.854043137626877e-13,
+                    "sigma_rigidity_m": 5.724815888334977e-17,
+                    "rms_jerk": 1509.8464793161072,
+                    "cadence_error_percent": 37.142857142857146,
+                    "has_identity_swap": false
+                }
+            }
+        },
+        "P7_E1T1_90.mp4": {
+            "category": "90\u00b0 Sagittal View",
+            "angle": "90",
+            "matched_frames": 90,
+            "full_frames": 216,
+            "methods": {
+                "SpatialTrackerV2 + VGGT": {
+                    "temporal_lag": -4,
+                    "pearson_pitch": 0.7885312756014374,
+                    "abs_pearson_pitch": 0.7885312756014374,
+                    "pearson_accX": 0.0084635986042002,
+                    "abs_pearson_accX": 0.0084635986042002,
+                    "pearson_accY": 0.26130799469623167,
+                    "pearson_accZ": 0.5781449831938592,
+                    "dtw_pitch_norm": 0.13998831695322353,
+                    "dtw_acc3d_norm": 1.2317608667166784,
+                    "nrmse_pitch_percent": 30.656701176061656,
+                    "relative_deformation_percent": 77.17060706828026,
+                    "sigma_rigidity_m": 0.01023234013544748,
+                    "rms_jerk": 32.5702729495197,
+                    "cadence_error_percent": 8.547008547008547,
+                    "has_identity_swap": false
+                },
+                "DELTAv2 (MediaPipe - Matched)": {
+                    "temporal_lag": -35,
+                    "pearson_pitch": 0.7656218205797094,
+                    "abs_pearson_pitch": 0.7656218205797094,
+                    "pearson_accX": 0.04821599255953054,
+                    "abs_pearson_accX": 0.04821599255953054,
+                    "pearson_accY": 0.3682295953051775,
+                    "pearson_accZ": 0.4023230535301264,
+                    "dtw_pitch_norm": 0.1205588883911539,
+                    "dtw_acc3d_norm": 1.3381572621950912,
+                    "nrmse_pitch_percent": 26.086925683179267,
+                    "relative_deformation_percent": 22.132831285287324,
+                    "sigma_rigidity_m": 0.004774397622598756,
+                    "rms_jerk": 47.687017538111164,
+                    "cadence_error_percent": 3.389830508474576,
+                    "has_identity_swap": false
+                },
+                "DELTAv2 (MediaPipe - Full Sequence)": {
+                    "temporal_lag": -70,
+                    "pearson_pitch": 0.21047812396379376,
+                    "abs_pearson_pitch": 0.21047812396379376,
+                    "pearson_accX": 0.3266943483910064,
+                    "abs_pearson_accX": 0.3266943483910064,
+                    "pearson_accY": 0.5848198386383354,
+                    "pearson_accZ": 0.1006119844213289,
+                    "dtw_pitch_norm": 0.2578809584176353,
+                    "dtw_acc3d_norm": 1.238642449799925,
+                    "nrmse_pitch_percent": 27.978128223152236,
+                    "relative_deformation_percent": 26.22609270615368,
+                    "sigma_rigidity_m": 0.006123441957616394,
+                    "rms_jerk": 45.75207819371252,
+                    "cadence_error_percent": 19.867549668874172,
+                    "has_identity_swap": false
+                },
+                "DELTAv2 (Bounding Box - Matched)": {
+                    "temporal_lag": -34,
+                    "pearson_pitch": 0.47435664518276344,
+                    "abs_pearson_pitch": 0.47435664518276344,
+                    "pearson_accX": 0.10588963691359062,
+                    "abs_pearson_accX": 0.10588963691359062,
+                    "pearson_accY": 0.45872301572984003,
+                    "pearson_accZ": 0.351524982259455,
+                    "dtw_pitch_norm": 0.23415396170862357,
+                    "dtw_acc3d_norm": 1.5544606755810264,
+                    "nrmse_pitch_percent": 26.9487800782218,
+                    "relative_deformation_percent": 23.831144781959896,
+                    "sigma_rigidity_m": 0.010509425648861993,
+                    "rms_jerk": 155.37006953556985,
+                    "cadence_error_percent": 5.042016806722689,
+                    "has_identity_swap": false
+                },
+                "DELTA (Chunked SVD - Matched)": {
+                    "temporal_lag": 26,
+                    "pearson_pitch": 0.6890470488387772,
+                    "abs_pearson_pitch": 0.6890470488387772,
+                    "pearson_accX": 0.4939941947778935,
+                    "abs_pearson_accX": 0.4939941947778935,
+                    "pearson_accY": 0.438185224019522,
+                    "pearson_accZ": 0.5089007324455711,
+                    "dtw_pitch_norm": 0.2600569872809995,
+                    "dtw_acc3d_norm": 1.4719588443216332,
+                    "nrmse_pitch_percent": 45.27144152165345,
+                    "relative_deformation_percent": 28.425298006934316,
+                    "sigma_rigidity_m": 0.01583148740603552,
+                    "rms_jerk": 456.4116870331116,
+                    "cadence_error_percent": 26.923076923076923,
+                    "has_identity_swap": false
+                },
+                "Dummy (2D Lift - Matched)": {
+                    "temporal_lag": -16,
+                    "pearson_pitch": 0.45489692675084575,
+                    "abs_pearson_pitch": 0.45489692675084575,
+                    "pearson_accX": 0.31156286757838214,
+                    "abs_pearson_accX": 0.31156286757838214,
+                    "pearson_accY": 0.493770241668343,
+                    "pearson_accZ": 0.535456411863566,
+                    "dtw_pitch_norm": 0.2533818668686648,
+                    "dtw_acc3d_norm": 1.0101823606935636,
+                    "nrmse_pitch_percent": 30.749063544021617,
+                    "relative_deformation_percent": 3.446113818545993e-13,
+                    "sigma_rigidity_m": 5.064548224152159e-17,
+                    "rms_jerk": 1263.1537703241745,
+                    "cadence_error_percent": 0.8130081300813009,
+                    "has_identity_swap": false
+                }
+            }
+        },
+        "P8_E3T1_Rear.mp4": {
+            "category": "Posterior (Rear) View",
+            "angle": "Rear",
+            "matched_frames": 60,
+            "full_frames": 219,
+            "methods": {
+                "SpatialTrackerV2 + VGGT": {
+                    "temporal_lag": 2,
+                    "pearson_pitch": 0.4873218555264982,
+                    "abs_pearson_pitch": 0.4873218555264982,
+                    "pearson_accX": 0.5977107789495315,
+                    "abs_pearson_accX": 0.5977107789495315,
+                    "pearson_accY": 0.09173156071996563,
+                    "pearson_accZ": 0.4458767466839289,
+                    "dtw_pitch_norm": 0.2493692100555957,
+                    "dtw_acc3d_norm": 1.12590080003985,
+                    "nrmse_pitch_percent": 52.14619382898543,
+                    "relative_deformation_percent": 59.43525871418918,
+                    "sigma_rigidity_m": 0.004911133893030577,
+                    "rms_jerk": 28.842463566797615,
+                    "cadence_error_percent": 19.565217391304348,
+                    "has_identity_swap": false
+                },
+                "DELTAv2 (MediaPipe - Matched)": {
+                    "temporal_lag": -24,
+                    "pearson_pitch": 0.7322863915914706,
+                    "abs_pearson_pitch": 0.7322863915914706,
+                    "pearson_accX": 0.8352749399379356,
+                    "abs_pearson_accX": 0.8352749399379356,
+                    "pearson_accY": 0.47883829657153537,
+                    "pearson_accZ": 0.053458866411705414,
+                    "dtw_pitch_norm": 0.15721266687798477,
+                    "dtw_acc3d_norm": 1.241057880615388,
+                    "nrmse_pitch_percent": 29.50542587793056,
+                    "relative_deformation_percent": 11.590133528127547,
+                    "sigma_rigidity_m": 0.005269799416313787,
+                    "rms_jerk": 16.154694081744566,
+                    "cadence_error_percent": 27.722772277227726,
+                    "has_identity_swap": false
+                },
+                "DELTAv2 (MediaPipe - Full Sequence)": {
+                    "temporal_lag": -33,
+                    "pearson_pitch": 0.1862860982255016,
+                    "abs_pearson_pitch": 0.1862860982255016,
+                    "pearson_accX": 0.5831777646680649,
+                    "abs_pearson_accX": 0.5831777646680649,
+                    "pearson_accY": 0.363297217189674,
+                    "pearson_accZ": 0.16231740758111643,
+                    "dtw_pitch_norm": 0.24381029283484065,
+                    "dtw_acc3d_norm": 1.2567883641925865,
+                    "nrmse_pitch_percent": 28.735004620277792,
+                    "relative_deformation_percent": 31.35628579434929,
+                    "sigma_rigidity_m": 0.01786317243535307,
+                    "rms_jerk": 27.89320293370405,
+                    "cadence_error_percent": 12.698412698412698,
+                    "has_identity_swap": false
+                },
+                "DELTAv2 (Bounding Box - Matched)": {
+                    "temporal_lag": -8,
+                    "pearson_pitch": 0.5583056694296276,
+                    "abs_pearson_pitch": 0.5583056694296276,
+                    "pearson_accX": 0.5462833539462436,
+                    "abs_pearson_accX": 0.5462833539462436,
+                    "pearson_accY": 0.37002668763753654,
+                    "pearson_accZ": -0.05798226148013733,
+                    "dtw_pitch_norm": 0.23604363042159537,
+                    "dtw_acc3d_norm": 1.3364805102740362,
+                    "nrmse_pitch_percent": 26.738441737993224,
+                    "relative_deformation_percent": 17.663939415909116,
+                    "sigma_rigidity_m": 0.009467065796394078,
+                    "rms_jerk": 100.6360415795774,
+                    "cadence_error_percent": 158.65384615384613,
+                    "has_identity_swap": false
+                },
+                "DELTA (Chunked SVD - Matched)": {
+                    "temporal_lag": 13,
+                    "pearson_pitch": 0.5876361452321521,
+                    "abs_pearson_pitch": 0.5876361452321521,
+                    "pearson_accX": 0.39178873321477375,
+                    "abs_pearson_accX": 0.39178873321477375,
+                    "pearson_accY": 0.5620791756676895,
+                    "pearson_accZ": 0.4415394757941497,
+                    "dtw_pitch_norm": 0.297303356402571,
+                    "dtw_acc3d_norm": 1.3514248376221647,
+                    "nrmse_pitch_percent": 30.427537256441294,
+                    "relative_deformation_percent": 26.361605272682016,
+                    "sigma_rigidity_m": 0.01503589825887193,
+                    "rms_jerk": 277.99028350359646,
+                    "cadence_error_percent": 63.96396396396396,
+                    "has_identity_swap": false
+                },
+                "Dummy (2D Lift - Matched)": {
+                    "temporal_lag": 2,
+                    "pearson_pitch": 0.23531878564984252,
+                    "abs_pearson_pitch": 0.23531878564984252,
+                    "pearson_accX": 0.6515737302533099,
+                    "abs_pearson_accX": 0.6515737302533099,
+                    "pearson_accY": 0.7540033829633072,
+                    "pearson_accZ": 0.43137059332648514,
+                    "dtw_pitch_norm": 0.29507952072703514,
+                    "dtw_acc3d_norm": 1.0947814461061482,
+                    "nrmse_pitch_percent": 30.952972469018565,
+                    "relative_deformation_percent": 4.869192502948817e-13,
+                    "sigma_rigidity_m": 6.284189097073283e-17,
+                    "rms_jerk": 764.2496131977699,
+                    "cadence_error_percent": 0.7246376811594203,
+                    "has_identity_swap": false
+                }
+            }
+        },
+        "P11_E3T1_Front.mp4": {
+            "category": "Frontal View",
+            "angle": "Front",
+            "matched_frames": 60,
+            "full_frames": 229,
+            "methods": {
+                "SpatialTrackerV2 + VGGT": {
+                    "temporal_lag": -9,
+                    "pearson_pitch": 0.6151161217077183,
+                    "abs_pearson_pitch": 0.6151161217077183,
+                    "pearson_accX": 0.6314792727179379,
+                    "abs_pearson_accX": 0.6314792727179379,
+                    "pearson_accY": 0.3525609015643458,
+                    "pearson_accZ": 0.454276548409441,
+                    "dtw_pitch_norm": 0.3383482366652248,
+                    "dtw_acc3d_norm": 1.5443425963373243,
+                    "nrmse_pitch_percent": 42.55910017912485,
+                    "relative_deformation_percent": 42.77619340528356,
+                    "sigma_rigidity_m": 0.006472953365068801,
+                    "rms_jerk": 30.668622691148478,
+                    "cadence_error_percent": 81.52173913043478,
+                    "has_identity_swap": false
+                },
+                "DELTAv2 (MediaPipe - Matched)": {
+                    "temporal_lag": 27,
+                    "pearson_pitch": -0.1494208654329996,
+                    "abs_pearson_pitch": 0.1494208654329996,
+                    "pearson_accX": 0.37308704441486923,
+                    "abs_pearson_accX": 0.37308704441486923,
+                    "pearson_accY": 0.6070850094327342,
+                    "pearson_accZ": 0.5806259446416895,
+                    "dtw_pitch_norm": 0.3092703194876183,
+                    "dtw_acc3d_norm": 1.3448536040352834,
+                    "nrmse_pitch_percent": 1180.499624203959,
+                    "relative_deformation_percent": 9.324222817867984,
+                    "sigma_rigidity_m": 0.004593635406763659,
+                    "rms_jerk": 20.56939226511048,
+                    "cadence_error_percent": 20.0,
+                    "has_identity_swap": false
+                },
+                "DELTAv2 (MediaPipe - Full Sequence)": {
+                    "temporal_lag": 24,
+                    "pearson_pitch": 0.3051274514124086,
+                    "abs_pearson_pitch": 0.3051274514124086,
+                    "pearson_accX": 0.4588371507675794,
+                    "abs_pearson_accX": 0.4588371507675794,
+                    "pearson_accY": 0.26658581454222635,
+                    "pearson_accZ": 0.27856853670594206,
+                    "dtw_pitch_norm": 0.24221303338669176,
+                    "dtw_acc3d_norm": 1.0428658274984706,
+                    "nrmse_pitch_percent": 26.484422871840675,
+                    "relative_deformation_percent": 17.219556631298584,
+                    "sigma_rigidity_m": 0.007660409786145112,
+                    "rms_jerk": 30.39642169006784,
+                    "cadence_error_percent": 16.666666666666664,
+                    "has_identity_swap": false
+                },
+                "DELTAv2 (Bounding Box - Matched)": {
+                    "temporal_lag": 5,
+                    "pearson_pitch": -0.21603071509899097,
+                    "abs_pearson_pitch": 0.21603071509899097,
+                    "pearson_accX": 0.5081052241332983,
+                    "abs_pearson_accX": 0.5081052241332983,
+                    "pearson_accY": 0.280106299672375,
+                    "pearson_accZ": 0.539085701842433,
+                    "dtw_pitch_norm": 0.3281730895526281,
+                    "dtw_acc3d_norm": 1.2353344997287337,
+                    "nrmse_pitch_percent": 28.983297910499633,
+                    "relative_deformation_percent": 14.96875180146535,
+                    "sigma_rigidity_m": 0.008405616862170442,
+                    "rms_jerk": 220.39511830791295,
+                    "cadence_error_percent": 71.9298245614035,
+                    "has_identity_swap": true
+                },
+                "DELTA (Chunked SVD - Matched)": {
+                    "temporal_lag": -20,
+                    "pearson_pitch": -0.14366878063191751,
+                    "abs_pearson_pitch": 0.14366878063191751,
+                    "pearson_accX": 0.6734923978570089,
+                    "abs_pearson_accX": 0.6734923978570089,
+                    "pearson_accY": 0.6051462699835155,
+                    "pearson_accZ": 0.5055575560839224,
+                    "dtw_pitch_norm": 0.21657377772130604,
+                    "dtw_acc3d_norm": 1.0187546932445162,
+                    "nrmse_pitch_percent": 46.74380957397277,
+                    "relative_deformation_percent": 20.717908195839005,
+                    "sigma_rigidity_m": 0.013637917817567046,
+                    "rms_jerk": 387.5804648504311,
+                    "cadence_error_percent": 52.51798561151079,
+                    "has_identity_swap": false
+                },
+                "Dummy (2D Lift - Matched)": {
+                    "temporal_lag": -5,
+                    "pearson_pitch": -0.020846890261284726,
+                    "abs_pearson_pitch": 0.020846890261284726,
+                    "pearson_accX": 0.8052141065455137,
+                    "abs_pearson_accX": 0.8052141065455137,
+                    "pearson_accY": 0.7577249280828968,
+                    "pearson_accZ": 0.5668533671678438,
+                    "dtw_pitch_norm": 0.37212665985555504,
+                    "dtw_acc3d_norm": 0.9837036330531732,
+                    "nrmse_pitch_percent": 24.050389431951274,
+                    "relative_deformation_percent": 3.402677278084753e-13,
+                    "sigma_rigidity_m": 4.6973579719293404e-17,
+                    "rms_jerk": 1041.0657118474583,
+                    "cadence_error_percent": 0.0,
+                    "has_identity_swap": false
+                }
+            }
+        }
+    }
+}

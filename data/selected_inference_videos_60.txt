@@ -1,0 +1,101 @@
+================================================================================
+  3D GAIT TRACKING: 60 BENCHMARK INFERENCE VIDEOS SELECTION
+  Data Generazione: 2026-10-30 17:27:10
+  Totale Video Selezionati: 60 / 60 (58 Soggetti Unici + 2 Duplicati)
+  Sensore IMU: Gamba Destra (T1, T2, T1ALT, T2ALT)
+
+  NOTA STRUTTURALE RIPARTIZIONE 45° (5-5-5-5):
+  I video a 45 gradi (DX->SX e SX->DX) si suddividono ciascuno in 2 ulteriori
+  perspective subcategories according to depth trajectory direction:
+    1. Front-Oblique (Diagonal approach toward the camera)
+    2. Rear-Oblique (Diagonal recession away from the camera)
+  The final 45-deg selection is balanced across 5-5-5-5 quotas:
+    - 45° DX -> SX: 5 Front-Obliquo + 5 Rear-Obliquo (10 video)
+    - 45° SX -> DX: 5 Front-Obliquo + 5 Rear-Obliquo (10 video)
+================================================================================
+
+### 90° Sagittale (Right -> Left) (10 / 10)
+--------------------------------------------------------------------------------
+ 1. P25_E2T2_90.mp4        | Subject: P25  | Keypoints: Repositioned (Operator) | GT: Optimal   (ROM 71.9°, 0.71Hz) | Standard
+ 2. P27_E2T2_90.mp4        | Subject: P27  | Keypoints: Repositioned (Operator) | GT: Optimal   (ROM 61.6°, 0.8Hz) | Standard
+ 3. P29_E1T1_90.mp4        | Subject: P29  | Keypoints: Repositioned (Operator) | GT: Good    (ROM 89.0°, 1.16Hz) | Standard
+ 4. P33_E1T1_90.mp4        | Subject: P33  | Keypoints: Repositioned (Operator) | GT: Optimal   (ROM 70.7°, 0.9Hz) | Standard
+ 5. P41_E2T2_90.mp4        | Subject: P41  | Keypoints: Repositioned (Operator) | GT: Good    (ROM 81.9°, 1.0Hz) | Standard
+ 6. P46_E1T1_90.mp4        | Subject: P46  | Keypoints: Repositioned (Operator) | GT: Optimal   (ROM 66.5°, 0.9Hz) | Standard
+ 7. P52_E1T1_90.mp4        | Subject: P52  | Keypoints: Repositioned (Operator) | GT: Good    (ROM 88.1°, 0.94Hz) | Standard
+ 8. P55_E1T1_90.mp4        | Subject: P55  | Keypoints: Repositioned (Operator) | GT: Optimal   (ROM 75.0°, 0.87Hz) | Standard
+ 9. P56_E1T1_90_ALT.mp4    | Subject: P56  | Keypoints: Repositioned (Operator) | GT: Optimal   (ROM 71.0°, 0.82Hz) | Alt (Abito Largo)
+10. P9_E2T2_90_ALT.mp4     | Subject: P9   | Keypoints: Repositioned (Operator) | GT: Optimal   (ROM 56.7°, 0.97Hz) | Alt (Abito Largo)
+
+### 90° Sagittale (Left -> Right) (10 / 10)
+--------------------------------------------------------------------------------
+ 1. P13_E1T2_90.mp4        | Subject: P13  | Keypoints: Automatico             | GT: Imprecise (ROM 104.1°, 1.0Hz) | Standard
+ 2. P1_E2T1_90.mp4         | Subject: P1   | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 98.4°, 1.12Hz) | Standard
+ 3. P21_E1T2_90.mp4        | Subject: P21  | Keypoints: Repositioned (Operator) | GT: Good    (ROM 84.8°, 0.8Hz) | Standard
+ 4. P24_E1T2_90.mp4        | Subject: P24  | Keypoints: Repositioned (Operator) | GT: Good    (ROM 83.3°, 0.89Hz) | Standard
+ 5. P28_E2T1_90.mp4        | Subject: P28  | Keypoints: Repositioned (Operator) | GT: Good    (ROM 87.7°, 0.92Hz) | Standard
+ 6. P32_E1T2_90.mp4        | Subject: P32  | Keypoints: Repositioned (Operator) | GT: Good    (ROM 83.8°, 0.91Hz) | Standard
+ 7. P3_E1T2_90.mp4         | Subject: P3   | Keypoints: Repositioned (Operator) | GT: Good    (ROM 80.6°, 0.87Hz) | Standard
+ 8. P4_E2T1_90.mp4         | Subject: P4   | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 91.0°, 1.06Hz) | Standard
+ 9. P55_E1T2_90_ALT.mp4    | Subject: P55  | Keypoints: Repositioned (Operator) | GT: Optimal   (ROM 67.6°, 0.76Hz) | Alt (Abito Largo)
+10. P58_E1T2_90.mp4        | Subject: P58  | Keypoints: Repositioned (Operator) | GT: Good    (ROM 86.3°, 0.87Hz) | Standard
+
+### 45° Obliquo (Right -> Left) (10 / 10)
+# Bilanciamento: 5 Front-Obliquo (Approaching) + 5 Rear-Obliquo (Receding)
+--------------------------------------------------------------------------------
+-- Sottocategoria: 45° DX->SX Front-Obliquo (Approaching) (5 video) --
+ 1. P11_E2T2_45.mp4        | Subject: P11  | Keypoints: Repositioned (Operator) | GT: Good    (ROM 82.1°, 0.82Hz) | Standard
+ 2. P12_E2T2_45.mp4        | Subject: P12  | Keypoints: Repositioned (Operator) | GT: Good    (ROM 84.2°, 0.94Hz) | Standard
+ 3. P31_E2T2_45.mp4        | Subject: P31  | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 102.7°, 1.21Hz) | Standard
+ 4. P35_E2T2_45.mp4        | Subject: P35  | Keypoints: Repositioned (Operator) | GT: Good    (ROM 87.8°, 1.2Hz) | Standard
+ 5. P51_E2T2_45.mp4        | Subject: P51  | Keypoints: Repositioned (Operator) | GT: Good    (ROM 77.0°, 0.79Hz) | Standard
+
+-- Sottocategoria: 45° DX->SX Rear-Obliquo (Receding) (5 video) --
+ 6. P38_E1T1_45.mp4        | Subject: P38  | Keypoints: Repositioned (Operator) | GT: Good    (ROM 85.7°, 0.97Hz) | Standard
+ 7. P39_E1T1_45.mp4        | Subject: P39  | Keypoints: Repositioned (Operator) | GT: Good    (ROM 85.7°, 1.44Hz) | Standard
+ 8. P43_E1T1_45.mp4        | Subject: P43  | Keypoints: Repositioned (Operator) | GT: Good    (ROM 86.7°, 0.82Hz) | Standard
+ 9. P54_E1T1_45.mp4        | Subject: P54  | Keypoints: Repositioned (Operator) | GT: Good    (ROM 79.8°, 0.7Hz) | Standard
+10. P57_E1T1_45.mp4        | Subject: P57  | Keypoints: Repositioned (Operator) | GT: Good    (ROM 87.6°, 0.9Hz) | Standard
+
+### 45° Obliquo (Left -> Right) (10 / 10)
+# Bilanciamento: 5 Front-Obliquo (Approaching) + 5 Rear-Obliquo (Receding)
+--------------------------------------------------------------------------------
+-- Sottocategoria: 45° SX->DX Front-Obliquo (Approaching) (5 video) --
+ 1. P23_E1T2_45.mp4        | Subject: P23  | Keypoints: Automatico             | GT: Imprecise (ROM 102.9°, 1.0Hz) | Standard
+ 2. P36_E1T2_45.mp4        | Subject: P36  | Keypoints: Repositioned (Operator) | GT: Good    (ROM 87.1°, 0.74Hz) | Standard
+ 3. P59_E1T2_45.mp4        | Subject: P59  | Keypoints: Repositioned (Operator) | GT: Good    (ROM 86.1°, 0.72Hz) | Standard
+ 4. P5_E1T2_45_ALT.mp4     | Subject: P5   | Keypoints: Repositioned (Operator) | GT: Good    (ROM 83.3°, 0.97Hz) | Alt (Abito Largo)
+ 5. P7_E2T2_45_ALT.mp4     | Subject: P7   | Keypoints: Repositioned (Operator) | GT: Good    (ROM 84.3°, 1.12Hz) | Alt (Abito Largo)
+
+-- Sottocategoria: 45° SX->DX Rear-Obliquo (Receding) (5 video) --
+ 6. P20_E2T1_45_ALT.mp4    | Subject: P20  | Keypoints: Automatico             | GT: Imprecise (ROM 92.2°, 0.69Hz) | Alt (Abito Largo)
+ 7. P44_E2T1_45.mp4        | Subject: P44  | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 114.0°, 0.87Hz) | Standard
+ 8. P53_E2T1_45_ALT.mp4    | Subject: P53  | Keypoints: Repositioned (Operator) | GT: Good    (ROM 88.6°, 0.85Hz) | Alt (Abito Largo)
+ 9. P63_E2T1_45.mp4        | Subject: P63  | Keypoints: Repositioned (Operator) | GT: Good    (ROM 75.9°, 0.74Hz) | Standard
+10. P6_E2T1_45.mp4         | Subject: P6   | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 97.9°, 0.8Hz) | Standard
+
+### Frontale (Approaching) (10 / 10)
+--------------------------------------------------------------------------------
+ 1. P10_E3T2_Front.mp4     | Subject: P10  | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 143.6°, 0.78Hz) | Standard
+ 2. P22_E3T1_Front.mp4     | Subject: P22  | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 160.5°, 0.79Hz) | Standard
+ 3. P26_E3T1_Front.mp4     | Subject: P26  | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 106.4°, 1.03Hz) | Standard
+ 4. P30_E3T1_Front.mp4     | Subject: P30  | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 104.4°, 1.03Hz) | Standard
+ 5. P34_E3T1_Front.mp4     | Subject: P34  | Keypoints: Repositioned (Operator) | GT: Optimal   (ROM 72.3°, 0.76Hz) | Standard
+ 6. P37_E3T1_Front.mp4     | Subject: P37  | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 101.5°, 1.12Hz) | Standard
+ 7. P40_E3T1_Front.mp4     | Subject: P40  | Keypoints: Repositioned (Operator) | GT: Good    (ROM 85.7°, 0.8Hz) | Standard
+ 8. P64_E3T1_Front.mp4     | Subject: P64  | Keypoints: Repositioned (Operator) | GT: Good    (ROM 85.4°, 0.73Hz) | Standard
+ 9. P65_E3T2_Front.mp4     | Subject: P65  | Keypoints: Repositioned (Operator) | GT: Good    (ROM 88.7°, 0.74Hz) | Standard
+10. P8_E3T1_Front.mp4      | Subject: P8   | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 139.1°, 0.97Hz) | Standard
+
+### Posteriore (Receding) (10 / 10)
+--------------------------------------------------------------------------------
+ 1. P13_E3T1_Rear.mp4      | Subject: P13  | Keypoints: Automatico             | GT: Imprecise (ROM 103.1°, 0.93Hz) | Standard
+ 2. P2_E3T1_Rear.mp4       | Subject: P2   | Keypoints: Automatico             | GT: Good    (ROM 89.7°, 0.99Hz) | Standard
+ 3. P45_E3T1_Rear.mp4      | Subject: P45  | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 108.9°, 0.7Hz) | Standard
+ 4. P47_E3T1_Rear.mp4      | Subject: P47  | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 106.8°, 0.74Hz) | Standard
+ 5. P48_E3T1_Rear.mp4      | Subject: P48  | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 91.1°, 0.7Hz) | Standard
+ 6. P49_E3T1_Rear.mp4      | Subject: P49  | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 100.1°, 0.85Hz) | Standard
+ 7. P50_E3T1_Rear.mp4      | Subject: P50  | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 99.0°, 0.74Hz) | Standard
+ 8. P60_E3T1_Rear.mp4      | Subject: P60  | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 95.1°, 0.87Hz) | Standard
+ 9. P61_E3T1_Rear.mp4      | Subject: P61  | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 108.6°, 0.81Hz) | Standard
+10. P62_E3T1_Rear.mp4      | Subject: P62  | Keypoints: Repositioned (Operator) | GT: Imprecise (ROM 94.8°, 0.93Hz) | Standard

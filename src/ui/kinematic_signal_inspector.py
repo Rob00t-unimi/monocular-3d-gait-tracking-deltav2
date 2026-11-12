@@ -28,6 +28,8 @@ class UnifiedSignalBrowser:
 
     def load_and_process(self):
         csv_path = Path(self.file_list[self.index])
+        if not csv_path.is_absolute():
+            csv_path = Path(__file__).resolve().parents[2] / csv_path
         df_raw = self.orchestrator.loader.load(csv_path)
         if df_raw is None:
             return None, None
@@ -126,3 +128,6 @@ def inspect_signals(mode="all", data_dir="data"):
 
     browser = UnifiedSignalBrowser(signals_to_show, invalid_set, lowcut, highcut)
     plt.show()
+
+
+UnifiedSignalInspector = UnifiedSignalBrowser
