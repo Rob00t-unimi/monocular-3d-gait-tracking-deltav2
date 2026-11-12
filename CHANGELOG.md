@@ -9,8 +9,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [1.0.0] - 2026-11-10
 
 ### Added
-- **Unified Parametric CLI (`src/cli.py`, `gait360`):** Consolidated all pipeline stages and GUI launchers into seven clean subcommands (`scan`, `select-cohort`, `preprocess`, `track`, `prune`, `evaluate`, `inspect`), eliminating standalone script clutter.
-- **5-Chapter Technical Documentation (`docs/01_*.md`..`docs/05_*.md`) & 5 End-to-End Jupyter Notebooks (`examples/01_*.ipynb`..`examples/05_*.ipynb`):** Complete step-by-step documentation and interactive tutorials covering every stage of the pipeline.
+- **Unified Parametric CLI (`src/cli.py`, `gait360`):** Consolidated all pipeline stages and GUI launchers into eight clean subcommands (`scan`, `select-cohort`, `preprocess`, `track`, `prune`, `evaluate`, `align-dataset`, `inspect`), eliminating standalone script clutter.
+- **Dataset Aligner Tool (`src/data_io/dataset_aligner.py`, `gait360 align-dataset`):** Added automated validation and perspective classification of raw video files and 2D OpenPose keypoint JSONs against `dataset_manifest.json`.
+- **5-Chapter Technical Documentation (`docs/01_*.md`..`docs/05_*.md`) & 5 End-to-End Jupyter Notebooks (`examples/01_*.ipynb`..`examples/05_*.ipynb`):** Complete step-by-step documentation, Italian mirror (`docs/docs_it/`), and interactive tutorials covering every stage of the pipeline.
+- **Executive Benchmark Summary (`docs/CONCLUSIONS.md`):** Comprehensive comparative analysis synthesizing DELTAv2 vs Dummy baseline across 4 core indicators (Cadence, Pitch ROM, Cross-Correlation, and 3D Trajectory Rigidity).
+- **Interactive Documentation Hub (`index.html`):** Single-page web documentation application for GitHub Pages with dynamic Markdown rendering, KaTeX mathematical typesetting, and bilingual IT/EN interface.
 - **40-Video Stratified SOTA Benchmark (`src/benchmark/`):** Full 4-tier evaluation (`Dummy Tracker`, `DELTAv2 Raw`, `DELTAv2 Pruned Cloud`, `DELTAv2 Refined Triplet`) across 8 viewing perspectives (`90°`, `45°`, `0°`, `180°`) and 16-video matched multi-model comparison (`SpaTrackerV2`, `DELTA v1`, `DELTAv2`).
 
 ### Fixed
