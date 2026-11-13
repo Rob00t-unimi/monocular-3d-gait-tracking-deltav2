@@ -25,7 +25,7 @@ This document provides a high-level executive summary of the benchmark results e
 * **Dummy Baseline:** `30.0%` (9 / 30 videos)
 * **DELTAv2 (Refined Triplet):** **`10.0%`** (3 / 30 videos)
 * **Verdict:** **66.7% reduction in identity swaps (3× higher reliability).**  
-  Dense anatomical anchor sampling (MediaPipe body silhouette + pelvis) coupled with the *Geometric Pruner* preserves tracking focus on the ipsilateral thigh during swing phase, where 2D detectors consistently jump to the opposite leg.
+  Dense thigh + context query sampling (`987`-point `28×28` bbox grid fallback in the v1.0.0 40-video run; MediaPipe `1003`-point silhouette sampling pending re-evaluation) coupled with the *Geometric Pruner* preserves tracking focus on the ipsilateral thigh during swing phase, where 2D detectors consistently jump to the opposite leg.
 
 ### 4. Sagittal Waveform Correlation: **+48% Higher Fidelity**
 * **Metric:** **Pitch Pearson $r$** (linear waveform correlation against ground-truth IMU pitch).

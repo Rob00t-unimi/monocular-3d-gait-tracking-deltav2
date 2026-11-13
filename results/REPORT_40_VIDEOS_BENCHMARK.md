@@ -2,6 +2,7 @@
 ### *Full 40-Video Gait360 Evaluation with Kinematic World Alignment & Cross-Correlation Biomechanical Validation*
 
 > **Evaluated Videos:** 40 / 40 (Gait360 Dataset)  
+> **Context Sampling Note:** All 40 cached trajectories in this v1.0.0 report used the `987`-point (`3 + 200 + 784` `28×28` bounding-box grid) fallback rather than the `1003`-point MediaPipe body silhouette mask due to a silent fallback in `DeltaV2Tracker`. Since the 16-video ablation showed lower pre-pruning jerk with MediaPipe (`146.9` vs `176.7 m/s³`), these results represent the `bbox_grid` fallback baseline pending re-evaluation with MediaPipe enabled.  
 > **Compared Methods:** DELTAv2 (Refined Triplet via Geometric Pruning), DELTAv2 (Raw Baseline), Dummy Baseline (2D OpenPose Keypoint Lift)  
 > **Ground Truth:** Right Leg Thigh Inertial Sensor (Gait360 IMU, World Coordinate System)  
 > **Biomechanical Swap Disentanglement:**  
@@ -193,6 +194,6 @@ A primary methodological insight emerging from our multi-view analysis concerns 
 
 ## 3. Architectural Conclusions & Clinical Recommendations
 
-1. **Monocular 3D Tracking Validity:** DELTAv2 coupled with MediaPipe Silhouette Sampling and Geometric Pruning extracts continuous, low-jerk 3D thigh kinematics from uncalibrated monocular videos without chunk boundary discontinuities.
+1. **Monocular 3D Tracking Validity:** DELTAv2 (even under the `987`-point `bbox_grid` fallback) coupled with Geometric Pruning extracts continuous, low-jerk 3D thigh kinematics from uncalibrated monocular videos without chunk boundary discontinuities; enabling MediaPipe silhouette sampling (`1003` points) is expected to further improve stability.
 2. **Camera Placement Guidelines:** For single-camera clinical gait assessments, **90° sagittal** or **45° oblique** viewpoints are strongly recommended over pure axial (0°/180°) views unless depth sensors (RGB-D / LiDAR) are available.
 3. **Rejection of Naive 2D Lifting:** Comparison against the Dummy baseline proves that lifting 2D keypoints without dense 3D metric tracking introduces extreme acceleration noise (RMS Jerk 1452.0 m/s³) and severe ROM underestimation (-31.7%).

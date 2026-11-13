@@ -1,7 +1,8 @@
-﻿# 📊 Tabelle Metriche Complete del Benchmark: DELTAv2 vs Baseline Dummy
+# 📊 Tabelle Metriche Complete del Benchmark: DELTAv2 vs Baseline Dummy
 ### *Valutazione Completa su 40 Video Gait360 con Allineamento Cinematico al Mondo e Validazione Biomeccanica via Cross-Correlazione*
 
 > **Video Valutati:** 40 / 40 (Dataset Gait360)  
+> **Nota sul Campionamento di Contesto:** Tutte le 40 traiettorie salvate in questo report v1.0.0 hanno utilizzato il fallback a griglia `28×28` da `987` punti (`3 + 200 + 784`) invece della maschera silhouette MediaPipe (`1003` punti) a causa di un fallback silenzioso in `DeltaV2Tracker`. Poiché l'ablazione su 16 video mostrava un jerk pre-pruning inferiore con MediaPipe (`146.9` vs `176.7 m/s³`), questi risultati rappresentano la baseline `bbox_grid` in attesa di ri-esecuzione con MediaPipe attivo.  
 > **Metodi a Confronto:** DELTAv2 (Tripletta Rifinita via Geometric Pruning), DELTAv2 (Baseline Raw), Baseline Dummy (Lift 2D Keypoint OpenPose)  
 > **Ground Truth:** Sensore Inerziale Coscia Destra (Gait360 IMU, Sistema di Coordinate World)  
 > **Distinzione Biomeccanica degli Scambi (Disentanglement):**  
@@ -193,7 +194,7 @@ A primary methodological insight emerging from our multi-view analysis concerns 
 
 ## 3. Architectural Conclusions & Clinical Recommendations
 
-1. **Monocular 3D Tracking Validity:** DELTAv2 coupled with MediaPipe Silhouette Sampling and Geometric Pruning extracts continuous, low-jerk 3D thigh kinematics from uncalibrated monocular videos without chunk boundary discontinuities.
+1. **Monocular 3D Tracking Validity:** DELTAv2 (anche nella configurazione fallback `bbox_grid` da `987` punti) abbinato al Geometric Pruning estrae una cinematica 3D continua e a basso jerk senza discontinuità di chunking; il ripristino della silhouette MediaPipe (`1003` punti) è previsto come confronto migliorativo.
 2. **Camera Placement Guidelines:** For single-camera clinical gait assessments, **90° sagittal** or **45° oblique** viewpoints are strongly recommended over pure axial (0°/180°) views unless depth sensors (RGB-D / LiDAR) are available.
 3. **Rejection of Naive 2D Lifting:** Comparison against the Dummy baseline proves that lifting 2D keypoints without dense 3D metric tracking introduces extreme acceleration noise (RMS Jerk > 1450 m/s³) and severe ROM underestimation (-31.7%).
 

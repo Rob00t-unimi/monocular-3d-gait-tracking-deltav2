@@ -134,7 +134,7 @@ Seleziona in modo deterministico la coorte di benchmark a 40 video bilanciata e 
 ---
 
 #### 3. `preprocess` — Segmentazione Visiva 2D & Selezione Frame di Riferimento
-Esegue il pre-processing di visione 2D: rileva la silhouette del soggetto con MediaPipe, individua il picco massimo di spread orizzontale del ginocchio nella fase di oscillazione terminale ($|x_{\text{RKnee}} - x_{\text{LKnee}}|$) come frame di riferimento ottimale ed estrae il triangolo anatomico di ancoraggio femorale a 3 punti.
+Esegue il pre-processing di visione 2D: individua il picco massimo di apertura orizzontale tra le ginocchia ($|x_{\text{RKnee}} - x_{\text{LKnee}}|$) come frame di riferimento ottimale ed estrae il triangolo anatomico di ancoraggio femorale a 3 punti tramite gradienti di Sobel e fit Huber. (Nota: il campionamento della silhouette MediaPipe fa parte dello Stadio 3 in `DeltaV2Tracker`, che nel run v1.0.0 sui 40 video è ricaduto sul fallback a griglia `28×28 = 784` punti; vedi `results/REPORT_40_VIDEOS_BENCHMARK.md`.)
 - **Sintassi:** `python -m src.cli preprocess [opzioni]`
 - **Parametri:**
   - `--config <path>` *(default: `configs/default_config.yaml`)*: Percorso della configurazione YAML della pipeline.

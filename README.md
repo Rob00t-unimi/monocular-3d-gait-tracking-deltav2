@@ -134,7 +134,7 @@ Deterministically selects the balanced, stratified 40-video benchmark cohort acr
 ---
 
 #### 3. `preprocess` — 2D Vision Segmentation & Reference Frame Selection
-Performs 2D vision preprocessing: detects subject silhouettes using MediaPipe, identifies the terminal swing maximum horizontal knee spread peak ($|x_{\text{RKnee}} - x_{\text{LKnee}}|$) as the optimal reference frame, and extracts the 3-point anatomical femur anchor triangle.
+Performs 2D vision preprocessing: identifies the terminal swing maximum horizontal knee spread peak ($|x_{\text{RKnee}} - x_{\text{LKnee}}|$) as the optimal reference frame and extracts the 3-point anatomical femur anchor triangle via Sobel edge detection and Huber fitting. (Note: MediaPipe silhouette sampling belongs to Stage 3 `DeltaV2Tracker` context sampling, which fell back to a 784-point `28×28` bounding-box grid in the 40-video v1.0.0 run; see `results/REPORT_40_VIDEOS_BENCHMARK.md`.)
 - **Syntax:** `python -m src.cli preprocess [options]`
 - **Parameters:**
   - `--config <path>` *(default: `configs/default_config.yaml`)*: Path to pipeline YAML configuration.
