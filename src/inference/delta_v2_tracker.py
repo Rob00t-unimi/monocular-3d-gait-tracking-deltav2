@@ -34,6 +34,10 @@ logger = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 DELTA_ROOT = (PROJECT_ROOT / "models" / "DELTAv2").resolve()
 UNIDEPTH_ROOT = (DELTA_ROOT / "submodules" / "UniDepth").resolve()
+MEDIAPIPE_POSE_MODEL_URL = (
+    "https://storage.googleapis.com/mediapipe-models/pose_landmarker/"
+    "pose_landmarker_full/float16/latest/pose_landmarker_full.task"
+)
 
 # Add submodule paths
 for p in [str(DELTA_ROOT), str(UNIDEPTH_ROOT), str(PROJECT_ROOT)]:
@@ -99,8 +103,12 @@ class DeltaV2Tracker(Base3DTracker):
         target_thigh_points: int = 200,
         body_context_points: int = 800,
         coarse_to_fine: bool = True,
+        context_mode: str = "mediapipe",
+        allow_fallback: bool = False,
         verbose: bool = False
     ):
+        if context_mode not in {"mediapipe", "bbox_grid"}:
+            raise ValueError(f"Unsupported context_mode '{context_mode}'. Choose 'mediapipe' or 'bbox_grid'.")
         self.device = torch.device(device if device else ("cuda" if torch.cuda.is_available() else "cpu"))
         self.checkpoint_path = Path(checkpoint_path) if checkpoint_path else (DELTA_ROOT / "checkpoints" / "densetrack3dv2.pth")
         self.depth_batch_size = depth_batch_size
@@ -109,6 +117,8 @@ class DeltaV2Tracker(Base3DTracker):
         self.target_thigh_points = target_thigh_points
         self.body_context_points = body_context_points
         self.coarse_to_fine = coarse_to_fine
+        self.context_mode = context_mode
+        self.allow_fallback = allow_fallback
         self.verbose = verbose
 
         self.predictor = None
@@ -181,45 +191,56 @@ class DeltaV2Tracker(Base3DTracker):
         u[mask], v[mask] = 1 - u[mask], 1 - v[mask]
         return u[:, None] * p1 + v[:, None] * p2 + (1 - u - v)[:, None] * p3
 
-    def _sample_body_context_points(self, ref_frame_rgb: np.ndarray, kps_init: np.ndarray) -> np.ndarray:
-        """Samples context points from the body silhouette via MediaPipe (or bounding box fallback)."""
-        body_pts = np.zeros((0, 2))
-        if HAS_MEDIAPIPE:
-            try:
-                task_path = self._ensure_mediapipe_asset()
-                base_options = python.BaseOptions(model_asset_path=str(task_path))
-                options = vision.PoseLandmarkerOptions(
-                    base_options=base_options,
-                    running_mode=vision.RunningMode.IMAGE,
-                    output_segmentation_masks=True
-                )
-                with vision.PoseLandmarker.create_from_options(options) as landmarker:
-                    mp_img = mp.Image(image_format=mp.ImageFormat.SRGB, data=ref_frame_rgb)
-                    res = landmarker.detect(mp_img)
-                    if res.segmentation_masks:
-                        mask = res.segmentation_masks[0].numpy_view() > 0.5
-                        y, x = np.where(mask.squeeze())
-                        if len(x) > 0:
-                            all_pix = np.stack([x, y], axis=1)
-                            body_pts = all_pix[np.random.choice(len(all_pix), min(len(all_pix), self.body_context_points), replace=False)]
-            except Exception as e:
-                logger.warning(f"MediaPipe segmentation fallback: {e}")
+    def _sample_mediapipe_silhouette(self, ref_frame_rgb: np.ndarray) -> np.ndarray:
+        """Samples context points strictly inside the MediaPipe body segmentation mask."""
+        if not HAS_MEDIAPIPE:
+            raise RuntimeError("MediaPipe is not installed; install 'mediapipe' or use context_mode='bbox_grid'.")
 
-        # Fallback to bounding box grid if MediaPipe produced no points
-        if len(body_pts) == 0:
-            x_min, x_max = np.min(kps_init[:, 0]), np.max(kps_init[:, 0])
-            y_min, y_max = np.min(kps_init[:, 1]), np.max(kps_init[:, 1])
-            dx, dy = x_max - x_min, y_max - y_min
-            mid_x = (x_min + x_max) / 2.0
-            b_y1, b_y2 = y_min + (-17.0 * dy), y_min + (10.0 * dy)
-            b_w = 20.0 * dx
-            n_side = int(np.sqrt(self.body_context_points))
-            xs = np.linspace(max(0, mid_x - b_w / 2.0), min(ref_frame_rgb.shape[1], mid_x + b_w / 2.0), n_side)
-            ys = np.linspace(max(0, b_y1), min(ref_frame_rgb.shape[0], b_y2), n_side)
-            xv, yv = np.meshgrid(xs, ys)
-            body_pts = np.stack([xv.flatten(), yv.flatten()], axis=1)
+        task_path = self._ensure_mediapipe_asset()
+        base_options = python.BaseOptions(model_asset_path=str(task_path))
+        options = vision.PoseLandmarkerOptions(
+            base_options=base_options,
+            running_mode=vision.RunningMode.IMAGE,
+            output_segmentation_masks=True
+        )
+        with vision.PoseLandmarker.create_from_options(options) as landmarker:
+            mp_img = mp.Image(image_format=mp.ImageFormat.SRGB, data=ref_frame_rgb)
+            res = landmarker.detect(mp_img)
+            if not res.segmentation_masks:
+                raise RuntimeError("MediaPipe PoseLandmarker returned no segmentation mask.")
+            mask = res.segmentation_masks[0].numpy_view() > 0.5
+            y, x = np.where(mask.squeeze())
+            if len(x) == 0:
+                raise RuntimeError("MediaPipe segmentation mask is empty.")
+            all_pix = np.stack([x, y], axis=1)
+            return all_pix[np.random.choice(len(all_pix), min(len(all_pix), self.body_context_points), replace=False)]
 
-        return body_pts
+    def _sample_bbox_grid(self, ref_frame_rgb: np.ndarray, kps_init: np.ndarray) -> np.ndarray:
+        """Samples a regular 28x28 bounding-box grid around the initialized keypoints."""
+        x_min, x_max = np.min(kps_init[:, 0]), np.max(kps_init[:, 0])
+        y_min, y_max = np.min(kps_init[:, 1]), np.max(kps_init[:, 1])
+        dx, dy = x_max - x_min, y_max - y_min
+        mid_x = (x_min + x_max) / 2.0
+        b_y1, b_y2 = y_min + (-17.0 * dy), y_min + (10.0 * dy)
+        b_w = 20.0 * dx
+        n_side = int(np.sqrt(self.body_context_points))
+        xs = np.linspace(max(0, mid_x - b_w / 2.0), min(ref_frame_rgb.shape[1], mid_x + b_w / 2.0), n_side)
+        ys = np.linspace(max(0, b_y1), min(ref_frame_rgb.shape[0], b_y2), n_side)
+        xv, yv = np.meshgrid(xs, ys)
+        return np.stack([xv.flatten(), yv.flatten()], axis=1)
+
+    def _sample_body_context_points(self, ref_frame_rgb: np.ndarray, kps_init: np.ndarray) -> Tuple[np.ndarray, str]:
+        """Samples context points via MediaPipe silhouette or bbox_grid without silent fallback."""
+        if self.context_mode == "bbox_grid":
+            return self._sample_bbox_grid(ref_frame_rgb, kps_init), "bbox_grid"
+
+        try:
+            return self._sample_mediapipe_silhouette(ref_frame_rgb), "mediapipe"
+        except Exception as e:
+            if not self.allow_fallback:
+                raise RuntimeError(f"MediaPipe silhouette sampling failed (allow_fallback=False): {e}") from e
+            logger.warning(f"MediaPipe silhouette failed ({e}); explicitly falling back to bbox_grid.")
+            return self._sample_bbox_grid(ref_frame_rgb, kps_init), "bbox_grid"
 
     def track_video(
         self,
@@ -279,7 +300,7 @@ class DeltaV2Tracker(Base3DTracker):
         kps_init = np.array(specific_keypoints, dtype=np.float32)
         thigh_samples = self.sample_triangle(kps_init[0], kps_init[1], kps_init[2], n=self.target_thigh_points)
         ref_rel = ref_frame_idx - s
-        body_samples = self._sample_body_context_points(video_np[ref_rel], kps_init)
+        body_samples, actual_context_mode = self._sample_body_context_points(video_np[ref_rel], kps_init)
 
         full_q = np.concatenate([kps_init, thigh_samples, body_samples], axis=0)
         t_indices = np.full((len(full_q), 1), ref_rel)
@@ -316,12 +337,13 @@ class DeltaV2Tracker(Base3DTracker):
             ref_frame_idx=ref_frame_idx,
             start_idx=s,
             fps=30.0,
-            mode="v2_single_pass_body_box",
+            mode=f"v2_single_pass_{actual_context_mode}",
             scales=np.array([1.0, 1.0]),
             metadata={
                 "total_frames": total_frames,
                 "window_start": s,
                 "window_end": e,
+                "context_mode": actual_context_mode,
                 "num_queries": len(full_q),
                 "num_thigh_queries": 3 + self.target_thigh_points,
                 "num_body_context": len(body_samples)

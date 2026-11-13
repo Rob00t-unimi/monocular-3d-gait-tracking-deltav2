@@ -90,16 +90,19 @@ def main():
     parser.add_argument("--video", type=str, help="Specific video name to process (e.g. P27_E2T2_90.mp4)")
     parser.add_argument("--batch", action="store_true", help="Run batch inference on the full benchmark dataset")
     parser.add_argument("--csv", type=str, default="data/selected_inference_videos_40.csv", help="Path to benchmark CSV")
-    parser.add_argument("--output_dir", type=str, default="data/inference_results/raw", help="Output directory for raw NPZ")
+    parser.add_argument("--output_dir", type=str, default=None, help="Output directory for raw NPZ (auto-routed by context-mode if omitted)")
     parser.add_argument("--max_frames", type=int, default=250, help="Maximum video frames to track")
     parser.add_argument("--tracker", choices=["deltav2", "dummy"], default="deltav2", help="Tracker architecture to run")
+    parser.add_argument("--context-mode", choices=["mediapipe", "bbox_grid"], default="mediapipe", help="Context sampling mode for DELTAv2 (default: mediapipe)")
+    parser.add_argument("--allow-fallback", action="store_true", help="Allow explicit fallback to bbox_grid if MediaPipe fails")
     parser.add_argument("--resume", action="store_true", default=True, help="Skip already processed videos")
     parser.add_argument("--force", action="store_true", help="Force re-computation even if cached .npz exists")
     parser.add_argument("--device", type=str, default=None, help="Device to use ('cuda' or 'cpu')")
     parser.add_argument("--verbose", action="store_true", help="Enable verbose model logs")
     args = parser.parse_args()
 
-    output_dir = PROJECT_ROOT / args.output_dir
+    default_out = "data/inference_results/raw_mediapipe" if args.context_mode == "mediapipe" else "data/inference_results/raw"
+    output_dir = PROJECT_ROOT / (args.output_dir or default_out)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     csv_path = PROJECT_ROOT / args.csv
@@ -138,6 +141,8 @@ def main():
     from src.inference.delta_v2_tracker import DeltaV2Tracker
     tracker = DeltaV2Tracker(
         device=args.device,
+        context_mode=args.context_mode,
+        allow_fallback=args.allow_fallback,
         verbose=args.verbose
     )
 
