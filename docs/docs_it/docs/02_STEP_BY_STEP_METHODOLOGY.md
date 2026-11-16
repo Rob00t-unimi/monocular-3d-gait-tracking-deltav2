@@ -22,7 +22,7 @@ Questo documento descrive dettagliatamente il flusso di lavoro a cinque stadi, d
 
 ## Stadio 3: Tracking 3D Denso con DELTAv2 e Ancore Corporee
 
-1. **Campionamento con Ancore Anatomiche e di Contesto (`src/inference/delta_v2_tracker.py`):** Campiona 200 punti di query densi all'interno del triangolo della coscia insieme a 800 ancore di contesto distribuite sulla silhouette del soggetto (`300` punti bacino anti-swap + `500` punti torso per il contesto globale).
+1. **Campionamento con Ancore Anatomiche e di Contesto (`src/inference/delta_v2_tracker.py`):** Campiona `3` punti ancora e `200` punti densi all'interno del triangolo coscia insieme ai punti di contesto globale: progettato per `800` punti sulla silhouette MediaPipe (`1003` totali), con fallback a griglia `28×28 = 784` punti (`987` totali). *(Nota: nel benchmark v1.0.0 sui 40 video, tutti i 40 run hanno utilizzato il fallback a griglia da `987` punti per via di un fallback silenzioso su MediaPipe.)*
 2. **Riproiezione Metrica 3D:** Esegue la stima di profondità metrica assoluta tramite UniDepthV2 combinata con l'attenzione spazio-temporale del transformer di DELTAv2, proiettando le tracce 2D+profondità in coordinate metriche della telecamera $(X, Y, Z)$ in metri (`data/inference_results/raw/delta_v2_raw_*.npz`).
 
 ---

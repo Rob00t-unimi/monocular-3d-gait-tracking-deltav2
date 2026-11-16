@@ -22,7 +22,7 @@ This document details the complete five-stage workflow executed from raw multi-v
 
 ## Stage 3: Dense 3D Point Tracking with DELTAv2 & Body Anchors
 
-1. **Anatomical Thigh + Body Context Sampling (`src/inference/delta_v2_tracker.py`):** Samples 200 dense query points inside the thigh triangle together with 800 contextual anchor points across the subject silhouette (`300` pelvis anti-swap anchors + `500` torso context points).
+1. **Anatomical Thigh + Body Context Sampling (`src/inference/delta_v2_tracker.py`):** Samples `3` anchor points plus `200` dense query points inside the thigh triangle together with global context points: designed for `800` MediaPipe body silhouette points (`1003` total), with a `28×28 = 784`-point bounding-box grid fallback (`987` total). *(Note: in the v1.0.0 40-video benchmark, all 40 runs used the `987`-point grid fallback due to a silent MediaPipe asset/import fallback.)*
 2. **Metric 3D Trajectory Unprojection:** Executes UniDepthV2 metric depth estimation coupled with DELTAv2 transformer spatio-temporal attention, unprojecting 2D+depth tracks into metric camera coordinates $(X, Y, Z)$ in meters (`data/inference_results/raw/delta_v2_raw_*.npz`).
 
 ---

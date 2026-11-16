@@ -25,7 +25,7 @@ Questo documento fornisce una sintesi esecutiva ad alto livello dei risultati de
 * **Dummy Baseline:** `30.0%` (9 / 30 video)
 * **DELTAv2 (Tripletta Rigida):** **`10.0%`** (3 / 30 video)
 * **Verdetto:** **Riduzione del 66.7% negli scambi di identità (affidabilità 3× superiore).**  
-  Il campionamento denso delle ancore anatomiche (silhouette MediaPipe + bacino) combinato con il *Geometric Pruner* preserva l'attenzione del tracking sulla coscia omolaterale durante la fase di swing, dove i rilevatori 2D saltano regolarmente sulla gamba opposta.
+  Il campionamento denso su coscia e contesto (griglia `28×28` da `987` punti nella configurazione primaria `results/`; valutato anche su `40/40` video con silhouette MediaPipe pure da `1003` punti in `results_mediapipe/`) combinato con il *Geometric Pruner* preserva l'attenzione del tracking sulla coscia omolaterale durante la fase di swing, dove i rilevatori 2D saltano regolarmente sulla gamba opposta.
 
 ### 4. Correlazione della Forma d'Onda Sagittale: **+48% di Fedeltà Superiore**
 * **Metrica:** **Pitch Pearson $r$** (correlazione lineare della forma d'onda rispetto al pitch del sensore IMU di ground truth).
@@ -53,3 +53,10 @@ Questo documento fornisce una sintesi esecutiva ad alto livello dei risultati de
 - Ablazione tripletta vs. nuvola di punti: [`../results/REPORT_TRIPLET_VS_CLOUD_ABLATION.md`](../results/REPORT_TRIPLET_VS_CLOUD_ABLATION.md)
 - Confronto tra modelli su 16 video (SpaTracker vs DELTA vs DELTAv2): [`../results/REPORT_16_VIDEOS_MODEL_COMPARISON.md`](../results/REPORT_16_VIDEOS_MODEL_COMPARISON.md)
 - JSON metriche grezze: [`../../../results/benchmark_40_metrics.json`](../../../results/benchmark_40_metrics.json)
+- Report benchmark 40 video MediaPipe: [`../../../results_mediapipe/REPORT_40_VIDEOS_BENCHMARK.md`](../../../results_mediapipe/REPORT_40_VIDEOS_BENCHMARK.md)
+
+---
+
+## 3. Confronto Modalità di Contesto (`bbox_grid` vs `mediapipe` — 40/40 Video)
+
+Rieseguendo tutti i 40 video con `--context-mode mediapipe` (silhouette da `1003` punti), MediaPipe migliora `Raw` (`Pitch r`: `0.185 -> 0.265`, `AccX r`: `0.243 -> 0.289`) e `Refined Cloud (SVD)` (`Pitch r`: `0.276 -> 0.293`), e dentro la run MediaPipe `Cloud (SVD)` supera `mediapipe Triplet` (`0.293` vs `0.209`). Tuttavia, **`bbox_grid` + `Refined Triplet` rimane il metodo migliore in assoluto** (`Pitch r = 0.295`, `3/30 = 10.0%` scambi vs `20.0%`–`26.7%`, `28.4%` deformazione vs `34.3%`–`45.1%`, `+4.1%` errore ROM Pitch).

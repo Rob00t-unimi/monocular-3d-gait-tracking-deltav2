@@ -2,6 +2,7 @@
 ### *Full 40-Video Gait360 Evaluation with Kinematic World Alignment & Cross-Correlation Biomechanical Validation*
 
 > **Evaluated Videos:** 40 / 40 (Gait360 Dataset)  
+> **Context Sampling Note:** All 40 trajectories in this report used the `987`-point (`3 + 200 + 784` `28×28` bounding-box grid) context mode. The full 40/40 pure `1003`-point MediaPipe silhouette benchmark has since been completed in [`../results_mediapipe/REPORT_40_VIDEOS_BENCHMARK.md`](../results_mediapipe/REPORT_40_VIDEOS_BENCHMARK.md): MediaPipe improves `Raw` (`Pitch r`: `0.185 -> 0.265`) and `Refined Cloud (SVD)` (`0.276 -> 0.293`), while **`bbox_grid` + `Refined Triplet` remains the best configuration overall** (`Pitch r = 0.295`, `3/30 = 10.0%` swaps, `28.4%` deformation).  
 > **Compared Methods:** DELTAv2 (Refined Triplet via Geometric Pruning), DELTAv2 (Raw Baseline), Dummy Baseline (2D OpenPose Keypoint Lift)  
 > **Ground Truth:** Right Leg Thigh Inertial Sensor (Gait360 IMU, World Coordinate System)  
 > **Biomechanical Swap Disentanglement:**  
@@ -193,6 +194,6 @@ A primary methodological insight emerging from our multi-view analysis concerns 
 
 ## 3. Architectural Conclusions & Clinical Recommendations
 
-1. **Monocular 3D Tracking Validity:** DELTAv2 coupled with MediaPipe Silhouette Sampling and Geometric Pruning extracts continuous, low-jerk 3D thigh kinematics from uncalibrated monocular videos without chunk boundary discontinuities.
+1. **Monocular 3D Tracking Validity:** DELTAv2 with `987`-point `bbox_grid` context sampling coupled with Geometric Pruning extracts continuous, low-jerk 3D thigh kinematics from uncalibrated monocular videos without chunk boundary discontinuities; in the completed 40/40 comparison against `1003`-point MediaPipe (`results_mediapipe/`), MediaPipe improves `Raw` and `Refined Cloud (SVD)` (`Pitch r = 0.293`), while **`bbox_grid` + `Refined Triplet`** remains the overall best method (`Pitch r = 0.295`, `10.0%` swaps, `28.4%` deformation).
 2. **Camera Placement Guidelines:** For single-camera clinical gait assessments, **90° sagittal** or **45° oblique** viewpoints are strongly recommended over pure axial (0°/180°) views unless depth sensors (RGB-D / LiDAR) are available.
 3. **Rejection of Naive 2D Lifting:** Comparison against the Dummy baseline proves that lifting 2D keypoints without dense 3D metric tracking introduces extreme acceleration noise (RMS Jerk 1452.0 m/s³) and severe ROM underestimation (-31.7%).
