@@ -197,23 +197,34 @@ class DeltaV2Tracker(Base3DTracker):
             raise RuntimeError("MediaPipe is not installed; install 'mediapipe' or use context_mode='bbox_grid'.")
 
         task_path = self._ensure_mediapipe_asset()
-        base_options = python.BaseOptions(model_asset_path=str(task_path))
-        options = vision.PoseLandmarkerOptions(
-            base_options=base_options,
-            running_mode=vision.RunningMode.IMAGE,
-            output_segmentation_masks=True
+        mp_img = mp.Image(image_format=mp.ImageFormat.SRGB, data=ref_frame_rgb)
+        confidence_cascade = (0.5, 0.2, 0.1, 0.05, 0.02, 0.01, 0.0)
+
+        for conf in confidence_cascade:
+            base_options = python.BaseOptions(model_asset_path=str(task_path))
+            options = vision.PoseLandmarkerOptions(
+                base_options=base_options,
+                running_mode=vision.RunningMode.IMAGE,
+                output_segmentation_masks=True,
+                min_pose_detection_confidence=conf,
+                min_pose_presence_confidence=conf,
+            )
+            with vision.PoseLandmarker.create_from_options(options) as landmarker:
+                res = landmarker.detect(mp_img)
+                if not res.segmentation_masks:
+                    continue
+                mask = res.segmentation_masks[0].numpy_view() > 0.5
+                y, x = np.where(mask.squeeze())
+                if len(x) == 0:
+                    continue
+                if conf < confidence_cascade[0]:
+                    logger.info(f"MediaPipe silhouette recovered at reduced confidence={conf} ({len(x)} mask pixels).")
+                all_pix = np.stack([x, y], axis=1)
+                return all_pix[np.random.choice(len(all_pix), min(len(all_pix), self.body_context_points), replace=False)]
+
+        raise RuntimeError(
+            f"MediaPipe PoseLandmarker returned no segmentation mask across confidence cascade {list(confidence_cascade)}."
         )
-        with vision.PoseLandmarker.create_from_options(options) as landmarker:
-            mp_img = mp.Image(image_format=mp.ImageFormat.SRGB, data=ref_frame_rgb)
-            res = landmarker.detect(mp_img)
-            if not res.segmentation_masks:
-                raise RuntimeError("MediaPipe PoseLandmarker returned no segmentation mask.")
-            mask = res.segmentation_masks[0].numpy_view() > 0.5
-            y, x = np.where(mask.squeeze())
-            if len(x) == 0:
-                raise RuntimeError("MediaPipe segmentation mask is empty.")
-            all_pix = np.stack([x, y], axis=1)
-            return all_pix[np.random.choice(len(all_pix), min(len(all_pix), self.body_context_points), replace=False)]
 
     def _sample_bbox_grid(self, ref_frame_rgb: np.ndarray, kps_init: np.ndarray) -> np.ndarray:
         """Samples a regular 28x28 bounding-box grid around the initialized keypoints."""
@@ -292,11 +303,7 @@ class DeltaV2Tracker(Base3DTracker):
                     raise RuntimeError(f"Could not read frame {i} from {video_path}")
         video_np = np.stack(frames)
 
-        # 3. Predict depth
-        logger.info(f"Predicting depth for {len(video_np)} frames (window: {s}-{e})...")
-        videodepth_np = self._predict_depth(video_np)
-
-        # 4. Sample query points (3 keypoints + 200 triangle + 800 body context = 1003 points)
+        # 3. Sample query points BEFORE depth inference so context-mode failures fail fast
         kps_init = np.array(specific_keypoints, dtype=np.float32)
         thigh_samples = self.sample_triangle(kps_init[0], kps_init[1], kps_init[2], n=self.target_thigh_points)
         ref_rel = ref_frame_idx - s
@@ -305,6 +312,10 @@ class DeltaV2Tracker(Base3DTracker):
         full_q = np.concatenate([kps_init, thigh_samples, body_samples], axis=0)
         t_indices = np.full((len(full_q), 1), ref_rel)
         queries = torch.from_numpy(np.concatenate([t_indices, full_q], axis=1)).float().to(self.device)[None]
+
+        # 4. Predict depth
+        logger.info(f"Predicting depth for {len(video_np)} frames (window: {s}-{e})...")
+        videodepth_np = self._predict_depth(video_np)
 
         # 5. Execute 3D tracking
         logger.info(f"Tracking {len(full_q)} points with DELTAv2 (bidirectional)...")
