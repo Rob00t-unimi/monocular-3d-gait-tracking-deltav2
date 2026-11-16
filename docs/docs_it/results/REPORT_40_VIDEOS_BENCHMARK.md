@@ -2,7 +2,7 @@
 ### *Valutazione Completa su 40 Video Gait360 con Allineamento Cinematico al Mondo e Validazione Biomeccanica via Cross-Correlazione*
 
 > **Video Valutati:** 40 / 40 (Dataset Gait360)  
-> **Nota sul Campionamento di Contesto:** Tutte le 40 traiettorie salvate in questo report v1.0.0 hanno utilizzato il fallback a griglia `28×28` da `987` punti (`3 + 200 + 784`) invece della maschera silhouette MediaPipe (`1003` punti) a causa di un fallback silenzioso in `DeltaV2Tracker`. Poiché l'ablazione su 16 video mostrava un jerk pre-pruning inferiore con MediaPipe (`146.9` vs `176.7 m/s³`), questi risultati rappresentano la baseline `bbox_grid` in attesa di ri-esecuzione con MediaPipe attivo.  
+> **Nota sul Campionamento di Contesto:** Tutte le 40 traiettorie in questo report utilizzano la modalità di contesto `bbox_grid` da `987` punti (`3 + 200 + 784`). Il benchmark completo `40/40` con silhouette MediaPipe pura (`1003` punti) è ora disponibile in [`../../../results_mediapipe/REPORT_40_VIDEOS_BENCHMARK.md`](../../../results_mediapipe/REPORT_40_VIDEOS_BENCHMARK.md): MediaPipe migliora `Raw` (`Pitch r`: `0.185 -> 0.265`) e `Refined Cloud (SVD)` (`0.276 -> 0.293`), mentre **`bbox_grid` + `Refined Triplet` rimane la configurazione migliore in assoluto** (`Pitch r = 0.295`, `3/30 = 10.0%` scambi, `28.4%` deformazione).  
 > **Metodi a Confronto:** DELTAv2 (Tripletta Rifinita via Geometric Pruning), DELTAv2 (Baseline Raw), Baseline Dummy (Lift 2D Keypoint OpenPose)  
 > **Ground Truth:** Sensore Inerziale Coscia Destra (Gait360 IMU, Sistema di Coordinate World)  
 > **Distinzione Biomeccanica degli Scambi (Disentanglement):**  
@@ -194,7 +194,7 @@ A primary methodological insight emerging from our multi-view analysis concerns 
 
 ## 3. Architectural Conclusions & Clinical Recommendations
 
-1. **Monocular 3D Tracking Validity:** DELTAv2 (anche nella configurazione fallback `bbox_grid` da `987` punti) abbinato al Geometric Pruning estrae una cinematica 3D continua e a basso jerk senza discontinuità di chunking; il ripristino della silhouette MediaPipe (`1003` punti) è previsto come confronto migliorativo.
+1. **Monocular 3D Tracking Validity:** DELTAv2 con campionamento `bbox_grid` da `987` punti abbinato al Geometric Pruning estrae una cinematica 3D continua e a basso jerk senza discontinuità di chunking; nel confronto completo 40/40 con MediaPipe a `1003` punti (`results_mediapipe/`), MediaPipe migliora `Raw` e `Refined Cloud (SVD)` (`Pitch r = 0.293`), mentre **`bbox_grid` + `Refined Triplet`** rimane il metodo migliore in assoluto (`Pitch r = 0.295`, `10.0%` scambi, `28.4%` deformazione).
 2. **Camera Placement Guidelines:** For single-camera clinical gait assessments, **90° sagittal** or **45° oblique** viewpoints are strongly recommended over pure axial (0°/180°) views unless depth sensors (RGB-D / LiDAR) are available.
 3. **Rejection of Naive 2D Lifting:** Comparison against the Dummy baseline proves that lifting 2D keypoints without dense 3D metric tracking introduces extreme acceleration noise (RMS Jerk > 1450 m/s³) and severe ROM underestimation (-31.7%).
 

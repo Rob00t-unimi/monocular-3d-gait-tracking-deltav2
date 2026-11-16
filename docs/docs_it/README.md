@@ -245,6 +245,19 @@ Avvia ispettori grafici interattivi per la validazione qualitativa dei keypoint,
 | **Scambi d'Identità Veri ($90^\circ$ e $45^\circ$)** | `9 / 30 (30.0%)` | `4 / 30 (13.3%)` | `3 / 30 (10.0%)` | **`3 / 30 (10.0%)`** |
 | **Artefatti di Profondità Assiale ($0^\circ$ e $180^\circ$)** | `4 / 10 (40.0%)` | `1 / 10 (10.0%)` | `1 / 10 (10.0%)` | **`1 / 10 (10.0%)`** |
 
+### Ablazione Modalità di Contesto (`bbox_grid` vs `mediapipe` — 40/40 Video)
+
+| Configurazione (40 Video) | Pitch Pearson $r$ ($\uparrow$) | AccX Pearson $r$ ($\uparrow$) | Deformazione Rigida 3D (%) ($\downarrow$) | Errore ROM Pitch (%) | Scambi Veri ($90^\circ$/$45^\circ$) ($\downarrow$) |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **`bbox_grid` — DELTAv2 Raw** | `0.185 ± 0.316` | `0.243 ± 0.171` | `33.3 ± 12.3` | `-15.5 ± 48.5` | `4 / 30 (13.3%)` |
+| **`mediapipe` — DELTAv2 Raw** | `0.265 ± 0.344` | **`0.289 ± 0.152`** | `35.8 ± 18.9` | `+5.1 ± 65.8` | `6 / 30 (20.0%)` |
+| **`bbox_grid` — Refined Cloud (SVD)** | `0.276 ± 0.288` | `0.288 ± 0.145` | `41.4 ± 8.3` | `+44.1 ± 54.6` | `5 / 30 (16.7%)` |
+| **`mediapipe` — Refined Cloud (SVD)** | `0.293 ± 0.295` | `0.268 ± 0.134` | `45.1 ± 13.7` | `+36.6 ± 46.2` | `6 / 30 (20.0%)` |
+| **`mediapipe` — Refined Triplet** | `0.209 ± 0.385` | `0.258 ± 0.160` | `34.3 ± 18.5` | `+9.9 ± 60.8` | `8 / 30 (26.7%)` |
+| **`bbox_grid` — Refined Triplet (Migliore in Assoluto)** | **`0.295 ± 0.329`** | `0.255 ± 0.162` | **`28.4 ± 9.9`** | **`+4.1 ± 70.8`** | **`3 / 30 (10.0%)`** |
+
+> **Verdetto:** Il campionamento puro con silhouette MediaPipe (`1003` punti) migliora `DELTAv2 Raw` (`Pitch r`: `0.185 -> 0.265`, `AccX r`: `0.243 -> 0.289`) e `Refined Cloud (SVD)` (`Pitch r`: `0.276 -> 0.293`), **ma `bbox_grid` + `Refined Triplet` rimane il metodo migliore in assoluto** (`Pitch r = 0.295`, `3/30 = 10.0%` scambi, `28.4%` deformazione, `+4.1%` errore ROM) perché i punti di sfondo della griglia ancorano la geometria globale durante gli incroci sagittali e obliqui. Vedi [`results_mediapipe/REPORT_40_VIDEOS_BENCHMARK.md`](../../results_mediapipe/REPORT_40_VIDEOS_BENCHMARK.md).
+
 ---
 
 ---

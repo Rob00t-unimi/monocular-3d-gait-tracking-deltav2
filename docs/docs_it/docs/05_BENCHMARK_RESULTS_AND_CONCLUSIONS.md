@@ -33,3 +33,22 @@ Tutte le tabelle dettagliate per singola prospettiva sono consultabili in:
 - [`results/REPORT_40_VIDEOS_BENCHMARK.md`](../results/REPORT_40_VIDEOS_BENCHMARK.md)
 - [`results/REPORT_TRIPLET_VS_CLOUD_ABLATION.md`](../results/REPORT_TRIPLET_VS_CLOUD_ABLATION.md)
 - [`results/REPORT_16_VIDEOS_MODEL_COMPARISON.md`](../results/REPORT_16_VIDEOS_MODEL_COMPARISON.md)
+- [`results_mediapipe/REPORT_40_VIDEOS_BENCHMARK.md`](../../../results_mediapipe/REPORT_40_VIDEOS_BENCHMARK.md)
+
+---
+
+## 3. Ablazione Campionamento di Contesto: `bbox_grid` vs `mediapipe` (40 Video)
+
+Per isolare l'effetto della distribuzione delle ancore di contesto (griglia `28×28` da `987` punti incluso sfondo vs silhouette umana pura MediaPipe da `1003` punti), l'intera pipeline sui 40 video è stata rieseguita con `--context-mode mediapipe` (`results_mediapipe/`):
+
+| Configurazione (40 Video) | Pitch Pearson $r$ ($\uparrow$) | AccX Pearson $r$ ($\uparrow$) | Deformazione Rigida 3D (%) ($\downarrow$) | Errore ROM Pitch (%) | Scambi Veri ($90^\circ$/$45^\circ$) ($\downarrow$) |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **`bbox_grid` — DELTAv2 Raw** | `0.185 ± 0.316` | `0.243 ± 0.171` | `33.3 ± 12.3` | `-15.5 ± 48.5` | `4 / 30 (13.3%)` |
+| **`mediapipe` — DELTAv2 Raw** | `0.265 ± 0.344` | **`0.289 ± 0.152`** | `35.8 ± 18.9` | `+5.1 ± 65.8` | `6 / 30 (20.0%)` |
+| **`bbox_grid` — Refined Cloud (SVD)** | `0.276 ± 0.288` | `0.288 ± 0.145` | `41.4 ± 8.3` | `+44.1 ± 54.6` | `5 / 30 (16.7%)` |
+| **`mediapipe` — Refined Cloud (SVD)** | `0.293 ± 0.295` | `0.268 ± 0.134` | `45.1 ± 13.7` | `+36.6 ± 46.2` | `6 / 30 (20.0%)` |
+| **`mediapipe` — Refined Triplet** | `0.209 ± 0.385` | `0.258 ± 0.160` | `34.3 ± 18.5` | `+9.9 ± 60.8` | `8 / 30 (26.7%)` |
+| **`bbox_grid` — Refined Triplet (Migliore in Assoluto)** | **`0.295 ± 0.329`** | `0.255 ± 0.162` | **`28.4 ± 9.9`** | **`+4.1 ± 70.8`** | **`3 / 30 (10.0%)`** |
+
+- **Dentro la run `mediapipe`:** `Refined Cloud (SVD)` (`Pitch r = 0.293`, `6/30` scambi) e `Raw` (`Pitch r = 0.265`, `AccX r = 0.289`) superano nettamente `mediapipe Refined Triplet` (`Pitch r = 0.209`, `8/30` scambi), migliorando rispetto ai rispettivi `Raw` (`0.185`) e `Cloud` (`0.276`) con `bbox_grid`.
+- **Vincitore assoluto (`bbox_grid` + `Refined Triplet`):** Tra tutte le combinazioni testate, **`bbox_grid` + `Refined Triplet`** resta il metodo migliore in assoluto: eguaglia `mediapipe Cloud` sul `Pitch r` (`0.295` vs `0.293`), dimezza gli scambi d'identità (`10.0%` vs `20.0%`–`26.7%`) e mantiene la minore deformazione rigida (`28.4%`) e il miglior bias ROM (`+4.1%`), grazie ai punti di sfondo che ancorano la scena globale durante gli incroci.

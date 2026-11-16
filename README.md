@@ -245,6 +245,19 @@ Launches standalone interactive graphical inspectors for qualitative validation 
 | **True Identity Swaps ($90^\circ$ & $45^\circ$)** | `9 / 30 (30.0%)` | `4 / 30 (13.3%)` | `3 / 30 (10.0%)` | **`3 / 30 (10.0%)`** |
 | **Axial Depth Artifacts ($0^\circ$ & $180^\circ$)** | `4 / 10 (40.0%)` | `1 / 10 (10.0%)` | `1 / 10 (10.0%)` | **`1 / 10 (10.0%)`** |
 
+### Context-Mode Ablation (`bbox_grid` vs. `mediapipe` — 40/40 Videos)
+
+| Configuration (40 Videos) | Pitch Pearson $r$ ($\uparrow$) | AccX Pearson $r$ ($\uparrow$) | 3D Rigid Def (%) ($\downarrow$) | Pitch ROM Error (%) | True Swaps ($90^\circ$/$45^\circ$) ($\downarrow$) |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **`bbox_grid` — DELTAv2 Raw** | `0.185 ± 0.316` | `0.243 ± 0.171` | `33.3 ± 12.3` | `-15.5 ± 48.5` | `4 / 30 (13.3%)` |
+| **`mediapipe` — DELTAv2 Raw** | `0.265 ± 0.344` | **`0.289 ± 0.152`** | `35.8 ± 18.9` | `+5.1 ± 65.8` | `6 / 30 (20.0%)` |
+| **`bbox_grid` — Refined Cloud (SVD)** | `0.276 ± 0.288` | `0.288 ± 0.145` | `41.4 ± 8.3` | `+44.1 ± 54.6` | `5 / 30 (16.7%)` |
+| **`mediapipe` — Refined Cloud (SVD)** | `0.293 ± 0.295` | `0.268 ± 0.134` | `45.1 ± 13.7` | `+36.6 ± 46.2` | `6 / 30 (20.0%)` |
+| **`mediapipe` — Refined Triplet** | `0.209 ± 0.385` | `0.258 ± 0.160` | `34.3 ± 18.5` | `+9.9 ± 60.8` | `8 / 30 (26.7%)` |
+| **`bbox_grid` — Refined Triplet (Best Overall)** | **`0.295 ± 0.329`** | `0.255 ± 0.162` | **`28.4 ± 9.9`** | **`+4.1 ± 70.8`** | **`3 / 30 (10.0%)`** |
+
+> **Verdict:** Pure `1003`-point MediaPipe silhouette sampling improves `DELTAv2 Raw` (`Pitch r`: `0.185 -> 0.265`, `AccX r`: `0.243 -> 0.289`) and `Refined Cloud (SVD)` (`Pitch r`: `0.276 -> 0.293`), **but `bbox_grid` + `Refined Triplet` remains the best method overall** (`Pitch r = 0.295`, `3/30 = 10.0%` swaps, `28.4%` deformation, `+4.1%` ROM error) because background grid points anchor global scene geometry during sagittal/oblique crossovers. See [`results_mediapipe/REPORT_40_VIDEOS_BENCHMARK.md`](results_mediapipe/REPORT_40_VIDEOS_BENCHMARK.md).
+
 ---
 
 ---

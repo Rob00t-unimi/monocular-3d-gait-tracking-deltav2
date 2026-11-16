@@ -6,6 +6,14 @@ Il formato è basato su [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ---
 
+## [1.1.0] - 2026-11-16
+
+### Aggiunto
+- **Pipeline Dual Context-Mode e Benchmark MediaPipe 40/40 (`src/inference/delta_v2_tracker.py`, `src/cli.py`, `results_mediapipe/`):** Implementato il routing esplicito `--context-mode {bbox_grid,mediapipe}` (`raw_mediapipe/`, `refined_mediapipe/`, `results_mediapipe/`), la cascata di confidenza `PoseLandmarker` (`0.5 -> 0.2 -> 0.1 -> 0.05 -> 0.02 -> 0.01 -> 0.0`) e il campionamento fail-fast prima della stima di profondità, completando 40/40 video con silhouette MediaPipe pure (`1003` punti).
+- **Esito del Confronto `bbox_grid` vs `mediapipe`:** Nella run `mediapipe`, `Refined Cloud (SVD)` (`Pitch r = 0.293 ± 0.295`) e `Raw` (`Pitch r = 0.265 ± 0.344`, `AccX r = 0.289 ± 0.152`) superano `mediapipe Refined Triplet` (`Pitch r = 0.209 ± 0.385`, `8/30` scambi) e migliorano rispetto ai rispettivi valori `bbox_grid` (`Raw 0.185`, `Cloud 0.276`). Tuttavia, **`bbox_grid` + `Refined Triplet` resta il metodo migliore in assoluto** (`Pitch r = 0.295 ± 0.329`, `3/30 = 10.0%` scambi, `28.4%` deformazione 3D, `+4.1%` errore ROM Pitch).
+
+---
+
 ## [1.0.0] - 2026-11-10
 
 ### Aggiunto

@@ -139,3 +139,9 @@ the tracking system produces authentic, positive gait pitch curves across **all 
 | 38 | `P53_E2T1_45_ALT.mp4` | 45° Oblique (L->R) Rear-Receding | 0.706 | **0.792** | 0.519 | **0.187** | 0.265 | 19.9% | 33.4% | 🟢 Triplet |
 | 39 | `P63_E2T1_45.mp4` | 45° Oblique (L->R) Rear-Receding | -0.031 | **-0.011** | 0.252 | **0.198** | 0.243 | 35.1% | 56.0% | 🔵 Cloud |
 | 40 | `P6_E2T1_45.mp4` | 45° Oblique (L->R) Rear-Receding | -0.528 | **0.462** | 0.217 | **0.226** | 0.244 | 28.8% | 30.5% | 🟢 Triplet |
+
+---
+
+## 5. Context-Mode Comparison Note (`bbox_grid` vs. `mediapipe`)
+
+In the subsequent 40/40 `--context-mode mediapipe` run (`results_mediapipe/REPORT_40_VIDEOS_BENCHMARK.md`), `Refined Cloud (SVD)` (`Pitch r = 0.293 ± 0.295`, `6/30` swaps) outperforms `mediapipe Refined Triplet` (`Pitch r = 0.209 ± 0.385`, `8/30` swaps). Across both context modes, however, **`bbox_grid` + `Refined Triplet`** remains the overall best method (`Pitch r = 0.295 ± 0.329`, `3/30 = 10.0%` swaps, `28.4%` 3D deformation, `+4.1%` Pitch ROM error).

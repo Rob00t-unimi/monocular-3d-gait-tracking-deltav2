@@ -25,7 +25,7 @@ This document provides a high-level executive summary of the benchmark results e
 * **Dummy Baseline:** `30.0%` (9 / 30 videos)
 * **DELTAv2 (Refined Triplet):** **`10.0%`** (3 / 30 videos)
 * **Verdict:** **66.7% reduction in identity swaps (3× higher reliability).**  
-  Dense thigh + context query sampling (`987`-point `28×28` bbox grid fallback in the v1.0.0 40-video run; MediaPipe `1003`-point silhouette sampling pending re-evaluation) coupled with the *Geometric Pruner* preserves tracking focus on the ipsilateral thigh during swing phase, where 2D detectors consistently jump to the opposite leg.
+  Dense thigh + context query sampling (`987`-point `28×28` bbox grid in the primary `results/` configuration; also benchmarked at `40/40` with pure `1003`-point MediaPipe silhouettes in `results_mediapipe/`) coupled with the *Geometric Pruner* preserves tracking focus on the ipsilateral thigh during swing phase, where 2D detectors consistently jump to the opposite leg.
 
 ### 4. Sagittal Waveform Correlation: **+48% Higher Fidelity**
 * **Metric:** **Pitch Pearson $r$** (linear waveform correlation against ground-truth IMU pitch).
@@ -53,3 +53,10 @@ This document provides a high-level executive summary of the benchmark results e
 - Triplet vs. Point Cloud Ablation: [`../results/REPORT_TRIPLET_VS_CLOUD_ABLATION.md`](../results/REPORT_TRIPLET_VS_CLOUD_ABLATION.md)
 - 16-Video Model Comparison (SpaTracker vs DELTA vs DELTAv2): [`../results/REPORT_16_VIDEOS_MODEL_COMPARISON.md`](../results/REPORT_16_VIDEOS_MODEL_COMPARISON.md)
 - Raw Metrics JSON: [`../results/benchmark_40_metrics.json`](../results/benchmark_40_metrics.json)
+- 40-Video MediaPipe Benchmark Report: [`../results_mediapipe/REPORT_40_VIDEOS_BENCHMARK.md`](../results_mediapipe/REPORT_40_VIDEOS_BENCHMARK.md)
+
+---
+
+## 3. Context-Mode Comparison (`bbox_grid` vs. `mediapipe` — 40/40 Videos)
+
+Re-running all 40 videos with `--context-mode mediapipe` (`1003`-point body silhouette) showed that MediaPipe improves `Raw` (`Pitch r`: `0.185 -> 0.265`, `AccX r`: `0.243 -> 0.289`) and `Refined Cloud (SVD)` (`Pitch r`: `0.276 -> 0.293`), and within the MediaPipe run `Cloud (SVD)` outperforms `mediapipe Triplet` (`0.293` vs `0.209`). Nevertheless, **`bbox_grid` + `Refined Triplet` remains the best method overall** (`Pitch r = 0.295`, `3/30 = 10.0%` swaps vs `20.0%`–`26.7%`, `28.4%` deformation vs `34.3%`–`45.1%`, `+4.1%` Pitch ROM error).
