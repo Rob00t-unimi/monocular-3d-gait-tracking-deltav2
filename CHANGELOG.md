@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [1.1.0] - 2026-11-16
+
+### Added
+- **Dual Context-Mode Pipeline & 40/40 MediaPipe Benchmark (`src/inference/delta_v2_tracker.py`, `src/cli.py`, `results_mediapipe/`):** Implemented explicit `--context-mode {bbox_grid,mediapipe}` routing (`raw_mediapipe/`, `refined_mediapipe/`, `results_mediapipe/`), MediaPipe `PoseLandmarker` confidence cascade (`0.5 -> 0.2 -> 0.1 -> 0.05 -> 0.02 -> 0.01 -> 0.0`), and fail-fast context sampling prior to depth prediction, completing all 40/40 videos with pure `1003`-point MediaPipe silhouettes.
+- **Context-Mode Comparison Findings:** Within the `mediapipe` run, `Refined Cloud (SVD)` (`Pitch r = 0.293 ± 0.295`) and `Raw` (`Pitch r = 0.265 ± 0.344`, `AccX r = 0.289 ± 0.152`) outperform `mediapipe Refined Triplet` (`Pitch r = 0.209 ± 0.385`, `8/30` swaps) and improve over their `bbox_grid` counterparts (`Raw 0.185`, `Cloud 0.276`). However, **`bbox_grid` + `Refined Triplet` remains the best configuration overall** (`Pitch r = 0.295 ± 0.329`, `3/30 = 10.0%` swaps, `28.4%` 3D deformation, `+4.1%` Pitch ROM error).
+
+---
+
 ## [1.0.0] - 2026-11-10
 
 ### Added

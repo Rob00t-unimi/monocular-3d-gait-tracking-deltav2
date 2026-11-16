@@ -93,3 +93,8 @@ Attraverso:
 
 il sistema di tracking produce curve di Pitch autentiche e conformi alla fisiologia su **tutti gli 8 punti di vista**, validando la pipeline per l'analisi clinica del cammino multi-vista.
 
+---
+
+## 5. Nota di Confronto Modalità di Contesto (`bbox_grid` vs `mediapipe`)
+
+Nella successiva esecuzione 40/40 con `--context-mode mediapipe` (`results_mediapipe/REPORT_40_VIDEOS_BENCHMARK.md`), `Refined Cloud (SVD)` (`Pitch r = 0.293 ± 0.295`, `6/30` scambi) supera `mediapipe Refined Triplet` (`Pitch r = 0.209 ± 0.385`, `8/30` scambi). Considerando entrambe le modalità di contesto, tuttavia, **`bbox_grid` + `Refined Triplet`** rimane il metodo migliore in assoluto (`Pitch r = 0.295 ± 0.329`, `3/30 = 10.0%` scambi, `28.4%` deformazione 3D, `+4.1%` errore ROM Pitch).

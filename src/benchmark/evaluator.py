@@ -281,8 +281,13 @@ def compute_comprehensive_metrics(
     }
 
 
-def main(force: bool = False):
-    json_path = RESULTS_DIR / "benchmark_40_metrics.json"
+def main(force: bool = False, context_mode: str = "bbox_grid"):
+    if context_mode not in {"bbox_grid", "mediapipe"}:
+        raise ValueError(f"Unsupported context_mode '{context_mode}'.")
+    raw_dir = PROJECT_ROOT / "data" / "inference_results" / ("raw_mediapipe" if context_mode == "mediapipe" else "raw")
+    refined_dir = PROJECT_ROOT / "data" / "inference_results" / ("refined_mediapipe" if context_mode == "mediapipe" else "refined")
+    results_dir = PROJECT_ROOT / ("results_mediapipe" if context_mode == "mediapipe" else "results")
+    json_path = results_dir / "benchmark_40_metrics.json"
     if json_path.exists() and not force:
         with open(json_path, "r", encoding="utf-8") as f:
             cached = json.load(f)
@@ -301,7 +306,7 @@ def main(force: bool = False):
         logger.error(f"Manifest not found: {MANIFEST_PATH}")
         sys.exit(1)
 
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    results_dir.mkdir(parents=True, exist_ok=True)
 
     df_manifest = pd.read_csv(MANIFEST_PATH)
     total_videos = len(df_manifest)
@@ -333,8 +338,8 @@ def main(force: bool = False):
 
         print(f"\n[{idx+1:02d}/{total_videos:02d}] Processing: {vname} | Category: {cat_name}")
 
-        raw_npz_path = RAW_DIR / f"delta_v2_raw_{vname}.npz"
-        refined_npz_path = REFINED_DIR / f"delta_v2_refined_{vname}.npz"
+        raw_npz_path = raw_dir / f"delta_v2_raw_{vname}.npz"
+        refined_npz_path = refined_dir / f"delta_v2_refined_{vname}.npz"
         sensor_csv_path = Path(row["sensor_csv"])
         if not sensor_csv_path.is_absolute():
             sensor_csv_path = PROJECT_ROOT / sensor_csv_path
@@ -421,13 +426,14 @@ def main(force: bool = False):
         )
 
     # 5. Export to JSON
-    json_path = RESULTS_DIR / "benchmark_40_metrics.json"
+    json_path = results_dir / "benchmark_40_metrics.json"
     full_output = {
         "metadata": {
             "created_at": time.strftime("%Y-%m-%d %H:%M:%S"),
             "videos_total": total_videos,
             "videos_processed": processed_count,
             "cutoff_frequencies_hz": {"lowcut": lowcut, "highcut": highcut},
+            "context_mode": context_mode,
             "alignment_method": "world_space_kinematic_alignment",
             "methods": ["dummy", "raw", "refined_triplet", "refined_cloud"],
             "categories": CLEAN_CATEGORIES,

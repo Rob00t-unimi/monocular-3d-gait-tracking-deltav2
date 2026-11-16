@@ -33,3 +33,22 @@ Full per-category tables are available in:
 - [`results/REPORT_40_VIDEOS_BENCHMARK.md`](../results/REPORT_40_VIDEOS_BENCHMARK.md)
 - [`results/REPORT_TRIPLET_VS_CLOUD_ABLATION.md`](../results/REPORT_TRIPLET_VS_CLOUD_ABLATION.md)
 - [`results/REPORT_16_VIDEOS_MODEL_COMPARISON.md`](../results/REPORT_16_VIDEOS_MODEL_COMPARISON.md)
+- [`results_mediapipe/REPORT_40_VIDEOS_BENCHMARK.md`](../results_mediapipe/REPORT_40_VIDEOS_BENCHMARK.md)
+
+---
+
+## 3. Context Sampling Ablation: `bbox_grid` vs. `mediapipe` (40 Videos)
+
+To isolate the effect of the context anchor distribution (`987`-point `28×28` bounding-box grid including background vs. `1003`-point pure MediaPipe human silhouette), the full 40-video pipeline was re-executed with `--context-mode mediapipe` (`results_mediapipe/`):
+
+| Configuration (40 Videos) | Pitch Pearson $r$ ($\uparrow$) | AccX Pearson $r$ ($\uparrow$) | 3D Rigid Def (%) ($\downarrow$) | Pitch ROM Error (%) | True Swaps ($90^\circ$/$45^\circ$) ($\downarrow$) |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **`bbox_grid` — DELTAv2 Raw** | `0.185 ± 0.316` | `0.243 ± 0.171` | `33.3 ± 12.3` | `-15.5 ± 48.5` | `4 / 30 (13.3%)` |
+| **`mediapipe` — DELTAv2 Raw** | `0.265 ± 0.344` | **`0.289 ± 0.152`** | `35.8 ± 18.9` | `+5.1 ± 65.8` | `6 / 30 (20.0%)` |
+| **`bbox_grid` — Refined Cloud (SVD)** | `0.276 ± 0.288` | `0.288 ± 0.145` | `41.4 ± 8.3` | `+44.1 ± 54.6` | `5 / 30 (16.7%)` |
+| **`mediapipe` — Refined Cloud (SVD)** | `0.293 ± 0.295` | `0.268 ± 0.134` | `45.1 ± 13.7` | `+36.6 ± 46.2` | `6 / 30 (20.0%)` |
+| **`mediapipe` — Refined Triplet** | `0.209 ± 0.385` | `0.258 ± 0.160` | `34.3 ± 18.5` | `+9.9 ± 60.8` | `8 / 30 (26.7%)` |
+| **`bbox_grid` — Refined Triplet (Best Overall)** | **`0.295 ± 0.329`** | `0.255 ± 0.162` | **`28.4 ± 9.9`** | **`+4.1 ± 70.8`** | **`3 / 30 (10.0%)`** |
+
+- **Within the `mediapipe` run:** `Refined Cloud (SVD)` (`Pitch r = 0.293`, `6/30` swaps) and `Raw` (`Pitch r = 0.265`, `AccX r = 0.289`) clearly outperform `mediapipe Refined Triplet` (`Pitch r = 0.209`, `8/30` swaps), and improve over `bbox_grid` `Raw` (`0.185`) and `Cloud` (`0.276`).
+- **Overall winner (`bbox_grid` + `Refined Triplet`):** Across all tested combinations, **`bbox_grid` + `Refined Triplet`** remains the best method overall — matching `mediapipe Cloud` on `Pitch r` (`0.295` vs `0.293`) while halving True Identity Swaps (`10.0%` vs `20.0%`–`26.7%`) and achieving the lowest 3D rigid deformation (`28.4%`) and Pitch ROM bias (`+4.1%`), as static background grid points stabilize global scene geometry during limb crossovers.

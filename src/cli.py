@@ -140,6 +140,17 @@ def build_parser() -> argparse.ArgumentParser:
         help="3D tracking architecture to execute (default: deltav2)",
     )
     p_track.add_argument(
+        "--context-mode",
+        choices=["mediapipe", "bbox_grid"],
+        default="mediapipe",
+        help="Context sampling mode for DELTAv2; routes mediapipe to raw_mediapipe/ so existing bbox_grid outputs in raw/ are preserved (default: mediapipe)",
+    )
+    p_track.add_argument(
+        "--allow-fallback",
+        action="store_true",
+        help="Allow explicit fallback to bbox_grid if MediaPipe silhouette sampling fails",
+    )
+    p_track.add_argument(
         "--video",
         default=None,
         help="Optional single video filename to track (e.g., P27_E2T2_90.mp4); runs full cohort if omitted",
@@ -179,6 +190,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Maximum triangle aspect ratio for Stage 3 normal-twist guard (default: 8.0)",
     )
     p_prune.add_argument(
+        "--context-mode",
+        choices=["bbox_grid", "mediapipe"],
+        default="bbox_grid",
+        help="Select which raw/refined directory pair to prune: bbox_grid (raw/ -> refined/) or mediapipe (raw_mediapipe/ -> refined_mediapipe/)",
+    )
+    p_prune.add_argument(
         "--force",
         action="store_true",
         help="Re-run geometric pruning even if cached refined .npz already exists",
@@ -193,6 +210,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--reports-only",
         action="store_true",
         help="Regenerate Markdown reports from existing results/benchmark_40_metrics.json without recomputing",
+    )
+    p_eval.add_argument(
+        "--context-mode",
+        choices=["bbox_grid", "mediapipe"],
+        default="bbox_grid",
+        help="Select which tracking results to evaluate: bbox_grid (raw/refined -> results/) or mediapipe (raw_mediapipe/refined_mediapipe -> results_mediapipe/)",
     )
     p_eval.add_argument(
         "--force",
@@ -299,7 +322,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     if args.command == "track":
         from src.pipeline.tracking_pipeline import main as track_main
 
-        cli_args = ["gait360 track", "--tracker", args.tracker]
+        cli_args = ["gait360 track", "--tracker", args.tracker, "--context-mode", args.context_mode]
+        if args.allow_fallback:
+            cli_args.append("--allow-fallback")
         if args.video:
             cli_args.extend(["--video", args.video])
         else:
@@ -313,8 +338,12 @@ def main(argv: Optional[List[str]] = None) -> int:
     if args.command == "prune":
         from src.pipeline.pruning_pipeline import main as prune_main
 
+        raw_dir = "data/inference_results/raw_mediapipe" if args.context_mode == "mediapipe" else "data/inference_results/raw"
+        refined_dir = "data/inference_results/refined_mediapipe" if args.context_mode == "mediapipe" else "data/inference_results/refined"
         cli_args = [
             "gait360 prune",
+            "--raw_dir", raw_dir,
+            "--output_dir", refined_dir,
             "--z-weight", str(args.z_weight),
             "--min-altitude", str(args.min_altitude),
             "--max-aspect-ratio", str(args.max_aspect_ratio),
@@ -334,8 +363,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         from src.benchmark.report_generator import generate_reports
 
         if not args.reports_only:
-            eval_main(force=args.force)
-        generate_reports(force=args.force)
+            eval_main(force=args.force, context_mode=args.context_mode)
+        generate_reports(force=args.force, context_mode=args.context_mode)
         return 0
 
     if args.command == "inspect":

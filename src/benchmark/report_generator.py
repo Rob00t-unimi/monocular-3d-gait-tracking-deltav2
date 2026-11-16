@@ -31,8 +31,9 @@ def _en_cat(cat: str) -> str:
     return CATEGORY_EN_MAP.get(cat, cat)
 
 
-def generate_reports(force: bool = False) -> None:
-    json_path = PROJECT_ROOT / "results" / "benchmark_40_metrics.json"
+def generate_reports(force: bool = False, context_mode: str = "bbox_grid") -> None:
+    results_dir = PROJECT_ROOT / ("results_mediapipe" if context_mode == "mediapipe" else "results")
+    json_path = results_dir / "benchmark_40_metrics.json"
     if not json_path.exists():
         print(f"Error: {json_path} does not exist.")
         return
@@ -344,7 +345,7 @@ def generate_reports(force: bool = False) -> None:
     )
 
     analysis_content = "\n".join(md_analysis) + "\n"
-    report_40_path = PROJECT_ROOT / "results" / "REPORT_40_VIDEOS_BENCHMARK.md"
+    report_40_path = results_dir / "REPORT_40_VIDEOS_BENCHMARK.md"
     full_md = tables_content + "\n---\n\n" + analysis_content
     if report_40_path.exists() and not force:
         existing = report_40_path.read_text(encoding="utf-8")
