@@ -371,6 +371,16 @@
     "it_path": "docs/docs_it/README.md"
   },
   {
+    "id": "presentation",
+    "type": "presentation",
+    "title_it": "Slides — Presentazione (10 Slide)",
+    "title_en": "Slides — Presentation (10 Slides)",
+    "cat_it": "Presentazione",
+    "cat_en": "Presentation",
+    "en_path": "docs/presentation_en.html",
+    "it_path": "docs/presentation_it.html"
+  },
+  {
     "id": "changelog",
     "title_it": "CHANGELOG — Cronologia dei Rilasci",
     "title_en": "CHANGELOG — Release History",
@@ -594,11 +604,19 @@
           group.appendChild(catTitle);
 
           filteredDocs.forEach(doc => {
+            const title = currentLang === 'it' ? doc.title_it : doc.title_en;
+            if (doc.type === 'presentation') {
+              const link = document.createElement('a');
+              link.className = 'nav-item';
+              link.href = currentLang === 'it' ? doc.it_path : doc.en_path;
+              link.style.textDecoration = 'none';
+              link.innerHTML = `<span>${title} ↗</span>`;
+              group.appendChild(link);
+              return;
+            }
             const item = document.createElement('div');
             item.className = 'nav-item' + (doc.id === currentDocId ? ' active' : '');
             item.onclick = () => selectDoc(doc.id);
-
-            const title = currentLang === 'it' ? doc.title_it : doc.title_en;
             item.innerHTML = `<span>${title}</span>`;
             group.appendChild(item);
           });
