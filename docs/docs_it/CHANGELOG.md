@@ -6,6 +6,16 @@ Il formato è basato su [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ---
 
+## [Non Rilasciato]
+
+### Aggiunto
+- **Report Tecnici PDF Bilingue (`docs/report_it.pdf`, `docs/report_en.pdf`) e Slides v4 (`docs/presentation_it.html`, `docs/presentation_en.html`):** Integrati i report tecnici IEEE a due colonne (9 pp., 24 riferimenti verificati) e le presentazioni interattive v4 (12 slide principali + 3 bonus) nell'Hub GitHub Pages (`index.html`), con il Report Tecnico in prima posizione e link diretto dal `README.md`.
+
+### Modificato
+- **Allineamento Documentazione e Notebook:** Sincronizzati `README.md`, `docs/01..06`, `docs/CONCLUSIONS.md`, `experiments/03_deltav2_prototyping/README.md`, `results/REPORT_TRIPLET_VS_CLOUD_ABLATION.md`, i mirror italiani (`docs/docs_it/`) e i Jupyter notebook (`examples/03..05`) con codice sorgente (`src/`), CSV di benchmark (`results/`, `results_mediapipe/`), bibliografia verificata e Report Tecnico.
+
+---
+
 ## [1.1.0] - 2026-11-16
 
 ### Aggiunto
@@ -23,9 +33,9 @@ Il formato è basato su [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Risolto
 - **Attenuazione degli Z-Spike di Profondità Monoculare (`src/postprocessing/geometric_pruner.py`):** Introdotta la pesatura anisotropa della profondità (`z_weight = 0.25`) e una soglia minima fisica (MAD floor `0.015 m/frame`) sulla velocità, prevenendo l'eccesso di pruning e le oscillazioni spurie lungo i raggi ottici.
-- **Prevenzione del Twist della Normale nei Triangoli Quasi-Collineari (`src/postprocessing/geometric_pruner.py`):** Introdotti vincoli sull'altezza minima del triangolo anatomico (`h_min >= 0.035 m`) e sull'aspect ratio (`AR <= 8.0`) nello Stadio 3, riducendo l'errore sul ROM di Pitch da `+45.2%` a **`+4.1%`** e aumentando la correlazione Pearson $r$ del Pitch a **`0.295 ± 0.329`**.
-- **Terna Anatomica IMU e Rimozione del Leakage da Telecamera (`src/analysis/kinematic_alignment.py`, `src/analysis/signal_extractor.py`):** Disabilitato il rimescolamento non supervisionato degli assi IMU tramite PCA (`use_pca_basis = False`), rimosso il leakage da proiezione sul piano camera SVD globale e introdotta l'integrazione a passaggio singolo della velocità a media nulla.
-- **Cross-Correlazione con Segno e Vincolo sul Ritardo Fisiologico (`src/metrics/waveform/cross_correlation.py`):** Sostituita la correlazione non firmata con la cross-correlazione di forma d'onda con segno, vincolata al lag massimo fisiologico di `max_shift_s = 0.5 s`.
+- **Prevenzione del Twist della Normale nei Triangoli Stretti (`src/postprocessing/geometric_pruner.py`, `src/analysis/kinematic_alignment.py`):** Introdotte la regolarizzazione del twist sul piano tangente ($\alpha_z = 0.05$) e soglie adattive di non-collinearità 3D, riducendo l'errore sul ROM di Pitch da `+44.1%` (Refined Cloud) a **`+4.1%`** (Refined Triplet) e portando il Pitch Pearson $r$ a **`0.295 ± 0.329`**.
+- **Terna Anatomica IMU e Allineamento Cinematico World (`src/analysis/kinematic_alignment.py`):** Abilitata la calibrazione PCA anatomica degli assi IMU (`use_anatomical_pca_basis = True`), l'allineamento Kabsch in $\text{SO}(3)$ e l'allineamento d'orientamento relativo in $\mathfrak{so}(3)$.
+- **Sincronizzazione Limitata Normalizzata sull'Overlap (`src/analysis/kinematic_alignment.py`):** Ricerca del lag temporale vincolata a `max_lag_seconds = 2.5 s` con normalizzazione sull'overlap.
 
 ---
 
@@ -42,5 +52,5 @@ Il formato è basato su [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Aggiunto
 - **Infrastruttura Core e I/O Dati (`src/core/`, `src/data_io/`, `src/utils/`):** Modelli di dominio immutabili, lettore video OpenCV, parser JSON 2D OpenPose, loader CSV IMU WitMotion e scanner del dataset multi-vista.
-- **Pre-Processing di Visione 2D della Coscia (`src/preprocessing/vision/`):** Rilevamento contorni Canny, regressione robusta dei bordi della coscia, selezione automatica del frame di riferimento a massima estensione ed estrazione delle 3 ancore anatomiche.
+- **Pre-Processing di Visione 2D della Coscia (`src/preprocessing/vision/`):** Rilevamento gradienti direzionali di Sobel, regressione robusta Huber dei bordi della coscia, selezione automatica del frame di riferimento a massima estensione ed estrazione delle 3 ancore anatomiche.
 - **Engine di Tracking 3D Denso (`src/inference/`):** Implementazione di `BaseTracker`, `DummyTracker` e `DELTAv2Tracker` con ancore anatomiche di contesto (`200` punti coscia + `800` punti bacino/tronco) a seguito della valutazione comparativa contro `SpaTrackerV2` e `VGGT`.

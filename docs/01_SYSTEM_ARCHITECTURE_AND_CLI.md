@@ -2,12 +2,12 @@
 
 ## 1. Architectural Overview
 
-`monocular-3d-gait-tracking-deltav2` (**Gait360**) is structured into seven top-level functional directories:
+`monocular-3d-gait-tracking-deltav2` (**Gait360**) is structured into modular functional directories separating data, configuration, documentation, benchmarks, and production source code:
 
 ```text
 monocular-3d-gait-tracking-deltav2/
 ├── README.md                          # Project overview, CLI guide & benchmark summary
-├── CHANGELOG.md                       # Keep-a-Changelog release history (v0.1.0, v0.5.0, v1.0.0)
+├── CHANGELOG.md                       # Keep-a-Changelog release history (v0.1.0 .. v1.1.0)
 ├── pyproject.toml                     # Package configuration & `gait360` CLI entrypoint
 ├── .gitignore                         # Ignores heavy datasets, weights & temporary logs
 ├── .gitattributes                     # Git LFS tracking rules for .npz and .pdf artifacts
@@ -18,27 +18,33 @@ monocular-3d-gait-tracking-deltav2/
 │   └── setup/                         # Cross-platform setup & CUDA/DELTAv2 diagnostic scripts
 ├── data/                              # Manifests, cached states, datasets (Gait_Dataset) & IMU cache (gt_cache)
 ├── docs/
+│   ├── report_en.pdf                  # Technical Report (English, IEEE two-column, 9 pp.)
+│   ├── report_it.pdf                  # Technical Report (Italian, IEEE two-column, 9 pp.)
+│   ├── presentation_en.html           # Interactive HTML Presentation Slides (English, v4)
+│   ├── presentation_it.html           # Interactive HTML Presentation Slides (Italian, v4)
 │   ├── 01_SYSTEM_ARCHITECTURE_AND_CLI.md
 │   ├── 02_STEP_BY_STEP_METHODOLOGY.md
 │   ├── 03_EXPERIMENTAL_CHRONICLE_AND_MODELS.md
 │   ├── 04_MATHEMATICAL_FORMULATION_AND_FIXES.md
 │   ├── 05_BENCHMARK_RESULTS_AND_CONCLUSIONS.md
 │   ├── 06_DUMMY_BASELINE_METHOD.md
-│   ├── CONCLUSIONS.md                 # Executive summary: DELTAv2 vs Dummy across 4 key indicators
+│   ├── CONCLUSIONS.md                 # Executive summary: DELTAv2 vs Dummy across key indicators
 │   ├── docs_it/                       # Italian documentation mirror (README, chapters, reports)
 │   └── references/                    # Reference literature PDFs (DELTAv2, DELTA, SpaTrackerV2, VGGT)
 ├── examples/                          # 5 End-to-End Interactive Jupyter Notebooks (01..05)
 ├── experiments/                       # Historical Decision Reports & Prototypes
-│   ├── 01_spatracker_vggt/            # Phase 1: VGGT & SpaTrackerV2 bidirectional exploration
+│   ├── 01_spatracker_vggt/            # Phase 1: VGGT & SpatialTrackerV2 bidirectional exploration
 │   ├── 02_delta_v1/                   # Phase 2: DELTA v1 dense 3D & anatomical anchor trials
-│   └── 03_deltav2_prototyping/        # Phase 3: DELTAv2 validation & 16-video cohort JSON
+│   └── 03_deltav2_prototyping/        # Phase 3: DELTAv2 validation & benchmark prototypes
 ├── models/                            # External 3D Trackers & submodules (DELTA, DELTAv2, SpaTrackerV2, VGGT)
-├── results/
+├── results/                           # Primary 40-video benchmark (`bbox_grid`, 987 pts)
 │   ├── benchmark_40_metrics.json      # Authoritative 40-video per-trial & aggregate metrics
 │   ├── benchmark_40_summary.csv       # Tabular summary across all 4 evaluation tiers
 │   ├── REPORT_40_VIDEOS_BENCHMARK.md  # Full 40-video 4-tier benchmark report
 │   ├── REPORT_TRIPLET_VS_CLOUD_ABLATION.md
 │   └── REPORT_16_VIDEOS_MODEL_COMPARISON.md
+├── results_mediapipe/                 # 40-video MediaPipe silhouette ablation (`mediapipe`, 1003 pts)
+│   └── REPORT_40_VIDEOS_BENCHMARK.md
 ├── src/
 │   ├── cli.py                         # Unified parametric CLI (`gait360` / `python -m src.cli`)
 │   ├── core/                          # Domain models, interfaces, constants & exceptions
@@ -52,15 +58,15 @@ monocular-3d-gait-tracking-deltav2/
 │   ├── pipeline/                      # Stage orchestrators (dataset, cohort, vision, track, prune)
 │   ├── benchmark/                     # Multi-tier evaluator & deterministic report generator
 │   └── ui/                            # 4 Tkinter interactive 2D/3D/waveform inspectors
-└── tests/                             # 106 automated unit & integration tests
+└── tests/                             # 115 automated unit & integration tests
 ```
 
-## 2. Caching, State Persistence
+## 2. Caching & State Persistence
 
-1. **Multi-View Trial Alignment Cache (`data/cached_dataset_map.json`):** Serializes the mapping between RGB videos (`90°`, `45°`, `Front`, `Rear`), OpenPose 2D keypoint directories, and WitMotion IMU ground-truth CSV files across all 59 subjects.
-2. **Candidate Video Quality Cache (`data/candidate_videos_cache.json`):** Stores pre-evaluated IMU ground-truth quality scores (`Optimal`, `Good`, `Imprecise`), Range of Motion (ROM), and step cadence for rapid stratified cohort selection.
+1. **Multi-View Trial Alignment Cache (`data/cached_dataset_map.json`):** Serializes the mapping between RGB videos (`90°`, `45°`, `Front`, `Rear`), OpenPose 2D keypoint directories (`BODY_25`), and WitMotion IMU ground-truth CSV files across the Gait360 dataset (64 total subjects, 2,942 videos).
+2. **Candidate Video Quality Cache (`data/candidate_videos_cache.json`):** Stores pre-evaluated IMU ground-truth quality scores (`Optimal`, `Good`, `Imprecise`), Range of Motion (ROM), and step cadence for deterministic stratified cohort selection.
 3. **2D Vision Keypoint State (`data/videos_state.json`):** Persists the selected reference frame index (`ref_frame`), walk start frame (`walk_start`), and the 3 anatomical thigh query points (`p1`, `p2`, `p3`) with automatic resume support.
-4. **3D Trajectory Tensor Cache (`data/inference_results/raw/*.npz` & `refined/*.npz`):** Stores raw DELTAv2 `(T, N, 3)` metric point clouds and geometrically pruned point clouds + rigid triplets `(T, 3, 3)`.
+4. **3D Trajectory Tensor Cache (`data/inference_results/`):** Stores raw DELTAv2 `(T, N, 3)` metric point clouds (`raw/` for `bbox_grid`, `raw_mediapipe/` for `mediapipe`) and geometrically pruned point clouds + rigid triplets `(T, 3, 3)` (`refined/` and `refined_mediapipe/`).
 
 ## 3. Unified Command-Line Interface (`gait360` / `python -m src.cli`)
 
@@ -79,15 +85,18 @@ python -m src.cli select-cohort
 # 3. Run 2D vision thigh segmentation & 3-point anchor extraction
 python -m src.cli preprocess --config configs/default_config.yaml
 
-# 4. Run dense 3D point tracking (deltav2 or dummy) with automatic .npz resume
-python -m src.cli track --tracker deltav2
+# 4. Run dense 3D point tracking (`deltav2` or `dummy`; context-mode `bbox_grid` or `mediapipe`)
+python -m src.cli track --tracker deltav2 --context-mode bbox_grid
+python -m src.cli track --tracker deltav2 --context-mode mediapipe
 
-# 5. Run 3-Stage Geometric Pruner (z_weight=0.25, h_min=0.035m, AR<=8.0)
-python -m src.cli prune --z-weight 0.25 --min-altitude 0.035 --max-aspect-ratio 8.0
+# 5. Run 3-Stage Geometric Pruner (`bbox_grid` -> refined/, `mediapipe` -> refined_mediapipe/)
+python -m src.cli prune --context-mode bbox_grid
+python -m src.cli prune --context-mode mediapipe
 
 # 6. Compute 3D SVD-aligned kinematic metrics and regenerate JSON, CSV & Markdown reports
-python -m src.cli evaluate
+python -m src.cli evaluate --context-mode bbox_grid
+python -m src.cli evaluate --context-mode mediapipe
 
-# 7. Launch interactive GUIs (keypoints | cohort | 3d | signals)
+# 7. Launch interactive GUIs (keypoints | cohort | 3d | signals | dashboard)
 python -m src.cli inspect --mode 3d
 ```

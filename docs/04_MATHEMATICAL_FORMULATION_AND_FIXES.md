@@ -1,81 +1,78 @@
 # 04 — Mathematical Formulation & Kinematic Processing
 
-This chapter provides the formal mathematical specification of the 3D post-processing pipeline, the spatial coordinate systems, the rigid-body kinematic alignment, and the signal-processing validation metrics.
+This chapter provides the formal mathematical specification of the 3D post-processing pipeline (`src/postprocessing/geometric_pruner.py`), camera-to-world kinematic alignment (`src/analysis/kinematic_alignment.py`), and swap disentanglement metrics (`src/metrics/`), aligned with the codebase and Technical Report.
 
 ---
 
-## 1. Anisotropic Metric Tensor for Monocular Depth (`z_weight = 0.25`)
+## 1. Zero-Phase Adaptive Filtering & 2D/3D Geometric Pruning (`GeometricPruner` v4.1)
 
-Monocular metric depth estimators (UniDepthV2) exhibit significantly higher uncertainty along the optical axis $Z$ than along the transverse image-plane axes $(X, Y)$ due to projective geometry and foreground-background edge ambiguity (Z-spikes).
-In **Stage 1 (Spatial DBSCAN Clustering)** and **Stage 2 (Kinematic MAD Pruning)** of `GeometricPruner`, spatial distances and trajectory derivatives are computed under an anisotropic metric tensor $\mathbf{W}_z$:
+Given raw metric trajectories $\mathbf{X}(t) \in \mathbb{R}^{N_{\text{thigh}} \times 3}$ and 2D tracks $\mathbf{x}(t) \in \mathbb{R}^{N_{\text{thigh}} \times 2}$ for the $N_{\text{thigh}} = 203$ thigh points (`indices 0..202`):
 
-$$\mathbf{W}_z = \text{diag}(1,\; 1,\; w_z), \qquad w_z = 0.25$$
+1. **Zero-Phase Butterworth Low-Pass Pre-Filtering:**
+   All 2D and 3D channels are filtered forward-backward (`scipy.signal.filtfilt`, 4th-order Butterworth) at the dataset-wide physiological cutoff $f_c = 2.9296875\text{ Hz}$ estimated via Welch PSD profiling ($f_{\text{low}} = 0.50\text{ Hz}$, $f_{\text{high}} \approx 3 \cdot f_{\text{median}}$).
 
-The distance between two points $\mathbf{p}_a, \mathbf{p}_b \in \mathbb{R}^3$ is defined as:
+2. **2D Convex Hull Area Persistence Pruning:**
+   At each frame $t \in [0, T-1]$, let $A_{\text{hull}}(t)$ be the 2D Convex Hull area of the active thigh cluster and $A_{\text{hull}}(t_{\text{ref}})$ its area at the reference frame. Whenever $A_{\text{hull}}(t) > \gamma_{\max}\,A_{\text{hull}}(t_{\text{ref}})$ (`max_area_ratio = 5.0`), the farthest peripheral outlier is iteratively removed across **all** frames simultaneously, guaranteeing **100% temporal persistence**.
 
-$$d_{\mathbf{W}_z}(\mathbf{p}_a, \mathbf{p}_b) = \|\mathbf{W}_z(\mathbf{p}_a - \mathbf{p}_b)\|_2 = \sqrt{(x_a - x_b)^2 + (y_a - y_b)^2 + w_z^2(z_a - z_b)^2}$$
-
-In Stage 2, velocity deviations from the median cluster profile are filtered using a Median Absolute Deviation (MAD) threshold with a physical noise floor $\sigma_{\min} = 0.015\text{ m/frame}$:
-
-$$\tau_v = \max\!\left(2.5 \cdot 1.4826 \cdot \text{MAD}(\|\mathbf{W}_z(\mathbf{v}_i - \bar{\mathbf{v}})\|_2),\; \sigma_{\min}\right)$$
+3. **Kinematic Velocity PCA + Adaptive DBSCAN (Coherent Cluster Isolation):**
+   Point velocity profiles are standardized and projected onto a 5-component PCA embedding (`pca_components = 5`), then clustered via adaptive DBSCAN starting at `initial_eps = 0.5` and scaling by `1.3` (up to `15` steps) until a dominant coherent rigid-body cluster is isolated.
 
 ---
 
-## 2. Geometric Conditioning of Rigid Body Triplets (Altitude & Aspect Ratio)
+## 2. Combinatorial Optimal Rigid Triplet Selection
 
-Given a candidate rigid triplet of 3D points $(\mathbf{p}_1(t), \mathbf{p}_2(t), \mathbf{p}_3(t)) \in \mathbb{R}^{3 \times 3}$, let the side vectors be $\mathbf{e}_{12} = \mathbf{p}_2 - \mathbf{p}_1$, $\mathbf{e}_{23} = \mathbf{p}_3 - \mathbf{p}_2$, and $\mathbf{e}_{31} = \mathbf{p}_1 - \mathbf{p}_3$, with maximum edge length $L_{\max}(t)$ and minimum edge length $L_{\min}(t)$.
-The instantaneous triangle area $A(t)$ and minimum physical altitude (lever arm) $h_{\min}(t)$ are given by:
+From the surviving thigh inlier set $\mathcal{I}$ (subsampled to at most `80` candidates if larger), candidate triplets $\tau = (i, j, k) \in \binom{\mathcal{I}}{3}$ are pre-filtered by $Z$-spike-regularized 3D reference area:
 
-$$A(t) = \frac{1}{2}\|\mathbf{e}_{12}(t) \times (\mathbf{p}_3(t) - \mathbf{p}_1(t))\|_2, \qquad h_{\min}(t) = \frac{2A(t)}{L_{\max}(t)}$$
+$$\tilde{A}_{3\text{D}}(\tau, t_{\text{ref}}) = \frac{A_{3\text{D}}(\tau, t_{\text{ref}})}{1 + w_z \left(\frac{\Delta z_{\max}}{\Delta xy_{\max} + \epsilon}\right)^2}$$
 
-The unit surface normal vector $\hat{\mathbf{n}}(t)$ is defined as:
+where $w_z$ (`z_spike_penalty_weight = 2.5` in config) penalizes triplets inflated by monocular optical-axis depth spikes. Among the top $K = 3000$ pre-filtered candidates, the algorithm searches adaptive non-collinearity floors $\rho_{\min} \in \{0.05, 0.02, 0.01, 0.005, 0.001\}$ enforcing $\min_t A_{3\text{D}}(\tau, t) \ge \rho_{\min}\,A_{3\text{D}}^{\text{orig}}(t_{\text{ref}})$, and maximizes the composite area-stability score:
 
-$$\hat{\mathbf{n}}(t) = \frac{\mathbf{e}_{12}(t) \times \mathbf{e}_{13}(t)}{\|\mathbf{e}_{12}(t) \times \mathbf{e}_{13}(t)\|_2}$$
+$$\mathcal{S}(\tau) = \ln\!\bigl(1 + A_{2\text{D}}(\tau, t_{\text{ref}})\bigr)\,\ln\!\bigl(1 + \min_t A_{2\text{D}}(\tau, t)\bigr)\cdot \text{Stab}_{2\text{D}}(\tau)\,\text{Stab}_{3\text{D}}(\tau)$$
 
-When $h_{\min}$ is small (triangles approaching collinearity), minor depth variations $\delta z$ along the optical axis induce large spurious rotations $O(\delta z / h_{\min})$ of $\hat{\mathbf{n}}(t)$. To guarantee numerical conditioning of the thigh normal vector, Stage 3 enforces two geometric bounds evaluated both at the reference frame and as a temporal mean:
-
-$$h_{\min} \ge 0.035\text{ m}\;(3.5\text{ cm}), \qquad \text{AR} = \frac{L_{\max}}{L_{\min}} \le 8.0$$
+where $\text{Stab}_{d\text{D}}(\tau) = \mu(A_{d\text{D}}(\tau, \cdot)) / [\sigma(A_{d\text{D}}(\tau, \cdot)) + 10^{-6}]$ for $d \in \{2, 3\}$.
 
 ---
 
-## 3. Anatomical Thigh Coordinate System and IMU Axis Alignment
+## 3. Camera-Space Kinematics & Tangent-Plane Twist Regularization
 
-To evaluate visual tracking against wearable inertial sensors without coordinate distortion:
+For a tracked triplet $(\mathbf{X}_t^1, \mathbf{X}_t^2, \mathbf{X}_t^3)$ (or $M$-point cloud):
 
-1. **Thigh Anatomical Basis:** The visual femur orientation is tracked directly in 3D Euclidean space through the normal vector $\hat{\mathbf{n}}(t)$ and the longitudinal femur unit vector $\hat{\mathbf{u}}_{\text{femur}}(t) = \frac{\mathbf{p}_{\text{knee}}(t) - \mathbf{p}_{\text{hip}}(t)}{\|\mathbf{p}_{\text{knee}}(t) - \mathbf{p}_{\text{hip}}(t)\|_2}$. The sagittal flexion/extension angle (Pitch) is extracted from the rotation angle around the transverse anatomical axis.
-2. **Preservation of Sensor Mounting Axes (`use_pca_basis = False`):** The WitMotion IMU sensor is attached to the anterior aspect of the right thigh. Its nominal axes correspond to:
-   - $X$-axis: Longitudinal limb axis (pointing downward toward the knee).
-   - $Y$-axis: Anteroposterior axis (orthogonal to the front surface of the thigh).
-   - $Z$-axis: Mediolateral transverse axis.
-   The nominal physical sensor axes are preserved directly without unsupervised PCA reorientation, ensuring direct physical correspondence with the anatomical limb frame.
+1. **Centroid Linear Acceleration (Savitzky–Golay):**
+   The instantaneous 3D centroid $\mathbf{c}_t = \frac{1}{M}\sum_{m=1}^{M}\mathbf{X}_t^m$ preserves 100% of full 3D metric coordinates. Its linear acceleration $\mathbf{a}_{\text{cam}}(t)$ is computed via Savitzky–Golay second-order differentiation (`window_length = 11`, `polyorder = 2`, `deriv = 2`).
 
----
+2. **Tangent-Plane Twist Regularization ($\alpha_z = 0.05$) & Gram–Schmidt Orientation:**
+   Because a 3-point patch on the thigh has median triangle altitude (lever arm) $h = 2.52\text{ cm}$ (IQR $[2.27, 3.27]\text{ cm}$), comparable to relative monocular depth jitter $\delta z = \sigma(Z_t^m - \bar{Z}_t)$ (median $1.37\text{ cm}$), unregularized depth noise induces parasitic normal deflections $\Delta\theta_{\mathbf{w}} \approx \arctan(1.37 / 2.52) \approx 28.5^\circ$ (peaks $45^\circ\text{--}90^\circ$). Before Gram–Schmidt orthogonalization, we attenuate only internal relative depth offsets around the instantaneous mean depth $\bar{Z}_t = \frac{1}{3}\sum_{m=1}^{3} Z_t^m$:
 
-## 4. Kabsch $\text{SO}(3)$ Rigid-Body Orientation & Velocity Integration
+   $$\tilde{Z}_t^m = \bar{Z}_t + \alpha_z\,(Z_t^m - \bar{Z}_t), \qquad \alpha_z = 0.05$$
 
-1. **Optimal $\text{SO}(3)$ Rigid Alignment:** To determine the static spatial transformation between the camera coordinate system and the inertial world frame at initial calibration, the system utilizes the Kabsch algorithm. Given zero-mean visual acceleration vectors $\mathbf{A}_{\text{vis}} \in \mathbb{R}^{T \times 3}$ and IMU acceleration vectors $\mathbf{A}_{\text{imu}} \in \mathbb{R}^{T \times 3}$, the cross-covariance matrix $\mathbf{H} = \mathbf{A}_{\text{vis}}^\top \mathbf{A}_{\text{imu}}$ is decomposed via Singular Value Decomposition:
+   and construct $\mathbf{R}_{\text{cam}}(t) = [\mathbf{u}_t, \mathbf{v}_t, \mathbf{w}_t] \in \text{SO}(3)$ on $\tilde{\mathbf{X}}_t^m = (X_t^m, Y_t^m, \tilde{Z}_t^m)^\top$:
 
-   $$\mathbf{H} = \mathbf{U}\mathbf{\Sigma}\mathbf{V}^\top$$
+   $$\mathbf{u}_t = \frac{\tilde{\mathbf{X}}_t^2 - \tilde{\mathbf{X}}_t^1}{\|\tilde{\mathbf{X}}_t^2 - \tilde{\mathbf{X}}_t^1\|_2}, \qquad \mathbf{w}_t = \frac{\mathbf{u}_t \times (\tilde{\mathbf{X}}_t^3 - \tilde{\mathbf{X}}_t^1)}{\|\mathbf{u}_t \times (\tilde{\mathbf{X}}_t^3 - \tilde{\mathbf{X}}_t^1)\|_2}, \qquad \mathbf{v}_t = \mathbf{w}_t \times \mathbf{u}_t$$
 
-   The optimal proper rotation matrix $\mathbf{R}^* \in \text{SO}(3)$ satisfying $\det(\mathbf{R}^*) = +1$ is:
-
-   $$\mathbf{R}^* = \mathbf{V}\,\text{diag}\!\left(1,\; 1,\; \det(\mathbf{V}\mathbf{U}^\top)\right)\mathbf{U}^\top$$
-
-2. **Single-Pass Zero-Mean Velocity Integration:** Instantaneous 3D velocity $\mathbf{v}(t)$ is obtained from linear acceleration $\mathbf{a}(t)$ by single-pass cumulative trapezoidal integration:
-
-   $$\mathbf{v}(t) = \int_0^t \mathbf{a}(\tau)\,d\tau - \frac{1}{T}\int_0^T \left(\int_0^t \mathbf{a}(\tau)\,d\tau\right)dt$$
-
-   This ensures a drift-free, zero-mean velocity profile across the analyzed stride sequence.
+   enforcing temporal sign continuity $\mathbf{w}_t \cdot \mathbf{w}_{t-1} \ge 0$. This reduces median angular jitter to $1.56^\circ$ while preserving $\bar{Z}_t$ untouched. For multi-point clouds (*Refined Cloud SVD*), $\mathbf{w}_t$ ($w_{t,z} \ge 0$) and $\mathbf{y}_t$ are the smallest and largest right singular vectors of the centered cloud.
 
 ---
 
-## 5. Signed Waveform Cross-Correlation with Physiological Lag Cap
+## 4. IMU World Projection, Kabsch $\text{SO}(3)$ Alignment & $\mathfrak{so}(3)$ Calibration
 
-The temporal lag $\tau^*$ between the visually derived angular velocity $\omega_{\text{vis}}(t)$ and the IMU gyro signal $\omega_{\text{imu}}(t)$ is determined via normalized cross-correlation:
+1. **IMU World Frame & Static Gravity Removal:**
+   Using sensor orientation quaternions $\mathbf{R}_{\text{imu}}(t)$, body-frame specific force is rotated into the static World frame and the mean gravity vector is removed:
 
-$$\rho(\tau) = \frac{\sum_{t} \left(\omega_{\text{vis}}(t) - \bar{\omega}_{\text{vis}}\right)\left(\omega_{\text{imu}}(t + \tau) - \bar{\omega}_{\text{imu}}\right)}{\sqrt{\sum_t \left(\omega_{\text{vis}}(t) - \bar{\omega}_{\text{vis}}\right)^2 \sum_t \left(\omega_{\text{imu}}(t + \tau) - \bar{\omega}_{\text{imu}}\right)^2}}$$
+   $$\mathbf{a}_{\text{world, IMU}}(t) = \mathbf{R}_{\text{imu}}(t)\,\mathbf{a}_{\text{body}}(t) - \bar{\mathbf{g}}$$
 
-1. **Signed Preservation:** Cross-correlation is computed on signed waveforms (preserving positive and negative values). This ensures that anti-phase tracking errors (such as $180^\circ$ phase flips or contralateral identity swaps) produce negative correlation coefficients rather than false positive scores.
-2. **Physiological Lag Bound:** The search window for the peak alignment lag is strictly bounded within a physiological window of $\pm 0.5\text{ s}$ around nominal synchronization:
+2. **Bounded Overlap-Normalized Temporal Synchronization:**
+   Clock offset $\Delta\tau$ between RGB video and wireless Bluetooth IMU is estimated by maximizing overlap-normalized cross-correlation within a bounded search window $|\tau| \le 2.5\text{ s}$ (`max_lag_seconds = 2.5`).
 
-$$\tau^* = \arg\max_{|\tau| \le 0.5\,\text{s}} \rho(\tau)$$
+3. **Static Camera-to-World Rotation ($\mathbf{R}_{\text{cam}\to\text{world}}$):**
+   Estimated via Kabsch SVD (`scipy.spatial.transform.Rotation.align_vectors`) aligning bandpass-filtered 3D visual acceleration $\mathbf{a}_{\text{cam}}(t)$ to $\mathbf{a}_{\text{world, IMU}}(t)$ in $\text{SO}(3)$.
+
+4. **Anatomical PCA Basis & Relative Orientation in $\mathfrak{so}(3)$:**
+   Because the thigh triangle plane and the wearable IMU housing belong to the same rigid segment but differ by an unknown static offset, relative rotations $\Delta\mathbf{R}(t) = \mathbf{R}(t_{\text{ref}})^\top \mathbf{R}(t)$ are mapped to the Lie algebra $\mathfrak{so}(3)$ via the logarithmic map; anatomical principal axes are calibrated via PCA (`use_anatomical_pca_basis = True`) so that sagittal flexion-extension Pitch is consistently aligned across arbitrary 360° viewpoints.
+
+---
+
+## 5. Biomechanical Swap Disentanglement
+
+Over sliding windows of $1.2\text{ s}$ (step $0.2\text{ s}$), persistent rolling antiphase ($r(t) < -0.35$ for $\ge 35\%$ of windows) is classified by camera geometry:
+- **Crossover Views ($90^\circ$ Sagittal & $45^\circ$ Oblique):** Classified as a **True Identity Swap** (tracker jump onto the contralateral limb during 2D occlusion).
+- **Axial Views ($0^\circ$ Frontal & $180^\circ$ Posterior):** Left and right limbs remain horizontally separated by pelvic width and never intersect in 2D; persistent antiphase is classified as an **Axial Monocular Depth Artifact**.

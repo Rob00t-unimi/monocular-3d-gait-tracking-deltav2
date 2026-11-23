@@ -1,41 +1,50 @@
-# 03 — Cronistoria Sperimentale e Selezione del Modello di Tracking 3D
+# 03 — Cronologia Sperimentale e Selezione dei Modelli di Tracking 3D
 
-Questo capitolo documenta l'evoluzione cronologica delle architetture valutate durante la fase di ricerca (`experiments/01_spatracker_vggt/`, `experiments/02_delta_v1/`, `experiments/03_deltav2_prototyping/`).
+Questo capitolo documenta l'evoluzione cronologica delle architetture di tracking 3D valutate durante la ricerca (`experiments/01_spatracker_vggt/`, `experiments/02_delta_v1/`, `experiments/03_deltav2_prototyping/`), allineata con il benchmark autorevole su finestra temporale appaiata (`results/REPORT_16_VIDEOS_MODEL_COMPARISON.md`) e la Tabella I del Report Tecnico.
 
 ---
 
-## 1. Fase 1: Esplorazione di VGGT e SpaTrackerV2 (`experiments/01_spatracker_vggt/`)
+## 1. Fase 1: Esplorazione di VGGT e SpatialTrackerV2 (`experiments/01_spatracker_vggt/`)
 
 ### 1.1 VGGT (Visual Geometry Grounded Transformer)
-- **Ipotesi:** Ricostruire nuvole di punti 3D dense della scena direttamente dai frame video monoculari.
-- **Modalità di Fallimento sul Cammino:** VGGT assume una scena prevalentemente statica osservata da una telecamera in movimento. Nelle registrazioni di laboratorio clinico del cammino, con una **telecamera fissa** e un **soggetto umano che si muove in modo non rigido**, le pareti di sfondo dominano la geometria globale, mentre il soggetto deambulante subisce uno schiacciamento della profondità (depth flattening) e una grave incoerenza temporale.
+- **Riferimento:** J. Wang et al., *"VGGT: Visual Geometry Grounded Transformer"*, *CVPR* 2025 (`arXiv:2503.11651`).
+- **Ipotesi:** Stimare mappe di punti 3D dense, intrinseci ed estrinseci di camera direttamente da sequenze monoculari del cammino (`VGGT4Track`).
+- **Modalità di Fallimento sul Cammino:** VGGT è progettato principalmente per scene statiche con camera in movimento. In laboratorio con **camera statica** e **soggetto non-rigido in movimento**, mantenere le mappe di attenzione multi-frame satura 24 GB di VRAM GPU oltre ~60–90 frame.
 
-### 1.2 SpaTrackerV2 (Tracking Puntuale Bidirezionale Forward-Backward)
-- **Ipotesi:** Tracciare i 3 punti anatomici della coscia in avanti e all'indietro a partire dal frame di riferimento ottimale $t_{\text{ref}}$ (selezionato alla massima estensione orizzontale del passo tra le ginocchia).
-- **Riscontri Sperimentali (Coorte dei 16 Video Comuni):**
-  - **Elevato Tasso di Scambio di Identità (Identity Swaps: 31.2%, 5/16 video):** Durante l'incrocio della gamba controlaterale nelle viste laterali a $90^\circ$ e oblique a $45^\circ$, le query puntiformi isolate si agganciano frequentemente alla gamba opposta in oscillazione.
-  - **Bassa Fluidità e Rigidità:** Produce un Jerk RMS medio di `98.4 ± 41.2 m/s³` e una Deformazione Rigida 3D del `68.4% ± 24.5%`.
-- **Decisione:** Abbandonare il tracking basato esclusivamente su punti sparsi in favore del tracking 3D denso supportato da ancore anatomiche di contesto.
+### 1.2 SpatialTrackerV2 (Tracking Bidirezionale Forward-Backward)
+- **Riferimento:** Y. Xiao et al., *"SpatialTrackerV2: 3D Point Tracking Made Easy"*, *ICCV* 2025 (`arXiv:2507.12462`).
+- **Ipotesi:** Tracciare i punti query sulla coscia bidirezionalmente attorno al frame di riferimento $t_{\text{ref}}$ mediante wrapper forward/prefisso-invertito accoppiato a VGGT4Track.
+- **Risultati Empirici (6 Video, Finestra Temporale Appaiata 60–90 frame):**
+  - Raggiunge una buona correlazione del Pitch su finestre corte (`+0.546 ± 0.250`) e basso RMS Jerk (`30.4 ± 2.0 m/s³`), **ma soffre di forte elasticità non rigida (`Deformazione Rigida 3D = 56.7% ± 13.3%`, quasi 3× peggiore di DELTAv2)** perché il bundle adjustment globale non impone vincoli di rigidità anatomica.
+  - **Collo di Bottiglia di Scalabilità:** Non è in grado di elaborare sequenze complete (164–238+ frame) in un singolo passaggio per limiti di VRAM.
+- **Decisione:** Scartato come backbone principale di produzione; mantenuto come riferimento di benchmark su finestra breve.
 
 ---
 
 ## 2. Fase 2: Transizione al Tracking 3D Denso con DELTA v1 (`experiments/02_delta_v1/`)
 
-- **Innovazione:** Introduzione delle **Ancore Anatomiche Corporee** (`200` punti coscia + `300` ancore anti-swap sul bacino + `500` punti di contesto sul tronco), forzando l'attenzione del transformer a distinguere la coscia ipsilaterale dalla gamba opposta.
-- **Riscontri Sperimentali (Coorte dei 16 Video Comuni):**
-  - Riduzione degli scambi di identità dal `31.2%` al **`12.5%` (2/16 video)** e incremento della correlazione Pearson $r$ del Pitch da `0.142` a `0.218`.
-  - **Limite Tecnico:** DELTA v1 presentava un marcato jitter di profondità monoculare ad alta frequenza (`RMS Jerk = 64.2 ± 28.7 m/s³`) e richiedeva la suddivisione a finestra mobile (chunking) per sequenze lunghe (`>250` frame), introducendo discontinuità artificiali alle giunzioni dei blocchi.
+- **Riferimento:** T. D. Ngo et al., *"DELTA: Dense Efficient Long-range 3D Tracking for Any Video"*, *ICLR* 2025 (`arXiv:2410.24211`).
+- **Innovazione:** Sostituite le griglie diffuse con un'armatura anatomica strutturata da 1003 punti (`3` ancore + `200` coscia + `300` bacino + `500` torso) accoppiata alla profondità metrica **UniDepthV2** e a stitching a blocchi da 60 frame (overlap 25 frame) via SVD di Kabsch-Umeyama.
+- **Risultati Empirici (6 Video, Finestra Appaiata):**
+  - Correlazione competitiva su finestra corta (`Pitch r = +0.535 ± 0.335`, `AccX r = +0.482 ± 0.117`).
+  - **Limite:** Lo stitching SVD tra blocchi introduce micro-discontinuità di posizione ai bordi che esplodono alla derivazione seconda (**`RMS Jerk = 476.3 ± 133.8 m/s³`**, 15.5× più rumoroso di DELTAv2) con deformazione ancora elevata (`46.4% ± 31.0%`).
 
 ---
 
-## 3. Fase 3: Adozione di DELTAv2 + Geometric Pruning a 3 Stadi (`experiments/03_deltav2_prototyping/`)
+## 3. Fase 3: Adozione di DELTAv2 + Pruning Geometrico a 3 Stadi (`experiments/03_deltav2_prototyping/`)
 
-- **Svolta Metodologica:** L'aggiornamento a **DELTAv2** combinato con la profondità metrica di **UniDepthV2** e il **3-Stage Geometric Pruner** (`z_weight=0.25`, `h_min >= 3.5 cm`, `AR <= 8.0`) ha eliminato gli artefatti di giunzione e stabilizzato la geometria 3D della coscia lungo tutti gli angoli a 360°.
+- **Riferimento:** T. D. Ngo et al., *"DELTAv2: Accelerating Dense 3D Point Tracking"*, `arXiv:2602.18432`, 2026; abbinato a **UniDepthV2** (`L. Piccinelli et al., arXiv:2502.20110, 2025`).
+- **Svolta:** Il tracking in singolo passaggio sull'intera sequenza (240+ frame senza chunking, `coarse_to_fine_dense=True`, `n_iters=6`) abbinato a **GeometricPruner v4.1** ha eliminato gli artefatti di giunzione tra blocchi e ottenuto la minima deformazione rigida 3D (`19.6%` su finestra appaiata, `28.4%` sull'intera coorte di 40 video).
 
-| Architettura (Coorte 16 Video Comuni) | Pitch Pearson $r$ ($\uparrow$) | Pitch nRMSE (%) ($\downarrow$) | AccX Pearson $r$ ($\uparrow$) | 3D Acc DTW ($\downarrow$) | 3D Rigid Def. (%) ($\downarrow$) | RMS Jerk ($\text{m/s}^3$) ($\downarrow$) | Identity Swaps ($\downarrow$) |
+### Confronto Multi-Modello su Finestra Temporale Appaiata (6 Prove di Benchmark, 60–90 Frame)
+
+| Architettura / Configurazione | Finestra Temporale | AccX $r$ ($\uparrow$) | Pitch $r$ ($\uparrow$) | Pitch DTW ($\downarrow$) | 3D Acc DTW ($\downarrow$) | Def. Rigida 3D (%) ($\downarrow$) | RMS Jerk ($\text{m/s}^3$) ($\downarrow$) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **1. Dummy Tracker (OpenPose)** | `0.211 ± 0.312` | `32.8 ± 9.4` | `0.214 ± 0.158` | `1.332 ± 0.310` | `15.8 ± 8.9` *(2D)* | `1418.5 ± 560.2` | `5 / 16 (31.2%)` |
-| **2. SpaTrackerV2 (Forward-Backward)** | `0.142 ± 0.285` | `36.4 ± 11.2` | `0.168 ± 0.149` | `1.385 ± 0.295` | `68.4 ± 24.5` | `98.4 ± 41.2` | `5 / 16 (31.2%)` |
-| **3. DELTA v1 (Dense 3D)** | `0.218 ± 0.294` | `33.1 ± 8.8` | `0.229 ± 0.161` | `1.278 ± 0.194` | `52.1 ± 18.7` | `64.2 ± 28.7` | `2 / 16 (12.5%)` |
-| **4. DELTAv2 Raw (Non Filtrato)** | `0.198 ± 0.264` | `30.2 ± 6.5` | `0.251 ± 0.165` | `1.235 ± 0.162` | `108.4 ± 25.1` | `174.6 ± 60.4` | `2 / 16 (12.5%)` |
-| **5. DELTAv2 Refined Triplet (Nostro)** | **`0.312 ± 0.334`** | **`29.8 ± 9.1`** | **`0.268 ± 0.159`** | **`1.218 ± 0.168`** | **`27.9 ± 9.6`** | **`35.8 ± 13.9`** | **`1 / 16 (6.2%)`** |
+| **SpatialTrackerV2 + VGGT** | Appaiata (60–90 fr) | `+0.360 ± 0.255` | **`+0.546 ± 0.250`** | `0.269 ± 0.075` | `1.167 ± 0.211` | `56.7 ± 13.3` | **`30.4 ± 2.0`** |
+| **DELTAv2 (MediaPipe — Matched)** | Appaiata (60–90 fr) | `+0.449 ± 0.255` | `+0.430 ± 0.398` | **`0.221 ± 0.078`** | `1.309 ± 0.077` | **`19.6 ± 7.6`** | `30.7 ± 13.0` |
+| **DELTAv2 (BBox Grid — Matched)** | Appaiata (60–90 fr) | **`+0.497 ± 0.218`** | `+0.232 ± 0.298` | `0.312 ± 0.099` | `1.291 ± 0.212` | `24.5 ± 7.8` | `176.7 ± 46.7` |
+| **DELTA v1 (Chunked SVD — Matched)** | Appaiata (60–90 fr) | `+0.482 ± 0.117` | `+0.535 ± 0.335` | `0.235 ± 0.053` | `1.242 ± 0.176` | `46.4 ± 31.0` | `476.3 ± 133.8` |
+| **Dummy (2D Lift — Matched)** | Appaiata (60–90 fr) | `+0.394 ± 0.271` | `+0.227 ± 0.181` | `0.278 ± 0.055` | **`1.067 ± 0.138`** | `0.0 ± 0.0` *(2D)* | `1236.6 ± 387.6` |
+| **DELTAv2 (MediaPipe — Seq. Intera)** | Intera (164–238 fr) | `+0.401 ± 0.121` | `+0.184 ± 0.217` | `0.234 ± 0.020` | `1.166 ± 0.100` | `26.9 ± 5.6` | `35.6 ± 6.9` |
+
+Le tabelle complete per singolo video sono disponibili in [`results/REPORT_16_VIDEOS_MODEL_COMPARISON.md`](../results/REPORT_16_VIDEOS_MODEL_COMPARISON.md) e la valutazione completa sui 40 video in [`docs/05_BENCHMARK_RESULTS_AND_CONCLUSIONS.md`](05_BENCHMARK_RESULTS_AND_CONCLUSIONS.md).

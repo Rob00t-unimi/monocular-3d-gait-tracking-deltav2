@@ -2,14 +2,23 @@
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 [![Architecture: DELTAv2](https://img.shields.io/badge/3D%20Tracker-DELTAv2%20%2B%20UniDepthV2-success.svg)](docs/03_EXPERIMENTAL_CHRONICLE_AND_MODELS.md)
-[![Tests: 106 Passed](https://img.shields.io/badge/tests-106%20passed-brightgreen.svg)](tests/)
+[![Tests: 115 Passed](https://img.shields.io/badge/tests-115%20passed-brightgreen.svg)](tests/)
 
-**`Monocular-3d-gait-tracking-deltav2`** is a markerless monocular 3D gait analysis framework that extracts clinical thigh kinematics (sagittal flexion/extension pitch, 3D linear accelerations, step cadence, and rigid-body stability) across **arbitrary 360° camera viewing angles** (`90°` pure lateral, `45°` front/rear oblique, `0°` frontal approaching, and `180°` posterior receding), validated against synchronized wearable **WitMotion IMU** ground-truth sensors across **40 stratified videos** (39 subjects).
+**`Monocular-3d-gait-tracking-deltav2`** is a markerless monocular 3D gait analysis framework that extracts clinical thigh kinematics (sagittal flexion/extension pitch, 3D linear accelerations, step cadence, and rigid-body stability) across **arbitrary 360° camera viewing angles** (`90°` pure lateral, `45°` front/rear oblique, `0°` frontal approaching, and `180°` posterior receding), validated against synchronized wearable **WitMotion IMU** ground-truth sensors across **40 stratified videos** (40 unique subjects).
 
 ---
 
 <div align="center">
-  <h4> <a href="https://rob00t-unimi.github.io/monocular-3d-gait-tracking-deltav2/">Click here to Read Full Documentation</a> </h4>
+  <h3>
+    <a href="https://rob00t-unimi.github.io/monocular-3d-gait-tracking-deltav2/#report_pdf">📄 Read Technical Report (PDF — GitHub Pages)</a>
+  </h3>
+  <p>
+    <a href="https://rob00t-unimi.github.io/monocular-3d-gait-tracking-deltav2/docs/report_en.pdf">Download Report (EN PDF)</a> &nbsp;•&nbsp;
+    <a href="https://rob00t-unimi.github.io/monocular-3d-gait-tracking-deltav2/docs/report_it.pdf">Scarica Report (IT PDF)</a> &nbsp;•&nbsp;
+    <a href="https://rob00t-unimi.github.io/monocular-3d-gait-tracking-deltav2/docs/presentation_en.html">🎞️ Presentation Slides (EN)</a> &nbsp;•&nbsp;
+    <a href="https://rob00t-unimi.github.io/monocular-3d-gait-tracking-deltav2/docs/presentation_it.html">🎞️ Slides (IT)</a> &nbsp;•&nbsp;
+    <a href="https://rob00t-unimi.github.io/monocular-3d-gait-tracking-deltav2/#readme">📚 Full Documentation Hub</a>
+  </p>
 </div>
 
 ---
@@ -19,7 +28,7 @@
 ```text
 monocular-3d-gait-tracking-deltav2/
 ├── README.md                          # Project overview, CLI guide & benchmark summary
-├── CHANGELOG.md                       # Keep-a-Changelog release history (v0.1.0, v0.5.0, v1.0.0)
+├── CHANGELOG.md                       # Keep-a-Changelog release history (v0.1.0 .. v1.1.0)
 ├── pyproject.toml                     # Package configuration & `gait360` CLI entrypoint
 ├── .gitignore                         # Ignores heavy datasets, weights & temporary logs
 ├── .gitattributes                     # Git LFS tracking rules for .npz and .pdf artifacts
@@ -30,6 +39,10 @@ monocular-3d-gait-tracking-deltav2/
 │   └── setup/                         # Cross-platform setup & CUDA/DELTAv2 diagnostic scripts
 ├── data/                              # Manifests, cached states, datasets (Gait_Dataset) & IMU cache (gt_cache)
 ├── docs/
+│   ├── report_en.pdf                  # Technical Report (English, IEEE two-column, 9 pp.)
+│   ├── report_it.pdf                  # Technical Report (Italian, IEEE two-column, 9 pp.)
+│   ├── presentation_en.html           # Interactive HTML Presentation Slides (English, v4)
+│   ├── presentation_it.html           # Interactive HTML Presentation Slides (Italian, v4)
 │   ├── 01_SYSTEM_ARCHITECTURE_AND_CLI.md
 │   ├── 02_STEP_BY_STEP_METHODOLOGY.md
 │   ├── 03_EXPERIMENTAL_CHRONICLE_AND_MODELS.md
@@ -43,14 +56,16 @@ monocular-3d-gait-tracking-deltav2/
 ├── experiments/                       # Historical Decision Reports & Prototypes
 │   ├── 01_spatracker_vggt/            # Phase 1: VGGT & SpaTrackerV2 bidirectional exploration
 │   ├── 02_delta_v1/                   # Phase 2: DELTA v1 dense 3D & anatomical anchor trials
-│   └── 03_deltav2_prototyping/        # Phase 3: DELTAv2 validation & 16-video cohort JSON
+│   └── 03_deltav2_prototyping/        # Phase 3: DELTAv2 validation & benchmark prototypes
 ├── models/                            # External 3D Trackers & submodules (DELTA, DELTAv2, SpaTrackerV2, VGGT)
-├── results/
+├── results/                           # Primary 40-video benchmark (`bbox_grid`, 987 pts)
 │   ├── benchmark_40_metrics.json      # Authoritative 40-video per-trial & aggregate metrics
 │   ├── benchmark_40_summary.csv       # Tabular summary across all 4 evaluation tiers
 │   ├── REPORT_40_VIDEOS_BENCHMARK.md  # Full 40-video 4-tier benchmark report
 │   ├── REPORT_TRIPLET_VS_CLOUD_ABLATION.md
 │   └── REPORT_16_VIDEOS_MODEL_COMPARISON.md
+├── results_mediapipe/                 # 40-video MediaPipe silhouette ablation (`mediapipe`, 1003 pts)
+│   └── REPORT_40_VIDEOS_BENCHMARK.md
 ├── src/
 │   ├── cli.py                         # Unified parametric CLI (`gait360` / `python -m src.cli`)
 │   ├── core/                          # Domain models, interfaces, constants & exceptions
@@ -64,7 +79,7 @@ monocular-3d-gait-tracking-deltav2/
 │   ├── pipeline/                      # Stage orchestrators (dataset, cohort, vision, track, prune)
 │   ├── benchmark/                     # Multi-tier evaluator & deterministic report generator
 │   └── ui/                            # 4 Tkinter interactive 2D/3D/waveform inspectors
-└── tests/                             # 106 automated unit & integration tests
+└── tests/                             # 115 automated unit & integration tests
 ```
 
 ## 2. Unified Command-Line Interface (`gait360`)
@@ -151,48 +166,52 @@ Performs 2D vision preprocessing: identifies the terminal swing maximum horizont
 ---
 
 #### 4. `track` — Dense 3D Point Tracking Inference
-Executes dense 3D point tracking inference using the chosen tracker architecture (`deltav2` or `dummy`), storing raw 3D trajectory tensors in `data/inference_results/raw/`.
+Executes dense 3D point tracking inference using the chosen tracker architecture (`deltav2` or `dummy`), storing raw 3D trajectory tensors in `data/inference_results/raw/` (for `bbox_grid`) or `data/inference_results/raw_mediapipe/` (for `mediapipe`).
 - **Syntax:** `python -m src.cli track [options]`
 - **Parameters:**
   - `--tracker {deltav2, dummy}` *(default: `deltav2`)*:
-    - `deltav2`: Production pipeline combining UniDepthV2 metric depth estimation with DELTAv2 coarse-to-fine optical tracking and anatomical silhouette masking.
+    - `deltav2`: Production pipeline combining UniDepthV2 metric depth estimation with DELTAv2 coarse-to-fine optical tracking and configurable context anchors.
     - `dummy`: 2D OpenPose pseudo-3D lifted baseline (ablation benchmark).
+  - `--context-mode {mediapipe, bbox_grid}` *(default: `mediapipe`)*: Context sampling strategy for DELTAv2 (`bbox_grid` = `987` pts routed to `raw/`; `mediapipe` = `1003` pts routed to `raw_mediapipe/`).
+  - `--allow-fallback`: Allow explicit fallback to `bbox_grid` if MediaPipe silhouette sampling fails.
   - `--video <name>` *(default: `None`)*: Specific video filename to track. If omitted, runs batch inference across all 40 benchmark videos.
   - `--force`: Re-run inference even if cached raw `.npz` trajectory tensor already exists.
 - **Examples:**
   ```bash
-  python -m src.cli track --tracker deltav2       # Batch run on 40 videos with automatic .npz resume
-  python -m src.cli track --tracker deltav2 --video P27_E2T2_90.mp4  # Track single video
-  python -m src.cli track --tracker dummy         # Run dummy baseline tracker
-  python -m src.cli track --force                # Force re-tracking, overwriting cached .npz files
+  python -m src.cli track --tracker deltav2 --context-mode bbox_grid  # Primary 987-pt batch run
+  python -m src.cli track --tracker deltav2 --context-mode mediapipe  # 1003-pt MediaPipe silhouette run
+  python -m src.cli track --tracker deltav2 --video P27_E2T2_90.mp4   # Track single video
+  python -m src.cli track --tracker dummy                             # Run dummy baseline tracker
   ```
 
 ---
 
 #### 5. `prune` — 3-Stage Geometric Post-Processing & Triplet Selection
-Executes the 3-Stage Geometric Post-Processing pipeline on raw DELTAv2 trajectories to filter out background floaters, dampen monocular depth z-jitter, and extract the optimal rigid triplet protected against normal-vector twist.
+Executes the 3-Stage Geometric Post-Processing pipeline on raw DELTAv2 trajectories to filter out background floaters, dampen monocular depth z-jitter, and extract the optimal rigid triplet.
 - **Syntax:** `python -m src.cli prune [options]`
 - **Parameters:**
   - `--video <name>` *(default: `None`)*: Specific video filename to prune. If omitted, processes all raw `.npz` tensors in batch.
-  - `--z-weight <float>` *(default: `0.25`)*: Anisotropic depth axis weighting for Stage 1-2 spatial DBSCAN and MAD velocity filtering.
-  - `--min-altitude <float>` *(default: `0.035`)*: Minimum physical triangle altitude ($h_{\min}$) in meters to guard against collinear triplet twist.
+  - `--context-mode {bbox_grid, mediapipe}` *(default: `bbox_grid`)*: Selects which raw/refined directory pair to prune (`raw/ -> refined/` or `raw_mediapipe/ -> refined_mediapipe/`).
+  - `--z-weight <float>` *(default: `0.25`)*: Anisotropic depth axis weighting parameter exposed via CLI.
+  - `--min-altitude <float>` *(default: `0.035`)*: Minimum physical triangle altitude ($h_{\min}$) in meters.
   - `--max-aspect-ratio <float>` *(default: `8.0`)*: Maximum triangle aspect ratio threshold ($\text{AR} = b / h$).
-  - `--force`: Force re-pruning even if cached refined `.npz` already exists in `data/inference_results/refined/`.
-- **Generated Artifacts:** Refined trajectory tensors in `data/inference_results/refined/`.
+  - `--force`: Force re-pruning even if cached refined `.npz` already exists.
+- **Generated Artifacts:** Refined trajectory tensors in `data/inference_results/refined/` (or `refined_mediapipe/`).
 - **Examples:**
   ```bash
-  python -m src.cli prune                        # Batch pruning across all 40 videos with default guards
+  python -m src.cli prune                        # Batch pruning across all 40 videos (`bbox_grid`)
+  python -m src.cli prune --context-mode mediapipe
   python -m src.cli prune --video P27_E2T2_90.mp4 # Prune single video
-  python -m src.cli prune --z-weight 0.20 --min-altitude 0.040
   ```
 
 ---
 
 #### 6. `evaluate` — SVD Kinematic Alignment & Benchmark Reporting
-Aligns 3D visual trajectories with WitMotion IMU ground-truth coordinate systems using Kabsch SVD rotation, extracts clinical gait waveforms (Pitch, 3D accelerations), computes 4-tier benchmark metrics (Pearson $r$, Peak XCorr, nRMSE, ROM error, DTW, Rigidity, Jerk), and generates authoritative reports.
+Aligns 3D visual trajectories with WitMotion IMU ground-truth coordinate systems using Kabsch SVD rotation and $\mathfrak{so}(3)$ Lie-algebra orientation alignment, extracts clinical gait waveforms (Pitch, 3D accelerations), computes 4-tier benchmark metrics (Pearson $r$, nRMSE, ROM error, DTW, Cadence error, Rigidity, Jerk, Identity Swaps), and generates authoritative reports.
 - **Syntax:** `python -m src.cli evaluate [options]`
 - **Parameters:**
-  - `--reports-only`: Regenerates markdown reports and summary CSV directly from existing `results/benchmark_40_metrics.json` without recomputing SVD kinematic alignment.
+  - `--context-mode {bbox_grid, mediapipe}` *(default: `bbox_grid`)*: Selects which tracking results to evaluate (`results/` vs `results_mediapipe/`).
+  - `--reports-only`: Regenerates markdown reports and summary CSV directly from existing `benchmark_40_metrics.json` without recomputing SVD kinematic alignment.
   - `--force`: Force full recomputation of SVD kinematic alignment and metrics across all 40 videos even if cached results exist.
 - **Generated Artifacts:**
   - `results/benchmark_40_metrics.json`
@@ -230,20 +249,21 @@ Launches standalone interactive graphical inspectors for qualitative validation 
 
 ---
 
-## 3. 40-Video Benchmark Summary
+## 3. 40-Video Benchmark Summary (`bbox_grid`, N = 40)
 
-| Metric (40 Stratified Videos) | 1. Dummy Tracker | 2. DELTAv2 Raw | 3. DELTAv2 Pruned Cloud | 4. DELTAv2 Refined Triplet |
+| Metric (40 Stratified Videos) | 1. Dummy Tracker (2D Lift) | 2. DELTAv2 Raw | 3. DELTAv2 Refined Cloud (SVD) | 4. DELTAv2 Refined Triplet |
 | :--- | :---: | :---: | :---: | :---: |
-| **Pitch Pearson $r$** ($\uparrow$) | `0.199 ± 0.305` | `0.185 ± 0.258` | `0.276 ± 0.278` | **`0.295 ± 0.329`** *(wins 21/40 vs Cloud)* |
-| **Pitch Peak XCorr** ($\uparrow$) | `0.369 ± 0.175` | `0.331 ± 0.156` | `0.391 ± 0.169` | **`0.415 ± 0.195`** |
-| **Pitch nRMSE (%)** ($\downarrow$) | `33.2 ± 9.7` | `30.8 ± 6.7` | `34.4 ± 10.6` | **`30.5 ± 9.3`** |
-| **Pitch ROM Error (%)** ($0\%$) | `-31.7% ± 88.2%` | `-15.5% ± 66.2%` | `+45.2% ± 112.9%` | **`+4.1% ± 70.8%`** |
-| **AccX Pearson $r$** ($\uparrow$) | `0.205 ± 0.163` | `0.243 ± 0.168` | **`0.273 ± 0.152`** | `0.255 ± 0.162` |
-| **3D Acc DTW (norm)** ($\downarrow$) | `1.345 ± 0.328` | `1.242 ± 0.168` | `1.239 ± 0.160` | **`1.230 ± 0.173`** |
-| **3D Rigid Deformation (%)** ($\downarrow$) | `16.4 ± 9.4` *(2D)* | `110.9 ± 26.8` | `41.4 ± 20.1` | **`28.4 ± 9.9`** *(wins 39/40 = 97.5% vs Cloud)* |
-| **RMS Jerk ($\text{m/s}^3$)** ($\downarrow$) | `1452.0 ± 592.3` | `179.9 ± 62.7` | **`28.9 ± 11.4`** | `36.6 ± 14.3` |
-| **True Identity Swaps ($90^\circ$ & $45^\circ$)** | `9 / 30 (30.0%)` | `4 / 30 (13.3%)` | `3 / 30 (10.0%)` | **`3 / 30 (10.0%)`** |
-| **Axial Depth Artifacts ($0^\circ$ & $180^\circ$)** | `4 / 10 (40.0%)` | `1 / 10 (10.0%)` | `1 / 10 (10.0%)` | **`1 / 10 (10.0%)`** |
+| **Pitch Pearson $r$** ($\uparrow$) | `0.199 ± 0.452` | `0.185 ± 0.316` | `0.276 ± 0.288` | **`0.295 ± 0.329`** *(wins 21/40 vs Cloud)* |
+| **Pitch DTW (norm)** ($\downarrow$) | **`0.218 ± 0.057`** | `0.244 ± 0.049` | `0.240 ± 0.044` | `0.243 ± 0.042` *(wins 22/40 vs Cloud)* |
+| **Pitch nRMSE (%)** ($\downarrow$) | **`28.6 ± 7.8`** | `30.4 ± 6.7` | `34.4 ± 8.3` | `30.5 ± 9.3` |
+| **Pitch ROM Error (%)** ($0\%$) | `-31.7 ± 46.0` | `-15.5 ± 48.5` | `+44.1 ± 54.6` | **`+4.1 ± 70.8`** |
+| **AccX Pearson $r$** ($\uparrow$) | `0.205 ± 0.140` | `0.243 ± 0.171` | **`0.288 ± 0.145`** | `0.255 ± 0.162` |
+| **3D Acc DTW (norm)** ($\downarrow$) | `1.244 ± 0.230` | `1.275 ± 0.214` | `1.248 ± 0.170` | **`1.230 ± 0.173`** |
+| **3D Rigid Deformation (%)** ($\downarrow$) | `0.0 ± 0.0` *(planar 2D)* | `33.3 ± 12.3` | `41.4 ± 8.3` | **`28.4 ± 9.9`** *(wins 39/40 = 97.5% vs Cloud)* |
+| **RMS Jerk ($\text{m/s}^3$)** ($\downarrow$) | `1452.0 ± 646.6` | `179.9 ± 58.6` | **`36.2 ± 14.1`** | `36.6 ± 14.3` |
+| **Antiphase Duration (%)** ($\downarrow$) | `22.3 ± 26.4` | `17.3 ± 17.8` | `16.8 ± 19.9` | **`13.5 ± 15.9`** |
+| **True Identity Swaps ($90^\circ$ & $45^\circ$)** | `9 / 30 (30.0%)` | `4 / 30 (13.3%)` | `5 / 30 (16.7%)` | **`3 / 30 (10.0%)`** |
+| **Axial Depth Artifacts ($0^\circ$ & $180^\circ$)** | `4 / 10 (40.0%)` | `1 / 10 (10.0%)` | `2 / 10 (20.0%)` | **`1 / 10 (10.0%)`** |
 
 ### Context-Mode Ablation (`bbox_grid` vs. `mediapipe` — 40/40 Videos)
 
@@ -285,14 +305,13 @@ Launches standalone interactive graphical inspectors for qualitative validation 
 
 > [!NOTE]
 > **DELTAv2 Model & Weights Provenance:**  
-> DELTAv2 (*DenseTrack3Dv2*) is a cutting-edge research prototype developed by Snap Research (Ngo et al., *"DELTAv2: Dense Efficient Long-range 3D Tracking for Any video"*, arXiv:2508.01170) as an evolution of DELTA (CVPR 2024). It is not distributed as a package via PyPI. The model architecture was integrated directly from Snap Research's official experimental repository ([`snap-research/DenseTrack3Dv2`](https://github.com/snap-research/DenseTrack3Dv2)), and the official pre-trained checkpoint (`densetrack3dv2.pth`, 205.7 MB) was obtained via the authors' Google Drive mirror (`1Qa9YFAjBFIzrrHHWf8NZMln5YkLfw4Qa`) documented in their repository. DELTAv2 was integrated into this framework on **October 20, 2026** (Phase 3) to overcome the temporal asymmetry and identity swaps observed with SpaTrackerV2 and DELTA v1.
+> DELTAv2 (*DenseTrack3Dv2*) is a dense 3D point tracking architecture developed by Ngo et al. (*"DELTAv2: Accelerating Dense 3D Point Tracking"*, arXiv:2602.18432, 2026) as an evolution of DELTA (ICLR 2025). It is not distributed as a package via PyPI. The model architecture was integrated directly from Snap Research's official repository ([`snap-research/DenseTrack3Dv2`](https://github.com/snap-research/DenseTrack3Dv2)), and the official pre-trained checkpoint (`densetrack3dv2.pth`, 205.7 MB) was obtained via the authors' Google Drive mirror documented in their repository to overcome the temporal asymmetry and identity swaps observed with SpatialTrackerV2 and DELTA v1.
 
 | Component / Submodule | Role in Framework | Scientific Paper & References | Upstream Code & Resources |
 | :--- | :--- | :--- | :--- |
-| **Gait360** | Multi-View Dataset & Wearable IMU Ground-Truth | Synchronized 360° gait recordings across multiple viewing perspectives (`0°`, `45°`, `90°`, `180°`) and elevations, paired with synchronized 9-DoF **WitMotion IMUs**. Publicly released by Liverpool John Moores University (LJMU). | [LJMU OpenData (eprint/133)](https://opendata.ljmu.ac.uk/id/eprint/133/) |
-| **DELTAv2** | Primary Dense 3D Point Tracker | Ngo et al., *"DELTAv2: Dense Efficient Long-range 3D Tracking for Any video"*, arXiv:2508.01170. SOTA joint tracking and dense depth estimation. | [GitHub (`snap-research/DenseTrack3Dv2`)](https://github.com/snap-research/DenseTrack3Dv2) • [Local PDF](docs/references/DELTAv2.pdf) |
-| **DELTA** | Phase 2 Baseline 3D Tracker (v1) | Babiloni et al., *"DELTA: Dense Efficient Long-range 3D Tracking"*, CVPR 2024. Initial 3D dense tracker evaluated in Phase 2. | [GitHub (`snap-research/DELTA_densetrack3d`)](https://github.com/snap-research/DELTA_densetrack3d) • [Local PDF](docs/references/DELTA.pdf) |
-| **UniDepth / UniDepthV2** | Monocular Metric Depth Backbone | Piccinelli et al., *"UniDepth: Universal Monocular Metric Depth Estimation"*, CVPR 2024. Powers true metric unprojection in DELTAv2. | [GitHub (`lpiccinelli-eth/UniDepth`)](https://github.com/lpiccinelli-eth/UniDepth) • [arXiv:2403.18913](https://arxiv.org/abs/2403.18913) |
-| **SpaTracker** | Phase 1 Exploratory 3D Tracker (v1) | Xiao et al., *"Spatial-Temporal Point Tracking"*, 2024. Evaluated during early bidirectional point tracking benchmarking. | [GitHub (`henry123-boy/SpaTracker`)](https://github.com/henry123-boy/SpaTracker) |
-| **SpaTrackerV2** | Phase 1 Exploratory 3D Tracker (v2) | Xiao et al., *"Spatial-Temporal Point Tracking v2"*, 2024. Extended point tracker evaluated on multi-scenario gait sequences. | [GitHub (`henry123-boy/SpaTrackerV2`)](https://github.com/henry123-boy/SpaTrackerV2) • [Local PDF](docs/references/SpaTrackerv2.pdf) |
-| **VGGT** | Phase 1 Transformer Tracker | Xu et al., *"Visual Geometry Grounded Transformer for Point Tracking"*, 2024. Evaluated for pointcloud reconstruction. | [GitHub (`facebookresearch/vggt`)](https://github.com/facebookresearch/vggt) • [Local PDF](docs/references/VGGT.pdf) |
+| **Gait360** | Multi-View Dataset & Wearable IMU Ground-Truth | L. K. Topham et al., *"A diverse and multi-modal gait dataset of indoor and outdoor walks acquired using multiple cameras and sensors"*, *Scientific Data*, vol. 10, p. 320, 2023. Synchronized 360° gait recordings (`0°`, `45°`, `90°`, `180°`) paired with 9-DoF **WitMotion IMUs** (LJMU). | [LJMU OpenData (eprint/133)](https://opendata.ljmu.ac.uk/id/eprint/133/) |
+| **DELTAv2** | Primary Dense 3D Point Tracker | T. D. Ngo et al., *"DELTAv2: Accelerating Dense 3D Point Tracking"*, arXiv:2602.18432, 2026. Coarse-to-fine dense 3D tracking with coupled metric depth. | [GitHub (`snap-research/DenseTrack3Dv2`)](https://github.com/snap-research/DenseTrack3Dv2) • [Local PDF](docs/references/DELTAv2.pdf) |
+| **DELTA** | Phase 2 Baseline 3D Tracker (v1) | T. D. Ngo et al., *"DELTA: Dense Efficient Long-range 3D Tracking for Any Video"*, in *Proc. ICLR*, 2025 (arXiv:2410.24211). Initial 3D dense tracker evaluated in Phase 2. | [GitHub (`snap-research/DELTA_densetrack3d`)](https://github.com/snap-research/DELTA_densetrack3d) • [Local PDF](docs/references/DELTA.pdf) |
+| **UniDepth / UniDepthV2** | Monocular Metric Depth Backbone | L. Piccinelli et al., *"UniDepth: Universal Monocular Metric Depth Estimation"*, *CVPR* 2024; and *"UniDepthV2: Universal Monocular Metric Depth Estimation Made Simpler"*, arXiv:2502.20110, 2025. | [GitHub (`lpiccinelli-eth/UniDepth`)](https://github.com/lpiccinelli-eth/UniDepth) • [arXiv:2502.20110](https://arxiv.org/abs/2502.20110) |
+| **SpatialTracker / SpatialTrackerV2** | Phase 1 Exploratory 3D Trackers | Y. Xiao et al., *"SpatialTracker: Tracking Any 2D Pixels in 3D Space"*, *CVPR* 2024; and *"SpatialTrackerV2: 3D Point Tracking Made Easy"*, *ICCV* 2025 (arXiv:2507.12462). | [GitHub (`henry123-boy/SpaTrackerV2`)](https://github.com/henry123-boy/SpaTrackerV2) • [Local PDF](docs/references/SpaTrackerv2.pdf) |
+| **VGGT** | Phase 1 Visual Geometry Backbone | J. Wang et al., *"VGGT: Visual Geometry Grounded Transformer"*, *CVPR* 2025 (arXiv:2503.11651). Evaluated for multi-frame 3D pointcloud initialization. | [GitHub (`facebookresearch/vggt`)](https://github.com/facebookresearch/vggt) • [Local PDF](docs/references/VGGT.pdf) |

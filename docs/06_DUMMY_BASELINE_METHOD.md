@@ -1,14 +1,14 @@
 # 06 — Dummy Baseline Method (OpenPose 2D Lift)
 
-This document provides a detailed technical specification of the geometric baseline ("Dummy Method") implemented in `src/inference/dummy_tracker.py` and evaluated across the Gait360 benchmark.
+This document provides the technical specification of the non-deep-learning geometric baseline ("Dummy Method") implemented in `src/inference/dummy_tracker.py` and configured in `configs/default_config.yaml`.
 
 ---
 
 ## 1. Motivation & Purpose
 
-To quantitatively isolate the contribution of deep metric 3D point tracking (DELTAv2) and geometric post-processing (GeometricPruner), the benchmark includes a non-deep-learning 2D geometric baseline:
-- Instead of tracking arbitrary optical features across time using cross-attention, the **Dummy Method** relies strictly on sparse 2D skeletal keypoint detections from **OpenPose** (`RHip`, `RKnee`, `LHip`, `LKnee`).
-- It tests a critical scientific baseline question: *Can clinical thigh kinematics be reliably extracted simply by projecting and transferring initial thigh points according to 2D skeleton joints?*
+To quantitatively isolate the contribution of dense metric 3D point tracking (DELTAv2 + UniDepthV2) and geometric post-processing (`GeometricPruner`), the benchmark includes a purely 2D skeletal geometric baseline:
+- Instead of tracking dense optical features in 3D using spatio-temporal attention, the **Dummy Method** relies strictly on sparse 2D skeletal keypoint detections from **OpenPose** (`RHip`, `RKnee`, `LHip`, `LKnee`).
+- It tests a fundamental ablation question: *Can clinical 3D thigh kinematics be reliably extracted simply by rigidly transferring initial thigh points using 2D skeleton joints and a constant-depth pinhole lift?*
 
 ---
 
@@ -28,41 +28,35 @@ $$\hat{\mathbf{u}}_\perp = \begin{bmatrix} -\hat{u}_y \\ \hat{u}_x \end{bmatrix}
 ### B. Scale-Invariant Coordinate Extraction
 Each thigh point $P_i$ ($i \in \{1, 2, 3\}$) is parameterized into scale-invariant relative coordinates $(\alpha_i, \beta_i)$ relative to the knee joint:
 
-$$\Delta\mathbf{p}_i = P_i - \mathbf{p}_{\text{knee}}$$
-$$\alpha_i = \frac{\Delta\mathbf{p}_i \cdot \hat{\mathbf{u}}}{L_{\text{femur}}}, \qquad \beta_i = \frac{\Delta\mathbf{p}_i \cdot \hat{\mathbf{u}}_\perp}{L_{\text{femur}}}$$
-
-Here, $\alpha_i$ represents the normalized longitudinal position along the femur ($0 = \text{knee}$, $1 = \text{hip}$), while $\beta_i$ represents the transverse deviation.
+$$\Delta\mathbf{p}_i = P_i - \mathbf{p}_{\text{knee}}, \qquad \alpha_i = \frac{\Delta\mathbf{p}_i \cdot \hat{\mathbf{u}}}{L_{\text{femur}}}, \qquad \beta_i = \frac{\Delta\mathbf{p}_i \cdot \hat{\mathbf{u}}_\perp}{L_{\text{femur}}}$$
 
 ### C. Frame-by-Frame Transfer Across the Video
 For every target frame $t \in [0, T-1]$ where OpenPose detects knee $\mathbf{p}_{\text{knee}}(t)$ and hip $\mathbf{p}_{\text{hip}}(t)$ with sufficient confidence:
-1. Recompute the instantaneous femur length $L_{\text{femur}}(t)$, longitudinal unit vector $\hat{\mathbf{u}}(t)$, and orthogonal unit vector $\hat{\mathbf{u}}_\perp(t)$.
-2. Transfer the relative coordinates back to image space:
 
 $$P_i(t) = \mathbf{p}_{\text{knee}}(t) + L_{\text{femur}}(t) \left( \alpha_i \hat{\mathbf{u}}(t) + \beta_i \hat{\mathbf{u}}_\perp(t) \right)$$
 
-If joint detections are missing or occluded at frame $t$, coordinates are linearly interpolated.
+Missing or occluded joint detections are linearly interpolated across time.
 
 ---
 
-## 3. Naive Pinhole 3D Lifting
+## 3. Naive Pinhole 3D Lifting (`depth_mode = "constant"`)
 
-To project the transferred 2D points into camera space $(X, Y, Z)$ without a dense metric depth model, the Dummy Method applies a naive geometric lifting:
-1. **Depth from Anthropometric Femur Prior:** Assuming an average human femur length $L_{\text{phys}} \approx 0.42\text{ m}$ and camera focal length $f$ (from camera intrinsics), the instantaneous estimated depth $\tilde{Z}(t)$ is approximated by:
+To lift the transferred 2D points into 3D camera coordinates $(X, Y, Z)$ without a monocular depth network, `DummyTracker.lift_to_3d` uses a pinhole camera model with principal point $(c_x, c_y) = (W/2, H/2)$ and nominal focal length $f = 1.2 \cdot \max(W, H)$ (`focal_factor = 1.2`):
 
-   $$\tilde{Z}(t) = \frac{f \cdot L_{\text{phys}}}{L_{\text{femur}}(t)}$$
+$$\mathbf{X}_{\text{cam}, i}(t) = \begin{bmatrix} \frac{P_{i, x}(t) - c_x}{f} \cdot Z(t) \\ \frac{P_{i, y}(t) - c_y}{f} \cdot Z(t) \\ Z(t) \end{bmatrix}$$
 
-2. **Inverse Pinhole Projection:**
-
-   $$\mathbf{X}_{\text{cam}, i}(t) = \begin{bmatrix} \frac{P_{i, x}(t) - c_x}{f_x} \cdot \tilde{Z}(t) \\ \frac{P_{i, y}(t) - c_y}{f_y} \cdot \tilde{Z}(t) \\ \tilde{Z}(t) \end{bmatrix}$$
+- **Production Benchmark Configuration (`depth_mode = "constant"`):** Uses a constant planar depth $Z(t) = Z_0 = 2.5\text{ m}$ (`default_depth_m = 2.5` in `configs/default_config.yaml`). Because all 3 points lie on the same fronto-parallel plane at constant $Z_0$ and are rigidly transferred in 2D, the resulting 3D pairwise distance variation is identically `0.0%` (**planar geometric tautology**, not genuine 3D rigidity).
+- **Optional Mode (`depth_mode = "anthropometric"`):** Also implemented in `dummy_tracker.py` by scaling $Z(t) = Z_0 \cdot (L_{\text{femur}}(t_{\text{ref}}) / L_{\text{femur}}(t))$ (clamped to $[0.2, 5.0]$), but not used in the primary benchmark because foreshortening in axial views causes extreme depth divergence.
 
 ---
 
-## 4. Benchmark Findings & Limitations
+## 4. Benchmark Findings & Limitations (40 Gait360 Videos)
 
-When evaluated across the 40 Gait360 videos:
-1. **Severe Acceleration Jitter (RMS Jerk = 1452.0 m/s³):**
-   Frame-to-frame OpenPose joint jitter induces massive second-derivative acceleration noise (**40× higher** than DELTAv2 Refined Triplet, `1452.0` vs `36.6 m/s³`).
-2. **High Identity Swap Rate (30.0%, 9/30 crossover videos):**
-   In $90^\circ$ and $45^\circ$ views, OpenPose frequently confuses the left and right knee/hip during contralateral limb crossing, transferring the points onto the wrong leg.
-3. **Axial View Collapse (0° and 180°):**
-   When the subject walks toward or away from the camera, 2D femur shortening causes erratic depth estimates, producing a **40.0% axial depth artifact rate**.
+1. **Severe Acceleration Jitter (`RMS Jerk = 1452.0 ± 646.6 m/s³`):**
+   Frame-to-frame OpenPose 2D keypoint jitter explodes under second-order differentiation (**~40× noisier** than DELTAv2 Refined Triplet, `36.6 ± 14.3 m/s³`).
+2. **Severe Pitch ROM Underestimation (`-31.7% ± 46.0%`):**
+   Compresses true thigh sagittal excursion by nearly one third compared to DELTAv2 Refined Triplet (`+4.1% ± 70.8%`).
+3. **High Identity Swap Rate (`30.0%`, 9/30 crossover videos):**
+   In $90^\circ$ and $45^\circ$ views, OpenPose frequently swaps left/right hip and knee labels during contralateral leg crossing (3× worse than DELTAv2 Refined Triplet's `10.0%`, 3/30).
+4. **Axial View Collapse (`40.0%`, 4/10 frontal/posterior videos):**
+   Without true 3D depth estimation, perspective foreshortening along the optical axis triggers antiphase artifacts in 4 out of 10 axial trials (vs `10.0%`, 1/10 for DELTAv2 Refined Triplet).
