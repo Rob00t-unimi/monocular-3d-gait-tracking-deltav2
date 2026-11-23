@@ -16,16 +16,16 @@
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: |
 | **Kinematic Correlation** | **Pitch Pearson r** *(higher is better)* | 0.185 | **0.295** | 0.276 | **Refined Triplet** | **21** vs 19 |
 | **Kinematic Correlation** | **Pitch abs(r)** *(higher is better)* | 0.302 | **0.382** | 0.366 | **Refined Triplet** | **21** vs 19 |
-| **Waveform Alignment** | **Pitch DTW norm** *(lower is better)* | 0.244 | **0.243** | 0.240 | **Refined Triplet** | **22** vs 18 |
+| **Waveform Alignment** | **Pitch DTW norm** *(lower is better)* | 0.244 | 0.243 | **0.240** | **Refined Cloud** *(Triplet wins 22/40)* | **22** vs 18 |
 | **Rigid Body Fidelity** | **3D Deformation %** *(lower is better)* | 33.3% | **28.4%** | 41.4% | **Refined Triplet** | **39** vs 1 |
-| **3D State-Space Orbit** | **3D Acc DTW** *(lower is better)* | 1.275 | **1.230** | 1.248 | **Refined Triplet** | **18** vs 22 |
-| **3D Trajectory Smoothness**| **RMS Jerk** *(lower is better)* | 179.9 | **36.6** | 36.2 | **Refined Triplet** | **18** vs 22 |
-| **Linear Acceleration** | **AccX Pearson r** *(higher is better)* | 0.243 | **0.255** | 0.288 | **Refined Cloud** | **16** vs 24 |
+| **3D State-Space Orbit** | **3D Acc DTW** *(lower is better)* | 1.275 | **1.230** | 1.248 | **Refined Triplet** | 18 vs 22 |
+| **3D Trajectory Smoothness**| **RMS Jerk** *(lower is better)* | 179.9 | 36.6 | **36.2** | **Refined Cloud** | 18 vs 22 |
+| **Linear Acceleration** | **AccX Pearson r** *(higher is better)* | 0.243 | 0.255 | **0.288** | **Refined Cloud** | 16 vs 24 |
 
 ### 📌 Scientific Verdict:
 1. **Decisive Superiority of Refined Triplet for Gait Kinematics:**
-   - **Pitch Correlation:** Refined Triplet achieves an average Pearson $r = \mathbf{0.295}$ vs $\mathbf{0.276}$ for the Cloud (**+7.0% improvement**). It wins in **21 of 40 videos (52.5%)**.
-   - **Waveform Fidelity (DTW):** Refined Triplet achieves lower DTW distance to Ground Truth (0.243 vs 0.240), winning in **22 of 40 videos (55.0%)**.
+   - **Pitch Correlation:** Refined Triplet achieves an average Pearson $r = \mathbf{0.295}$ vs $\mathbf{0.276}$ for the Cloud (**+6.9% relative improvement**). It wins in **21 of 40 videos (52.5%)**.
+   - **Waveform Fidelity (DTW):** Refined Triplet wins head-to-head on **22 of 40 videos (55.0%)** for Pitch DTW (mean `0.243` vs `0.240`) and achieves the best mean 3D Acceleration DTW (`1.230` vs `1.248`).
    - **Rigid Body Consistency:** The optimal 3 points isolated by Geometric Pruning exhibit only **28.4%** structural deformation, compared to **41.4%** for the full point cloud (winning in **39 of 40 videos, 97.5%**).
 2. **Point Cloud Role:**
    - SVD Best-Fit over 100+ points acts as a spatial low-pass filter on centroid motion (AccX $r = 0.288$ vs $0.255$ for Triplet).
@@ -142,6 +142,6 @@ the tracking system produces authentic, positive gait pitch curves across **all 
 
 ---
 
-## 5. Context-Mode Comparison Note (`bbox_grid` vs. `mediapipe`)
+## 6. Context-Mode Comparison Note (`bbox_grid` vs. `mediapipe`)
 
 In the subsequent 40/40 `--context-mode mediapipe` run (`results_mediapipe/REPORT_40_VIDEOS_BENCHMARK.md`), `Refined Cloud (SVD)` (`Pitch r = 0.293 ± 0.295`, `6/30` swaps) outperforms `mediapipe Refined Triplet` (`Pitch r = 0.209 ± 0.385`, `8/30` swaps). Across both context modes, however, **`bbox_grid` + `Refined Triplet`** remains the overall best method (`Pitch r = 0.295 ± 0.329`, `3/30 = 10.0%` swaps, `28.4%` 3D deformation, `+4.1%` Pitch ROM error).

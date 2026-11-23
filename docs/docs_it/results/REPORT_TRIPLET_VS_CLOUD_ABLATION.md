@@ -16,16 +16,16 @@
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: |
 | **Correlazione Cinematica** | **Pitch Pearson r** *(più alto è meglio)* | 0.185 | **0.295** | 0.276 | **Tripletta Rifinita** | **21** vs 19 |
 | **Correlazione Cinematica** | **Pitch abs(r)** *(più alto è meglio)* | 0.302 | **0.382** | 0.366 | **Tripletta Rifinita** | **21** vs 19 |
-| **Allineamento Forma d'Onda** | **Pitch DTW norm** *(più basso è meglio)* | 0.244 | **0.243** | 0.240 | **Tripletta Rifinita** | **22** vs 18 |
+| **Allineamento Forma d'Onda** | **Pitch DTW norm** *(più basso è meglio)* | 0.244 | 0.243 | **0.240** | **Nuvola Filtrata** *(Tripletta vince 22/40)* | **22** vs 18 |
 | **Fedeltà di Corpo Rigido** | **Deformazione 3D %** *(più basso è meglio)* | 33.3% | **28.4%** | 41.4% | **Tripletta Rifinita** | **39** vs 1 |
-| **Orbita Spazio degli Stati 3D** | **3D Acc DTW** *(più basso è meglio)* | 1.275 | **1.230** | 1.248 | **Tripletta Rifinita** | **18** vs 22 |
-| **Fluidità Traiettoria 3D** | **RMS Jerk** *(più basso è meglio)* | 179.9 | **36.6** | 36.2 | **Tripletta Rifinita** | **18** vs 22 |
-| **Accelerazione Lineare** | **AccX Pearson r** *(più alto è meglio)* | 0.243 | **0.255** | 0.288 | **Nuvola Filtrata** | **16** vs 24 |
+| **Orbita Spazio degli Stati 3D** | **3D Acc DTW** *(più basso è meglio)* | 1.275 | **1.230** | 1.248 | **Tripletta Rifinita** | 18 vs 22 |
+| **Fluidità Traiettoria 3D** | **RMS Jerk** *(più basso è meglio)* | 179.9 | 36.6 | **36.2** | **Nuvola Filtrata** | 18 vs 22 |
+| **Accelerazione Lineare** | **AccX Pearson r** *(più alto è meglio)* | 0.243 | 0.255 | **0.288** | **Nuvola Filtrata** | 16 vs 24 |
 
 ### 📌 Verdetto Scientifico:
 1. **Decisa Superiorità della Tripletta Rifinita per la Cinematica del Cammino:**
-   - **Correlazione Pitch:** La Tripletta Rifinita raggiunge una correlazione Pearson media di $r = \mathbf{0.295}$ contro $\mathbf{0.276}$ della Nuvola (**+7.0% di miglioramento netto**). Vince in **21 video su 40 (52.5%)**.
-   - **Fedeltà di Forma d'Onda (DTW):** La Tripletta ottiene una distanza DTW inferiore rispetto al Ground Truth (0.243 vs 0.240), vincendo in **22 video su 40 (55.0%)**.
+   - **Correlazione Pitch:** La Tripletta Rifinita raggiunge una correlazione Pearson media di $r = \mathbf{0.295}$ contro $\mathbf{0.276}$ della Nuvola (**+6.9% di miglioramento relativo**). Vince in **21 video su 40 (52.5%)**.
+   - **Fedeltà di Forma d'Onda (DTW):** La Tripletta vince testa a testa in **22 video su 40 (55.0%)** sul Pitch DTW (media `0.243` vs `0.240`) e ottiene la migliore distanza media 3D Acc DTW (`1.230` vs `1.248`).
    - **Coerenza di Corpo Rigido:** I 3 punti ottimali isolati dal Geometric Pruning mostrano solo il **28.4%** di deformazione strutturale, contro il **41.4%** dell'intera nuvola di punti (vittoria in ben **39 video su 40, 97.5%**).
 2. **Ruolo della Nuvola di Punti:**
    - Il Best-Fit SVD su oltre 100 punti agisce come filtro passa-basso spaziale sul moto del baricentro (AccX $r = 0.288$ vs $0.255$ per la Tripletta).

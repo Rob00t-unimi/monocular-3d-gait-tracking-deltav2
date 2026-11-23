@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Bilingual Technical Report PDFs (`docs/report_en.pdf`, `docs/report_it.pdf`) & Presentation Slides v4 (`docs/presentation_en.html`, `docs/presentation_it.html`):** Integrated full IEEE two-column technical reports (9 pp., 24 verified references) and interactive v4 slide decks (12 core + 3 bonus slides) directly into the GitHub Pages Documentation Hub (`index.html`), with the Technical Report prioritized first and directly deep-linked from `README.md`.
+
+### Changed
+- **Documentation & Notebook Alignment:** Synchronized `README.md`, `docs/01..06`, `docs/CONCLUSIONS.md`, `experiments/03_deltav2_prototyping/README.md`, `results/REPORT_TRIPLET_VS_CLOUD_ABLATION.md`, their Italian mirrors (`docs/docs_it/`), and Jupyter notebooks (`examples/03..05`) with the authoritative codebase (`src/`), benchmark CSVs (`results/`, `results_mediapipe/`), verified bibliography, and Technical Report.
+
+---
+
 ## [1.1.0] - 2026-11-16
 
 ### Added
@@ -26,9 +36,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 - **Monocular Depth Z-Spike Attenuation (`src/postprocessing/geometric_pruner.py`):** Introduced anisotropic depth scaling (`z_weight = 0.25`) and a physical velocity MAD floor (`0.015 m/frame`), preventing over-pruning and ray-shooting depth spikes.
-- **Narrow-Triangle Normal Twist Prevention (`src/postprocessing/geometric_pruner.py`):** Added minimum triangle altitude (`h_min >= 0.035 m`) and aspect ratio (`AR <= 8.0`) constraints in Stage 3, reducing Pitch ROM Error from `+45.2%` to **`+4.1%`** and increasing Pitch Pearson $r$ to **`0.295 ± 0.329`**.
-- **Anatomical IMU Frame & Camera-Leak Removal (`src/analysis/kinematic_alignment.py`, `src/analysis/signal_extractor.py`):** Disabled unsupervised IMU PCA axis scrambling (`use_pca_basis = False`), removed global SVD camera-plane projection leakage, and enforced single-pass zero-mean velocity integration.
-- **Signed Cross-Correlation with Physiological Lag Bound (`src/metrics/waveform/cross_correlation.py`):** Replaced unsigned Euclidean norm correlation with signed waveform cross-correlation capped at `max_shift_s = 0.5 s`.
+- **Narrow-Triangle Normal Twist Prevention (`src/postprocessing/geometric_pruner.py`, `src/analysis/kinematic_alignment.py`):** Added tangent-plane twist regularization ($\alpha_z = 0.05$) and adaptive 3D non-collinearity area floors, reducing Pitch ROM Error from `+44.1%` (Refined Cloud) to **`+4.1%`** (Refined Triplet) and increasing Pitch Pearson $r$ to **`0.295 ± 0.329`**.
+- **Anatomical IMU Frame & Kinematic World Alignment (`src/analysis/kinematic_alignment.py`):** Enabled anatomical PCA axis calibration (`use_anatomical_pca_basis = True`), Kabsch $\text{SO}(3)$ alignment, and Lie-algebra $\mathfrak{so}(3)$ relative orientation alignment.
+- **Bounded Overlap-Normalized Synchronization (`src/analysis/kinematic_alignment.py`):** Bounded temporal lag search to `max_lag_seconds = 2.5 s` with overlap normalization.
 
 ---
 
@@ -45,5 +55,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 - **Core Domain & Data I/O Infrastructure (`src/core/`, `src/data_io/`, `src/utils/`):** Implemented domain models, OpenCV video reader, OpenPose 2D JSON parser, WitMotion IMU CSV loader, and dataset scanner.
-- **2D Vision Thigh Preprocessing (`src/preprocessing/vision/`):** Implemented Canny edge processing, thigh boundary line fitting, optimal reference frame selection, and 3-point anatomical thigh query extraction.
+- **2D Vision Thigh Preprocessing (`src/preprocessing/vision/`):** Implemented directional Sobel edge detection, Huber robust thigh boundary line fitting, optimal reference frame selection, and 3-point anatomical thigh query extraction.
 - **Dense 3D Point Tracking Engine (`src/inference/`):** Implemented `BaseTracker`, `DummyTracker`, and `DELTAv2Tracker` with anatomical thigh and body context anchors (`200` thigh + `800` pelvis/torso points) after comparative evaluation against `SpaTrackerV2` and `VGGT`.

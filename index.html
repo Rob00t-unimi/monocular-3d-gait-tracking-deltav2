@@ -317,6 +317,110 @@
       color: var(--text-main);
     }
 
+    .content-container.pdf-mode {
+      padding: 20px 28px 24px 28px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .content-container.pdf-mode .markdown-body {
+      max-width: 100%;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .pdf-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      background-color: var(--bg-sidebar);
+      border: 1px solid var(--border-color);
+      border-radius: 8px 8px 0 0;
+      padding: 12px 18px;
+    }
+
+    .pdf-toolbar-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-bright);
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+
+    .pdf-lang-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background-color: var(--accent-bg);
+      color: var(--accent);
+      border: 1px solid rgba(88, 166, 255, 0.35);
+      text-transform: uppercase;
+    }
+
+    .pdf-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pdf-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-decoration: none !important;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-card);
+      color: var(--text-bright) !important;
+    }
+
+    .pdf-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent-hover) !important;
+    }
+
+    .pdf-btn.primary {
+      background-color: var(--accent);
+      border-color: var(--accent);
+      color: #0d1117 !important;
+    }
+
+    .pdf-btn.primary:hover {
+      background-color: var(--accent-hover);
+      border-color: var(--accent-hover);
+      color: #0d1117 !important;
+    }
+
+    .pdf-frame-container {
+      flex: 1;
+      min-height: 0;
+      border: 1px solid var(--border-color);
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      overflow: hidden;
+      background-color: #1c2128;
+    }
+
+    .pdf-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
@@ -361,6 +465,28 @@
 
   <script>
     const docs = [
+  {
+    "id": "report_pdf",
+    "type": "pdf",
+    "title_it": "📄 Report Tecnico — Gait Tracker (PDF, 9 pp.)",
+    "title_en": "📄 Technical Report — Gait Tracker (PDF, 9 pp.)",
+    "cat_it": "Report",
+    "cat_en": "Report",
+    "en_path": "docs/report_en.pdf",
+    "it_path": "docs/report_it.pdf",
+    "en_download": "Gait_Tracker_Report_EN.pdf",
+    "it_download": "Gait_Tracker_Report_IT.pdf"
+  },
+  {
+    "id": "presentation",
+    "type": "presentation",
+    "title_it": "🎞️ Slides — Presentazione v4 (12 + 3 Bonus)",
+    "title_en": "🎞️ Slides — Presentation v4 (12 + 3 Bonus)",
+    "cat_it": "Presentazione",
+    "cat_en": "Presentation",
+    "en_path": "docs/presentation_en.html",
+    "it_path": "docs/presentation_it.html"
+  },
   {
     "id": "readme",
     "title_it": "README — Panoramica e Guida CLI",
@@ -435,12 +561,21 @@
   },
   {
     "id": "res_40",
-    "title_it": "Report — Tabelle Metriche Complete 40 Video",
-    "title_en": "Report — 40-Video Comprehensive Metric Tables",
+    "title_it": "Report — Tabelle Metriche Complete 40 Video (bbox_grid)",
+    "title_en": "Report — 40-Video Comprehensive Metric Tables (bbox_grid)",
     "cat_it": "Risultati di Benchmark",
     "cat_en": "Benchmark Results",
     "en_path": "results/REPORT_40_VIDEOS_BENCHMARK.md",
     "it_path": "docs/docs_it/results/REPORT_40_VIDEOS_BENCHMARK.md"
+  },
+  {
+    "id": "res_40_mp",
+    "title_it": "Report — Ablazione MediaPipe 40 Video (1003 pt)",
+    "title_en": "Report — 40-Video MediaPipe Ablation (1003 pts)",
+    "cat_it": "Risultati di Benchmark",
+    "cat_en": "Benchmark Results",
+    "en_path": "results_mediapipe/REPORT_40_VIDEOS_BENCHMARK.md",
+    "it_path": "results_mediapipe/REPORT_40_VIDEOS_BENCHMARK.md"
   },
   {
     "id": "res_ablation",
@@ -534,21 +669,58 @@
   }
 ];
 
-    let currentDocId = 'readme';
+    let currentDocId = 'report_pdf';
     let currentLang = 'en';
+
+    function applyHashState() {
+      const rawHash = (window.location.hash || '').replace(/^#/, '');
+      if (!rawHash) return;
+      const parts = rawHash.split('&');
+      let targetDoc = null;
+      let targetLang = null;
+      parts.forEach((part, idx) => {
+        if (part.startsWith('lang=')) {
+          const val = part.slice(5).toLowerCase();
+          if (val === 'it' || val === 'en') targetLang = val;
+        } else if (part.startsWith('doc=')) {
+          targetDoc = part.slice(4);
+        } else if (idx === 0 && part) {
+          targetDoc = part;
+        }
+      });
+      if (targetLang) currentLang = targetLang;
+      if (targetDoc && docs.some(d => d.id === targetDoc && d.type !== 'presentation')) {
+        currentDocId = targetDoc;
+      }
+    }
+
+    function syncHashState() {
+      const hash = `#${currentDocId}${currentLang === 'it' ? '&lang=it' : ''}`;
+      if (window.location.hash !== hash) {
+        try {
+          history.replaceState(null, '', hash);
+        } catch (e) {
+          // Ignore file:// SecurityError
+        }
+      }
+    }
 
     const UI_STRINGS = {
       it: {
         appTitle: '🔬 Docs Hub',
         appSubtitle: 'monocular-3d-gait-tracking-deltav2 Suite di Documentazione',
         searchPlaceholder: 'Cerca nella documentazione...',
-        noResults: 'Nessun documento trovato'
+        noResults: 'Nessun documento trovato',
+        openNewTab: 'Apri in nuova scheda ↗',
+        downloadPdf: '⬇ Scarica PDF'
       },
       en: {
         appTitle: '🔬 Docs Hub',
         appSubtitle: 'monocular-3d-gait-tracking-deltav2 Documentation Suite',
         searchPlaceholder: 'Search documentation...',
-        noResults: 'No documents found'
+        noResults: 'No documents found',
+        openNewTab: 'Open in new tab ↗',
+        downloadPdf: '⬇ Download PDF'
       }
     };
 
@@ -594,11 +766,19 @@
           group.appendChild(catTitle);
 
           filteredDocs.forEach(doc => {
+            const title = currentLang === 'it' ? doc.title_it : doc.title_en;
+            if (doc.type === 'presentation') {
+              const link = document.createElement('a');
+              link.className = 'nav-item';
+              link.href = currentLang === 'it' ? doc.it_path : doc.en_path;
+              link.style.textDecoration = 'none';
+              link.innerHTML = `<span>${title} ↗</span>`;
+              group.appendChild(link);
+              return;
+            }
             const item = document.createElement('div');
             item.className = 'nav-item' + (doc.id === currentDocId ? ' active' : '');
             item.onclick = () => selectDoc(doc.id);
-
-            const title = currentLang === 'it' ? doc.title_it : doc.title_en;
             item.innerHTML = `<span>${title}</span>`;
             group.appendChild(item);
           });
@@ -614,6 +794,7 @@
 
     function selectDoc(docId) {
       currentDocId = docId;
+      syncHashState();
       renderNav();
       renderContent();
     }
@@ -622,6 +803,7 @@
       currentLang = lang;
       document.getElementById('btnIT').className = 'lang-btn' + (lang === 'it' ? ' active' : '');
       document.getElementById('btnEN').className = 'lang-btn' + (lang === 'en' ? ' active' : '');
+      syncHashState();
       updateUIStrings();
       renderNav();
       renderContent();
@@ -638,7 +820,32 @@
       document.getElementById('docTitle').textContent = title;
 
       const targetPath = (currentLang === 'it' && doc.it_path) ? doc.it_path : doc.en_path;
+      const contentContainer = document.querySelector('.content-container');
       const articleBody = document.getElementById('articleBody');
+
+      if (doc.type === 'pdf') {
+        contentContainer.classList.add('pdf-mode');
+        const strings = UI_STRINGS[currentLang];
+        const downloadName = (currentLang === 'it' && doc.it_download) ? doc.it_download : (doc.en_download || targetPath.split('/').pop());
+        articleBody.innerHTML = `
+          <div class="pdf-toolbar">
+            <div class="pdf-toolbar-info">
+              <span>📄 ${title}</span>
+              <span class="pdf-lang-badge">${currentLang.toUpperCase()}</span>
+            </div>
+            <div class="pdf-actions">
+              <a class="pdf-btn" href="${targetPath}" target="_blank" rel="noopener noreferrer">${strings.openNewTab}</a>
+              <a class="pdf-btn primary" href="${targetPath}" download="${downloadName}">${strings.downloadPdf}</a>
+            </div>
+          </div>
+          <div class="pdf-frame-container">
+            <iframe class="pdf-frame" src="${targetPath}" title="${title}"></iframe>
+          </div>
+        `;
+        return;
+      }
+
+      contentContainer.classList.remove('pdf-mode');
 
       // Stato di caricamento
       articleBody.innerHTML = `<div style="padding: 40px; text-align: center; color: var(--text-muted); font-size: 0.95rem;">Caricamento / Loading <code>${targetPath}</code>...</div>`;
@@ -707,7 +914,18 @@
     }
 
     document.getElementById('searchInput').addEventListener('input', renderNav);
+    window.addEventListener('hashchange', () => {
+      applyHashState();
+      document.getElementById('btnIT').className = 'lang-btn' + (currentLang === 'it' ? ' active' : '');
+      document.getElementById('btnEN').className = 'lang-btn' + (currentLang === 'en' ? ' active' : '');
+      updateUIStrings();
+      renderNav();
+      renderContent();
+    });
 
+    applyHashState();
+    document.getElementById('btnIT').className = 'lang-btn' + (currentLang === 'it' ? ' active' : '');
+    document.getElementById('btnEN').className = 'lang-btn' + (currentLang === 'en' ? ' active' : '');
     updateUIStrings();
     renderNav();
     renderContent();

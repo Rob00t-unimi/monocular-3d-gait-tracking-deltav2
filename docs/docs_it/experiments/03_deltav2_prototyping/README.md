@@ -23,18 +23,20 @@ La pipeline di produzione integra quattro stadi sinergici:
 
 ---
 
-## 2. Risultati Finali del Benchmark su 40 Video (Post-Fix `031a73d`)
+## 2. Risultati Finali del Benchmark su 40 Video (`bbox_grid`, N = 40)
 
 | Metrica | Dummy Baseline (Lift 2D) | DELTAv2 Raw Baseline | DELTAv2 Refined Cloud (SVD) | DELTAv2 Refined Triplet (Produzione) |
 | :--- | :---: | :---: | :---: | :---: |
-| **Pitch Pearson $r$** | $0.199 \pm 0.452$ | $0.185 \pm 0.316$ | $0.276 \pm 0.325$ | **$0.295 \pm 0.329$** (vince 21/40 vs Cloud) |
-| **Pitch ROM Error (%)** | $-31.7\% \pm 46.0\%$ | $-15.5\% \pm 48.5\%$ | $+45.2\% \pm 143.7\%$ | **$+4.1\% \pm 70.8\%$** |
-| **Pitch nRMSE (%)** | $28.6\% \pm 7.8\%$ | $30.4\% \pm 6.7\%$ | $34.4\% \pm 14.3\%$ | **$30.5\% \pm 9.3\%$** |
-| **AccX Pearson $r$** | $0.205 \pm 0.140$ | $0.243 \pm 0.171$ | $0.288 \pm 0.158$ | **$0.255 \pm 0.162$** |
-| **3D Acc DTW (norm)** | $1.244 \pm 0.230$ | $1.275 \pm 0.214$ | $1.248 \pm 0.172$ | **$1.230 \pm 0.173$** (Migliore assoluto) |
-| **Deformazione Rigida 3D (%)** | $0.0\% \pm 0.0\%$ | $33.3\% \pm 12.3\%$ | $41.4\% \pm 8.7\%$ | **$28.4\% \pm 9.9\%$** (vince **39/40 = 97.5%** vs Cloud) |
-| **RMS Jerk ($\text{m/s}^3$)** | $1452.0 \pm 646.6$ | $179.9 \pm 58.6$ | $36.2 \pm 13.4$ | **$36.6 \pm 14.3$** (5× più fluido di Raw, 40× vs Dummy) |
-| **True Identity Swaps ($90^\circ$ & $45^\circ$)** | $9 / 30\ (30.0\%)$ | $4 / 30\ (13.3\%)$ | $6 / 30\ (20.0\%)$ | **$3 / 30\ (10.0\%)$** |
-| **Artefatti di Profondità Assiale ($0^\circ$ & $180^\circ$)** | $4 / 10\ (40.0\%)$ | $1 / 10\ (10.0\%)$ | $1 / 10\ (10.0\%)$ | **$1 / 10\ (10.0\%)$** |
+| **Pitch Pearson $r$** | $0.199 \pm 0.452$ | $0.185 \pm 0.316$ | $0.276 \pm 0.288$ | **$0.295 \pm 0.329$** (vince 21/40 vs Cloud) |
+| **Pitch ROM Error (%)** | $-31.7\% \pm 46.0\%$ | $-15.5\% \pm 48.5\%$ | $+44.1\% \pm 54.6\%$ | **$+4.1\% \pm 70.8\%$** |
+| **Pitch nRMSE (%)** | $28.6\% \pm 7.8\%$ | $30.4\% \pm 6.7\%$ | $34.4\% \pm 8.3\%$ | **$30.5\% \pm 9.3\%$** |
+| **AccX Pearson $r$** | $0.205 \pm 0.140$ | $0.243 \pm 0.171$ | **$0.288 \pm 0.145$** | $0.255 \pm 0.162$ |
+| **3D Acc DTW (norm)** | $1.244 \pm 0.230$ | $1.275 \pm 0.214$ | $1.248 \pm 0.170$ | **$1.230 \pm 0.173$** (Migliore assoluto) |
+| **Deformazione Rigida 3D (%)** | $0.0\% \pm 0.0\%$ *(2D)* | $33.3\% \pm 12.3\%$ | $41.4\% \pm 8.3\%$ | **$28.4\% \pm 9.9\%$** (vince **39/40 = 97.5%** vs Cloud) |
+| **RMS Jerk ($\text{m/s}^3$)** | $1452.0 \pm 646.6$ | $179.9 \pm 58.6$ | **$36.2 \pm 14.1$** | $36.6 \pm 14.3$ (5× più fluido di Raw, 40× vs Dummy) |
+| **True Identity Swaps ($90^\circ$ & $45^\circ$)** | $9 / 30\ (30.0\%)$ | $4 / 30\ (13.3\%)$ | $5 / 30\ (16.7\%)$ | **$3 / 30\ (10.0\%)$** |
+| **Artefatti di Profondità Assiale ($0^\circ$ & $180^\circ$)** | $4 / 10\ (40.0\%)$ | $1 / 10\ (10.0\%)$ | $2 / 10\ (20.0\%)$ | **$1 / 10\ (10.0\%)$** |
+
+> **Nota sulla Modalità di Contesto:** Il benchmark primario sui 40 video qui sopra utilizza `bbox_grid` (`987` query: `3 + 200 + 784`). L'ablazione completa 40/40 con silhouette MediaPipe pura (`1003` query) è documentata in [`results_mediapipe/REPORT_40_VIDEOS_BENCHMARK.md`](../../../../results_mediapipe/REPORT_40_VIDEOS_BENCHMARK.md) e conferma `bbox_grid` + `Refined Triplet` come migliore configurazione complessiva.
 
 **Verdetto:** La pipeline **DELTAv2 Refined Triplet** è validata come soluzione stato dell'arte per il tracking 3D monoculare del cammino su tutte le 40 acquisizioni multi-prospettiva.
